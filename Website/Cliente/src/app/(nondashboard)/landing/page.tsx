@@ -8,43 +8,11 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useCarousel } from "@/hooks/useCarousel";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const loadingSkeleton = () => {
-  return (
-    <div className="landing-skeleton">
-      <div className="landing-skeleton__hero">
-        <div className="landing-skeleton__hero-content">
-          <Skeleton className="landing-skeleton__tittle" />
-          <Skeleton className="landing-skeleton__subtittle" />
-          <Skeleton className="landing-skeleton__subtittle-secondary" />
-          <Skeleton className="landing-skeleton__button" />
-        </div>
-        <Skeleton className="landing-skeleton__hero-image" />
-      </div>
-      <div className="landing-skeleton__featured">
-        <Skeleton className="landing-skeleton__feature-title" />
-        <Skeleton className="landing-skeleton__feature-description" />
-
-        <div className="landing-skeleton__tags">
-          {[1, 2, 3, 4, 5].map((_, index) => (
-            <Skeleton key={index} className="landing-skeleton__tag" />
-          ))}
-        </div>
-
-        <div className="landing-skeleton__courses">
-          {[1, 2, 3, 4].map((_, index) => (
-            <Skeleton key={index} className="landing-skeleton__course-card" />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const sections = [
   {
     id: "cursos",
     title: "Cursos",
-    description: "Isto é uma lista dos cursos que podes participar. Cursos profissionais a tua disposição.",
+    description: "Isto é uma lista dos cursos que podes participar. Cursos profissionais à tua disposição.",
     buttonText: "Procurar mais cursos",
     images: ["/images/hero1.jpg", "/images/hero2.jpg", "/images/hero3.jpg"],
   },
@@ -57,10 +25,10 @@ const sections = [
   },
   {
     id: "videos",
-    title: "Videos",
-    description: "Aqui encontras manuais úteis para expandir o teu conhecimento e aprender ao teu ritmo.",
-    buttonText: "Explorar manuais",
-    images: ["/images/manual1.jpg", "/images/manual2.jpg", "/images/manual3.jpg"],
+    title: "Vídeos",
+    description: "Descobre vídeos educativos para aprofundar os teus conhecimentos.",
+    buttonText: "Ver vídeos",
+    images: ["/images/video1.jpg", "/images/video2.jpg", "/images/video3.jpg"],
   },
 ];
 
@@ -71,6 +39,34 @@ const Landing = () => {
   // Alternar entre cursos e manuais
   const handleNext = () => setCurrentSection((prev) => (prev + 1) % sections.length);
   const handlePrev = () => setCurrentSection((prev) => (prev === 0 ? sections.length - 1 : prev - 1));
+
+  // Função para criar um novo dado na tabela "teste"
+  const handleCreateTest = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/testeinserir", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nome: "João Silva",
+          idade: 25,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Erro ao criar o dado");
+      }
+  
+      const data = await response.json();
+      console.log("Dado criado:", data);
+      alert("Dado criado com sucesso!");
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao criar o dado");
+    }
+  };
+  
 
   // Configuração da animação
   const slideVariants = {
@@ -89,26 +85,16 @@ const Landing = () => {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="landing">
       {/* Setas de navegação */}
-
-
-
-      <div
-        style={{
-          position: "relative", // Adicionado para que as setas sejam posicionadas corretamente
-        }}
-        className="landing__hero-container"
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            position: "absolute", // Alterado de fixed para absolute
-            top: "46%", // Posiciona as setas no meio vertical do contêiner
-            left: "1%",
-            right: "1%",
-            zIndex: 10, 
-          }}
-          className="landing__arrows">
+      <div className="landing__hero-container" style={{ position: "relative" }}>
+        <div className="landing__arrows" style={{
+          display: "flex",
+          justifyContent: "space-between",
+          position: "absolute",
+          top: "46%",
+          left: "1%",
+          right: "1%",
+          zIndex: 10,
+        }}>
           <button className="landing__arrow-button left" onClick={handlePrev}>
             <ArrowLeft size={32} />
           </button>
@@ -116,6 +102,7 @@ const Landing = () => {
             <ArrowRight size={32} />
           </button>
         </div>
+
         <AnimatePresence custom={currentSection} mode="wait">
           <motion.div
             key={sections[currentSection].id}
@@ -140,15 +127,12 @@ const Landing = () => {
               {sections[currentSection].images.map((src, index) => (
                 <div key={src} className="landing__hero-image-wrapper">
                   <Image
-                    key={src}
                     src={src}
                     alt={`hero banner ${index + 1}`}
                     fill
                     priority={index === currentImage}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className={`landing__hero-image ${
-                      index === currentImage ? "landing__hero-image--active" : ""
-                    }`}
+                    className={`landing__hero-image ${index === currentImage ? "landing__hero-image--active" : ""}`}
                   />
                 </div>
               ))}
@@ -157,7 +141,7 @@ const Landing = () => {
         </AnimatePresence>
       </div>
 
-      {/* PARTE FIXA */}
+      {/* Seção de cursos e botão de criação de teste */}
       <div className="landing__featured">
         <h2 className="landing__featured-title">Featured Courses</h2>
         <p className="landing__featured-description">
@@ -167,18 +151,15 @@ const Landing = () => {
         </p>
 
         <div className="landing__tags">
-          {[
-            "web development",
-            "enterprise IT",
-            "react nextjs",
-            "javascript",
-            "backend development",
-          ].map((tag, index) => (
-            <span key={index} className="landing__tag">
-              {tag}
-            </span>
+          {["web development", "enterprise IT", "react nextjs", "javascript", "backend development"].map((tag, index) => (
+            <span key={index} className="landing__tag">{tag}</span>
           ))}
         </div>
+
+        {/* BOTÃO PARA CRIAR DADO NA TABELA TESTE */}
+        <button onClick={handleCreateTest} className="landing__cta-button">
+          Criar Teste
+        </button>
       </div>
 
       <div className="landing__courses"></div>
