@@ -35,6 +35,8 @@ const sections = [
 const Landing = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const currentImage = useCarousel({ totalImages: 3 });
+  //const { data: cursos, isLoading, isError} = useGetCoursesQuery({});
+  //console.log("cursos:", cursos);
 
   // Alternar entre cursos e manuais
   const handleNext = () => setCurrentSection((prev) => (prev + 1) % sections.length);
