@@ -1,12 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, User } from "lucide-react";
 import { useCarousel } from "@/hooks/useCarousel";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useGetCursosQuery } from "@/state/api";
+import { useRouter } from "next/navigation";
+import Coursecardsearch from "@/components/Coursecardsearch";
 
 const sections = [
   {
@@ -35,39 +38,24 @@ const sections = [
 const Landing = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const currentImage = useCarousel({ totalImages: 3 });
-  //const { data: cursos, isLoading, isError} = useGetCoursesQuery({});
-  //console.log("cursos:", cursos);
 
+  const router = useRouter();
+  const handleCourseClick = (cursoid: string) => {
+    router.push(`/curso/${cursoid}`);
+  };
+  
+
+  const { data: cursos, isLoading, isError } = useGetCursosQuery({});
+  useEffect(() => {
+    if (isLoading) console.log("⏳ A carregar cursos...");
+    else if (isError) console.log("❌ Erro ao buscar cursos");
+    else if (cursos?.length === 0) console.log("⚠️ Nenhum curso encontrado!");
+    else console.log("✅ Cursos carregados:", cursos);
+  }, [cursos, isLoading, isError]);
+  
   // Alternar entre cursos e manuais
   const handleNext = () => setCurrentSection((prev) => (prev + 1) % sections.length);
   const handlePrev = () => setCurrentSection((prev) => (prev === 0 ? sections.length - 1 : prev - 1));
-
-  // Função para criar um novo dado na tabela "teste"
-  const handleCreateTest = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/testeinserir", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nome: "João Silva",
-          idade: 25,
-        }),
-      });
-  
-      if (!response.ok) {
-        throw new Error("Erro ao criar o dado");
-      }
-  
-      const data = await response.json();
-      console.log("Dado criado:", data);
-      alert("Dado criado com sucesso!");
-    } catch (error) {
-      console.error("Erro:", error);
-      alert("Erro ao criar o dado");
-    }
-  };
   
 
   // Configuração da animação
@@ -157,16 +145,32 @@ const Landing = () => {
             <span key={index} className="landing__tag">{tag}</span>
           ))}
         </div>
-
-        {/* BOTÃO PARA CRIAR DADO NA TABELA TESTE */}
-        <button onClick={handleCreateTest} className="landing__cta-button">
-          Criar Teste
-        </button>
       </div>
 
-      <div className="landing__courses"></div>
+      <div className="landing__courses">
+          {cursos &&
+            cursos.slice(0, 4).map((cursos, index) => (
+              <motion.div
+                key={cursos.cursoid}
+                initial={{ y: 50, opacity: 0}}
+                whileInView={{ y: 0, opacity: 1}}
+                transition={{ duration: 0.5, delay: index * 0.2 }}
+                viewport={{ amount: 0.4 }}
+              >
+                <Coursecardsearch
+                  curso={cursos}
+                  onClick={() => handleCourseClick(cursos.cursoid)}
+                />
+              </motion.div>
+            ))
+          }
+      </div>
     </motion.div>
   );
 };
 
 export default Landing;
+function useGetCoursesQuery(arg0: {}): { data: any; isLoading: any; isError: any; } {
+  throw new Error("Function not implemented.");
+}
+
