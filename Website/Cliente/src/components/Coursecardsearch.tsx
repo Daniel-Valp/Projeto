@@ -3,6 +3,13 @@ import React from "react";
 import { ProcurarPeloCurso } from "@/types/Cursotipos"; // Importa a interface correta
 
 const CourseCardSearch: React.FC<ProcurarPeloCurso> = ({ curso, isSelected, onClick }) => {
+    // Verifique se a imagem é externa ou local
+    const imageUrl = curso.imagem
+        ? curso.imagem.startsWith("http")  // Se a URL já começar com "http", é uma URL externa
+            ? curso.imagem                  // Use diretamente a URL externa
+            : `http://localhost:5000/uploads/${curso.imagem}`  // Se não, é uma imagem local
+        : "/placeholder.png";  // Caso não tenha imagem, usa um placeholder
+
     return (
         <div
             onClick={onClick} // ✅ Corrigido (onclick → onClick)
@@ -12,7 +19,7 @@ const CourseCardSearch: React.FC<ProcurarPeloCurso> = ({ curso, isSelected, onCl
         >
             <div className="course-card-search__image-container">
                 <Image
-                    src={curso.imagem || "/placeholder.png"} // ✅ Corrigido
+                    src={imageUrl} // Usando a URL corrigida
                     alt={curso.titulo} // ✅ Corrigido
                     fill
                     sizes="(max-width: 765px) 100vw, (max-width: 1200px) 50vw, 33vw"

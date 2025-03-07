@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,6 +10,39 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useGetCursosQuery } from "@/state/api";
 import { useRouter } from "next/navigation";
 import Coursecardsearch from "@/components/Coursecardsearch";
+
+const LoadingSkeleton = () => {
+  return (
+    <div className="landing-skeleton">
+      <div className="landing-skeleton__hero">
+        <div className="landing-skeleton__hero-content">
+          <Skeleton className="landing-skeleton__title" />
+          <Skeleton className="landing-skeleton__subtitle" />
+          <Skeleton className="landing-skeleton__subtitle-secondary" />
+          <Skeleton className="landing-skeleton__button" />
+        </div>
+        <Skeleton className="landing-skeleton__hero-image" />
+      </div>
+
+      <div className="landing-skeleton__featured">
+        <Skeleton className="landing-skeleton__featured-title" />
+        <Skeleton className="landing-skeleton__featured-description" />
+
+        <div className="landing-skeleton__tags">
+          {[1, 2, 3, 4, 5].map((_, index) => (
+            <Skeleton key={index} className="landing-skeleton__tag" />
+          ))}
+        </div>
+
+        <div className="landing-skeleton__courses">
+          {[1, 2, 3, 4].map((_, index) => (
+            <Skeleton key={index} className="landing-skeleton__course-card" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const sections = [
   {
@@ -38,20 +71,23 @@ const sections = [
 const Landing = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const currentImage = useCarousel({ totalImages: 3 });
+  const { data: cursos, isLoading, isError } = useGetCursosQuery({});
 
   const router = useRouter();
   const handleCourseClick = (cursoid: string) => {
     router.push(`/curso/${cursoid}`);
   };
   
-
-  const { data: cursos, isLoading, isError } = useGetCursosQuery({});
   useEffect(() => {
     if (isLoading) console.log("⏳ A carregar cursos...");
     else if (isError) console.log("❌ Erro ao buscar cursos");
     else if (cursos?.length === 0) console.log("⚠️ Nenhum curso encontrado!");
     else console.log("✅ Cursos carregados:", cursos);
   }, [cursos, isLoading, isError]);
+
+  if (isLoading) {
+    return <LoadingSkeleton />;
+  }
   
   // Alternar entre cursos e manuais
   const handleNext = () => setCurrentSection((prev) => (prev + 1) % sections.length);
@@ -170,7 +206,6 @@ const Landing = () => {
 };
 
 export default Landing;
-function useGetCoursesQuery(arg0: {}): { data: any; isLoading: any; isError: any; } {
-  throw new Error("Function not implemented.");
-}
+
+
 

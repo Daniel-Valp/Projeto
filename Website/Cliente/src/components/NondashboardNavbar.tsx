@@ -19,7 +19,7 @@ export default function Home() {
                             </Link>
                         <BookOpen className="nondashboard-navbar__search-icon" size={18}></BookOpen>
                     </div>
-                </div>
+                
             </div>
         </div>
         <div className="nondashboard-navbar__actions">
@@ -29,6 +29,7 @@ export default function Home() {
             </button>
 
             
+        </div>
         </div>
     </nav>
   );

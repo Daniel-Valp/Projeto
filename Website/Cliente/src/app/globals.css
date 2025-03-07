@@ -49,8 +49,8 @@ input[type="color"] {
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
 
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --background: theme("colors.customgreys.primarybg");
+    --foreground: theme("colors.white.50");
 
     --primary: 240 5.9% 10%;
     --primary-foreground: 0 0% 98%;
@@ -146,6 +146,7 @@ input[type="color"] {
 /* Search Page */
 .search {
   @apply flex flex-col bg-background text-foreground h-full mx-auto w-3/4;
+
 }
 
 .search__title {
