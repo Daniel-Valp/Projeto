@@ -1,10 +1,11 @@
-import Curso from "../models/cursomodels.js"; // Importa o modelo atualizado
+import { Curso, Secao, Capitulo } from "../models/cursomodels.js"; // Importação nomeada
+// 📌 Função para listar cursos (permanece igual)
 export const listarCursos = async (req, res) => {
-    const { categoria } = req.query; // Nome correto da coluna no PostgreSQL
+    const { categoria } = req.query;
     try {
         let whereClause = {};
         if (categoria && categoria !== "all") {
-            whereClause = { categoria }; // Ajustado para "categoria"
+            whereClause = { categoria };
         }
         const cursos = await Curso.findAll({ where: whereClause });
         res.json({ message: "Cursos devolvidos", data: cursos });
@@ -14,18 +15,29 @@ export const listarCursos = async (req, res) => {
         res.status(500).json({ message: "Erro ao buscar cursos", error });
     }
 };
-export const getCurso = async (req, res) => {
-    const { cursoid } = req.params; // Nome correto da coluna no PostgreSQL
+// 📌 Função para buscar um curso específico com suas seções e capítulos
+export const getCursos = async (req, res) => {
     try {
-        const curso = await Curso.findByPk(cursoid); // Busca pelo ID usando Sequelize
-        if (!curso) {
-            res.status(404).json({ message: "Curso não encontrado" });
-            return;
-        }
-        res.json({ message: "Curso encontrado com sucesso", data: curso });
+        const cursos = await Curso.findAll({
+            include: [
+                {
+                    model: Secao,
+                    as: "secoes",
+                    required: false, // Inclui cursos mesmo que não tenham seções
+                    include: [
+                        {
+                            model: Capitulo,
+                            as: "capitulos",
+                            required: false, // Inclui seções mesmo que não tenham capítulos
+                        },
+                    ],
+                },
+            ],
+        });
+        res.json({ message: "Cursos devolvidos", data: cursos });
     }
     catch (error) {
-        console.error("Erro ao buscar o curso:", error);
-        res.status(500).json({ message: "Erro ao buscar o curso", error });
+        console.error("Erro ao buscar cursos:", error);
+        res.status(500).json({ message: "Erro ao buscar cursos", error });
     }
 };

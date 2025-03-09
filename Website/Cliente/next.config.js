@@ -1,9 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-      domains: ['static.wikia.nocookie.net', 'localhost'],  // Adicionando localhost para imagens locais
-    },
-  };
-  
-  module.exports = nextConfig;
-  
+  images: {
+    domains: ['static.wikia.nocookie.net', 'localhost', 'cdn.theatlantic.com'],  // Adicionando o domínio da imagem
+  },
+};
+
+module.exports = nextConfig;

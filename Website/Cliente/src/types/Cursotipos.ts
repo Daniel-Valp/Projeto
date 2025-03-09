@@ -20,3 +20,8 @@ export interface ProcurarPeloCurso {
   isSelected?: boolean;
   onClick?: () => void;
 }
+
+export interface CursoSelecionado {
+  Curso: Curso;
+  handleEnrollNow: (cursoid: string) => void;
+}

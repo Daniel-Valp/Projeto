@@ -1,14 +1,15 @@
 import { Request, Response } from "express";
-import Curso from "../models/cursomodels.js"; // Importa o modelo atualizado
+import { Curso, Secao, Capitulo } from "../models/cursomodels.js";  // Importação nomeada
 
+// 📌 Função para listar cursos (permanece igual)
 export const listarCursos = async (req: Request, res: Response): Promise<void> => {
-    const { categoria } = req.query; // Nome correto da coluna no PostgreSQL
+    const { categoria } = req.query;
 
     try {
         let whereClause = {};
 
         if (categoria && categoria !== "all") {
-            whereClause = { categoria }; // Ajustado para "categoria"
+            whereClause = { categoria };
         }
 
         const cursos = await Curso.findAll({ where: whereClause });
@@ -20,20 +21,32 @@ export const listarCursos = async (req: Request, res: Response): Promise<void> =
     }
 };
 
-export const getCurso = async (req: Request, res: Response): Promise<void> => {
-    const { cursoid } = req.params; // Nome correto da coluna no PostgreSQL
-  
-    try {
-      const curso = await Curso.findByPk(cursoid); // Busca pelo ID usando Sequelize
-  
-      if (!curso) {
-        res.status(404).json({ message: "Curso não encontrado" });
-        return;
-      }
-  
-      res.json({ message: "Curso encontrado com sucesso", data: curso });
-    } catch (error) {
-      console.error("Erro ao buscar o curso:", error);
-      res.status(500).json({ message: "Erro ao buscar o curso", error });
-    }
-  };
+// 📌 Função para buscar um curso específico com suas seções e capítulos
+export const getCursos = async (req: Request, res: Response): Promise<void> => {
+  try {
+      const cursos = await Curso.findAll({
+          include: [
+              {
+                  model: Secao,
+                  as: "secoes",
+                  required: false, // Inclui cursos mesmo que não tenham seções
+                  include: [
+                      {
+                          model: Capitulo,
+                          as: "capitulos",
+                          required: false, // Inclui seções mesmo que não tenham capítulos
+                      },
+                  ],
+              },
+          ],
+      });
+
+      res.json({ message: "Cursos devolvidos", data: cursos });
+  } catch (error) {
+      console.error("Erro ao buscar cursos:", error);
+      res.status(500).json({ message: "Erro ao buscar cursos", error });
+  }
+};
+
+
+
