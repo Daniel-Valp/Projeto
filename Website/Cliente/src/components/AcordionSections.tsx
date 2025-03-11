@@ -16,7 +16,7 @@ const AccordionSections: React.FC<AccordionSecoes> = ({ sections }) => {
   return (
     <Accordion type="multiple" className="w-full">
       {sections.map((section: Secao) => (
-        <AccordionItem key={section.secaoid} value={section.secaotitulo}>
+        <AccordionItem key={section.secaoid} value={String(section.secaoid)}>
           <AccordionTrigger>
             <h5>{section.secaotitulo}</h5>
           </AccordionTrigger>

@@ -4,6 +4,7 @@ import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Provider } from "react-redux";
 import Providers from "./providers";
+import { ClerkProvider } from "@clerk/nextjs"
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -22,6 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <ClerkProvider>
     <html lang="en">
       <body
         className={`${dmSans.className}`}>
@@ -29,5 +31,6 @@ export default function RootLayout({
             <div className="root-layout">{children}</div></Providers>
       </body>
     </html>
+    </ClerkProvider>
   );
 }

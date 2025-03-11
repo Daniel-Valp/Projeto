@@ -77,7 +77,7 @@ const Landing = () => {
 
   const router = useRouter();
   const handleCourseClick = (cursoid: string) => {
-    router.push(`/curso/${cursoid}`);
+    router.push(`/search?id=${cursoid}`);
   };
   
   useEffect(() => {
@@ -190,23 +190,22 @@ const Landing = () => {
       </div>
 
       <div className="landing__courses">
-          {cursos &&
-            cursos.slice(0, 4).map((cursos, index) => (
-              <motion.div
-                key={cursos.cursoid}
-                initial={{ y: 50, opacity: 0}}
-                whileInView={{ y: 0, opacity: 1}}
-                transition={{ duration: 0.5, delay: index * 0.2 }}
-                viewport={{ amount: 0.4 }}
-              >
-                <Coursecardsearch
-                  curso={cursos}
-                  onClick={() => handleCourseClick(cursos.cursoid)}
-                />
-              </motion.div>
-            ))
-          }
-      </div>
+  {cursos &&
+    cursos.slice(0, 4).map((curso, index) => (
+      <motion.div
+        key={curso.cursoid}
+        initial={{ y: 50, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, delay: index * 0.2 }}
+        viewport={{ amount: 0.4 }}
+        onClick={() => handleCourseClick(curso.cursoid)} // ✅ Agora o clique no card leva à página do curso
+        className="cursor-pointer" // 🔥 Adiciona um cursor de "clique"
+      >
+        <Coursecardsearch curso={curso} />
+      </motion.div>
+    ))}
+</div>
+
     </motion.div>
   );
 };
