@@ -72,6 +72,8 @@ const Landing = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const currentImage = useCarousel({ totalImages: 3 });
   const { data: cursos, isLoading, isError } = useGetCursosQuery({});
+  const [curso, setCurso] = useState<any>(null); // Pode ser ajustado para o tipo correto do seu curso
+
 
   const router = useRouter();
   const handleCourseClick = (cursoid: string) => {
@@ -79,15 +81,19 @@ const Landing = () => {
   };
   
   useEffect(() => {
-    if (isLoading) console.log("⏳ A carregar cursos...");
-    else if (isError) console.log("❌ Erro ao buscar cursos");
-    else if (cursos?.length === 0) console.log("⚠️ Nenhum curso encontrado!");
-    else console.log("✅ Cursos carregados:", cursos);
-  }, [cursos, isLoading, isError]);
+    const fetchCurso = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/cursos/11c31a9d-6dd4-46f4-8728-64ac512dded7");
+        const data = await response.json();
+        console.log("Dados do curso:", data); // Apenas exibe os dados no console
+        setCurso(data.data); // Supondo que 'data.data' contém os dados do curso
+      } catch (error) {
+        console.error("Erro ao buscar curso:", error);
+      }
+    };
 
-  if (isLoading) {
-    return <LoadingSkeleton />;
-  }
+    fetchCurso();
+  }, []); // Executar apenas uma vez quando o componente for montado
   
   // Alternar entre cursos e manuais
   const handleNext = () => setCurrentSection((prev) => (prev + 1) % sections.length);

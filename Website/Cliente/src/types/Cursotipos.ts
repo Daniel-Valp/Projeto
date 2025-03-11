@@ -1,3 +1,5 @@
+import { Secao } from "./Secçõestipo";
+
 export interface Curso {
   cursoid: string;
   professorid: string;
@@ -8,7 +10,7 @@ export interface Curso {
   imagem?: string;
   nivel: "Iniciante" | "Intermedio" | "Avançado";
   estado: "Rascunho" | "Publicado";
-  secao: any[]; // Se souberes a estrutura, substitui `any` pelo tipo correto
+  secoes: Secao[]; // Agora está correto
   enlistados: any[];
   analise: Record<string, any>; // JSONB no banco pode ser um objeto genérico
   criadoem: string; // Timestamp como string ISO

@@ -1,6 +1,8 @@
 import express from "express";
-import { getCursos, listarCursos } from "../Controllers/ControllerCurso.js";
+import { getCursoPorId, listarCursos } from "../Controllers/ControllerCurso.js";
 const router = express.Router();
+// 📝 Rota para listar todos os cursos com seções e capítulos
 router.get("/", listarCursos);
-router.get("/:cursoid", getCursos);
+// 📝 Rota para pegar um curso pelo ID (completo)
+router.get("/:id", getCursoPorId);
 export default router;

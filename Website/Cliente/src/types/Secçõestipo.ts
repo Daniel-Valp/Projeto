@@ -1,20 +1,21 @@
-export interface Secção {
-    seccaoId: string;
-    seccaoTitle: string;
-    seccaoDescricao?: string;
-    capitulos: capitulo[];
-  }
-
-export interface AccordionSecoes {
-  sections: Secção[];
+export interface Capitulo {
+  capituloid: string;
+  secaoid: string;
+  type: "Text" | "Quiz" | "Video";
+  capitulotitulo: string;
+  conteudo: string;
+  video?: string | null;
+  freepreview: boolean;
 }
 
-export interface capitulo {
-    capituloId: string;
-    capitulotitulo: string;
-    conteudo: string;
-    video?: string | File;
-    freePreview?: boolean;
-    type: "Text" | "Quiz" | "Video";
-  }
+export interface Secao {
+  secaoid: string;
+  cursoid: string;
+  secaotitulo: string;
+  secaodescricao: string;
+  capitulos: Capitulo[];
+}
 
+export interface AccordionSecoes {
+  sections: Secao[];
+}

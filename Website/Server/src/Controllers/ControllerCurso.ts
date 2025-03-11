@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { Curso, Secao, Capitulo } from "../models/cursomodels.js";  // Importação nomeada
+import { Curso, Secao, Capitulo } from "../models/cursomodels.js"; // Importação nomeada
 
-// 📌 Função para listar cursos (permanece igual)
+// 📌 Função para listar TODOS os cursos com suas seções e capítulos
 export const listarCursos = async (req: Request, res: Response): Promise<void> => {
     const { categoria } = req.query;
 
@@ -12,41 +12,65 @@ export const listarCursos = async (req: Request, res: Response): Promise<void> =
             whereClause = { categoria };
         }
 
-        const cursos = await Curso.findAll({ where: whereClause });
+        const cursos = await Curso.findAll({
+            where: whereClause,
+            include: [
+                {
+                    model: Secao,
+                    as: "secoes",
+                    include: [
+                        {
+                            model: Capitulo,
+                            as: "capitulos",
+                        },
+                    ],
+                },
+            ],
+        });
 
-        res.json({ message: "Cursos devolvidos", data: cursos });
+        res.json({ message: "Lista de cursos completa", data: cursos });
     } catch (error) {
         console.error("Erro ao buscar cursos:", error);
         res.status(500).json({ message: "Erro ao buscar cursos", error });
     }
 };
 
-// 📌 Função para buscar um curso específico com suas seções e capítulos
-export const getCursos = async (req: Request, res: Response): Promise<void> => {
-  try {
-      const cursos = await Curso.findAll({
-          include: [
-              {
-                  model: Secao,
-                  as: "secoes",
-                  required: false, // Inclui cursos mesmo que não tenham seções
-                  include: [
-                      {
-                          model: Capitulo,
-                          as: "capitulos",
-                          required: false, // Inclui seções mesmo que não tenham capítulos
-                      },
-                  ],
-              },
-          ],
-      });
+// 📌 Função para buscar UM curso pelo ID (completo)
+export const getCursoPorId = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
 
-      res.json({ message: "Cursos devolvidos", data: cursos });
-  } catch (error) {
-      console.error("Erro ao buscar cursos:", error);
-      res.status(500).json({ message: "Erro ao buscar cursos", error });
-  }
+    console.log("🔍 ID recebido:", id); // 👀 Verifica se o ID está correto
+
+    if (!id) {
+        res.status(400).json({ message: "ID do curso não fornecido" });
+        return;
+    }
+
+    try {
+        const curso = await Curso.findOne({
+            where: { cursoid: id }, // Verifica se cursoid é a chave correta
+            include: [
+                {
+                    model: Secao,
+                    as: "secoes",
+                    include: [
+                        {
+                            model: Capitulo,
+                            as: "capitulos",
+                        },
+                    ],
+                },
+            ],
+        });
+
+        if (!curso) {
+            res.status(404).json({ message: "Curso não encontrado" });
+            return;
+        }
+
+        res.json({ message: "Curso encontrado", data: curso });
+    } catch (error) {
+        console.error("❌ Erro ao buscar curso:", error);
+        res.status(500).json({ message: "Erro ao buscar curso", error });
+    }
 };
-
-
-
