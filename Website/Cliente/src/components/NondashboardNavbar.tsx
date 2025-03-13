@@ -1,4 +1,5 @@
 import NonDashboardNavbar from "@/components/NondashboardNavbar"
+import { SignedIn, SignedOut, SignIn, UserButton } from "@clerk/nextjs";
 import { Bell, BookOpen } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -28,7 +29,17 @@ export default function Home() {
                 <Bell className="nondashboard-navbar__notification-icon"></Bell>
             </button>
 
-            
+            <SignedIn>
+                <UserButton />
+            </SignedIn>
+            <SignedOut>
+                <Link href="/signin" className="nondashboard-navbar__auth-button--login">
+                    Log in
+                </Link>
+                <Link href="/signup" className="nondashboard-navbar__auth-button--signup">
+                    Sign up
+                </Link>
+            </SignedOut>
         </div>
         </div>
     </nav>

@@ -175,15 +175,13 @@ const Landing = () => {
 
       {/* Seção de cursos e botão de criação de teste */}
       <div className="landing__featured">
-        <h2 className="landing__featured-title">Featured Courses</h2>
+        <h2 className="landing__featured-title">Ultimos cursos</h2>
         <p className="landing__featured-description">
-          From beginner to advanced, in all industries, we have the right
-          courses just for you and preparing your entire journey for learning
-          and making the most.
+          Desde iniciante a profissional aqui podes encontrar todo o tipo de cursos que te ajudam no dia a dia na vida da informatica.
         </p>
 
         <div className="landing__tags">
-          {["web development", "enterprise IT", "react nextjs", "javascript", "backend development"].map((tag, index) => (
+          {["Desenvolvimento web", "Empresas IT", "Segurança na internet", "Criação", "Aprendizagem informatica"].map((tag, index) => (
             <span key={index} className="landing__tag">{tag}</span>
           ))}
         </div>
