@@ -10,6 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useGetCursosQuery } from "@/state/api";
 import { useRouter } from "next/navigation";
 import Coursecardsearch from "@/components/Coursecardsearch";
+import { useUser } from "@clerk/nextjs";
+import AppSidebar from "@/components/AppSidebar";
 
 const LoadingSkeleton = () => {
   return (
@@ -69,6 +71,8 @@ const sections = [
 ];
 
 const Landing = () => {
+  const { user } = useUser();
+  //console.log("user:", user);
   const [currentSection, setCurrentSection] = useState(0);
   const currentImage = useCarousel({ totalImages: 3 });
   const { data: cursos, isLoading, isError } = useGetCursosQuery({});
@@ -115,6 +119,7 @@ const Landing = () => {
   };
 
   return (
+    
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="landing">
       {/* Setas de navegação */}
       <div className="landing__hero-container" style={{ position: "relative" }}>
