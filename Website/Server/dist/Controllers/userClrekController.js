@@ -1,13 +1,17 @@
-export const listarCursos = async (req, res) => {
-    const { categoria } = req.query;
+import { clerkClient } from "../index.js";
+export const updateUser = async (req, res) => {
+    const { userId } = req.params;
+    const userData = req.body;
     try {
-        let whereClause = {};
-        if (categoria && categoria !== "all") {
-            whereClause = { categoria };
-        }
+        const user = await clerkClient.users.updateUserMetadata(userId, {
+            publicMetadata: {
+                userType: userData.publicMetadata.userType,
+                settings: userData.publicMetadata.settings,
+            },
+        });
+        res.json({ message: "User updated successfully", data: user });
     }
     catch (error) {
-        console.error("Erro ao buscar cursos:", error);
-        res.status(500).json({ message: "Erro ao buscar cursos", error });
+        res.status(500).json({ message: "Error updating user", error });
     }
 };

@@ -1,8 +1,8 @@
 import express from "express";
-import { updateuser } from "../Controllers/userClrekController.js"
+import { updateUser } from "../Controllers/userClrekController.js"
 
 const router = express.Router();
 
-router.patch("/:userId", updateuser)
+router.put("/:userId", updateUser);
 
 export default router;

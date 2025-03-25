@@ -1,6 +1,7 @@
 import { Curso } from "@/types/Cursotipos"; // Usa nome de ficheiro mais claro
 import { BaseQueryApi, createApi, FetchArgs, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { User } from "@clerk/nextjs/server"
+import { Clerk } from "@clerk/clerk-js";
 
 const customBaseQuery = async (
   args: string | FetchArgs,
@@ -9,6 +10,13 @@ const customBaseQuery = async (
 ) => {
   const baseQuery = fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+    prepareHeaders: async (headers) => {
+      const token = await window.Clerk?.session?.getToken();
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   });
 
   try {
@@ -34,10 +42,10 @@ export const api = createApi({
     
     updateUser: build.mutation<User, Partial<User> & { userId: string}>({
       query: ({ userId, ...updateUser }) => ({
-        url: "users/clerk/${userId}",
+        url: `users/clerk/${userId}`,
         method: "PUT",
         body: updateUser
-      }),
+      }),      
       invalidatesTags: ["Users"]
     }),
 

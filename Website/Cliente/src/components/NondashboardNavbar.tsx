@@ -65,13 +65,6 @@ const NonDashboardNavbar = () => {
             >
               Log in
             </Link>
-            <Link
-              href="/signup"
-              className="nondashboard-navbar__auth-button--signup"
-              scroll={false}
-            >
-              Sign up
-            </Link>
           </SignedOut>
         </div>
       </div>
