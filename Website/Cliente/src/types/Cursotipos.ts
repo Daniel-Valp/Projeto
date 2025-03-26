@@ -8,17 +8,24 @@ export interface Curso {
   descricao: string;
   categoria: string;
   imagem?: string;
-  nivel: "Iniciante" | "Intermedio" | "Avançado";
+  nivel: "Iniciante" | "Intermediario" | "Avançado";
   estado: "Rascunho" | "Publicado";
-  secoes: Secao[]; // Agora está correto
+  horas: number; // Duração do curso em horas
+  subcategoria: Subcategoria; // Se precisar carregar os detalhes da subcategoria
+  secoes: Secao[]; // Relacionamento com as seções
   enlistados: any[];
-  analise: Record<string, any>; // JSONB no banco pode ser um objeto genérico
   criadoem: string; // Timestamp como string ISO
   atualizadoem: string;
 }
 
+export interface Subcategoria {
+  subcategoriaid: string;
+  nome: string;
+}
+
+
 export interface ProcurarPeloCurso {
-  curso: Curso; // Mantém coerência com `curso`, não `course`
+  curso: Curso; 
   isSelected?: boolean;
   onClick?: () => void;
 }

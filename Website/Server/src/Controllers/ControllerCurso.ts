@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Curso, Secao, Capitulo } from "../models/cursomodels.js"; // Importação nomeada
+import { v4 as uuidv4 } from "uuid"
 
 // 📌 Função para listar TODOS os cursos com suas seções e capítulos
 export const listarCursos = async (req: Request, res: Response): Promise<void> => {
@@ -72,5 +73,36 @@ export const getCursoPorId = async (req: Request, res: Response): Promise<void> 
     } catch (error) {
         console.error("❌ Erro ao buscar curso:", error);
         res.status(500).json({ message: "Erro ao buscar curso", error });
+    }
+};
+
+export const criarCurso = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { professorid, professornome, subcategoriaid } = req.body;
+
+        if (!professorid || !professornome) {
+            res.status(400).json({ message: "Nome e ID do professor são necessários" });
+            return;
+        }
+
+        const newCourse = await Curso.create({
+            cursoid: uuidv4(),
+            professorid,
+            professornome,
+            titulo: "Curso sem título",
+            descricao: "",
+            categoria: "Sem categoria",
+            imagem: "",
+            horas: 0, 
+            nivel: "Beginner",
+            estado: "Draft",
+            subcategoriaid: subcategoriaid || null, 
+            criadoem: new Date(),
+            atualizadoem: new Date(),
+        });
+
+        res.json({ message: "Curso criado com sucesso", data: newCourse });
+    } catch (error) {
+        res.status(500).json({ message: "Erro ao criar o curso", error });
     }
 };

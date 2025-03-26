@@ -30,12 +30,26 @@ const Curso = sequelize.define("Curso", {
         type: DataTypes.TEXT,
     },
     nivel: {
-        type: DataTypes.ENUM("Beginner", "Intermediate", "Advanced"),
+        type: DataTypes.ENUM("Iniciante", "Intermediario", "Avançado"),
         allowNull: false,
     },
     estado: {
-        type: DataTypes.ENUM("Draft", "Published"),
+        type: DataTypes.ENUM("Rascunho", "Publicado"),
         allowNull: false,
+    },
+    horas: {
+        type: DataTypes.INTEGER, // Número de horas que o curso demora
+        allowNull: false,
+        defaultValue: 0,
+    },
+    subcategoriaid: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: {
+            model: "subcategoria", // Nome da tabela de subcategorias
+            key: "subcategoriaid",
+        },
+        onDelete: "CASCADE",
     },
     criadoem: {
         type: DataTypes.DATE,
@@ -48,6 +62,21 @@ const Curso = sequelize.define("Curso", {
 }, {
     timestamps: false,
     tableName: "curso",
+});
+// 📌 Modelo da Subcategoria
+const Subcategoria = sequelize.define("Subcategoria", {
+    subcategoriaid: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+    },
+    nome: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+}, {
+    timestamps: false,
+    tableName: "subcategoria",
 });
 // 📌 Modelo da Seção (Secao)
 const Secao = sequelize.define("Secao", {
@@ -93,7 +122,7 @@ const Capitulo = sequelize.define("Capitulo", {
         onDelete: "CASCADE",
     },
     type: {
-        type: DataTypes.ENUM("Text", "Quiz", "Video"),
+        type: DataTypes.ENUM("Teste", "Quizz", "Video"),
         allowNull: false,
     },
     capitulotitulo: {
@@ -116,10 +145,13 @@ const Capitulo = sequelize.define("Capitulo", {
     timestamps: false,
     tableName: "capitulo",
 });
+// 📌 Relacionamento entre Curso e Subcategoria
+Subcategoria.hasMany(Curso, { foreignKey: "subcategoriaid", as: "cursos" });
+Curso.belongsTo(Subcategoria, { foreignKey: "subcategoriaid", as: "subcategoria" });
 // 📌 Relacionamento entre Curso e Secao
 Curso.hasMany(Secao, { foreignKey: "cursoid", as: "secoes" });
 Secao.belongsTo(Curso, { foreignKey: "cursoid", as: "curso" });
 // 📌 Relacionamento entre Secao e Capitulo
 Secao.hasMany(Capitulo, { foreignKey: "secaoid", as: "capitulos" });
 Capitulo.belongsTo(Secao, { foreignKey: "secaoid", as: "secao" });
-export { Curso, Secao, Capitulo };
+export { Curso, Secao, Capitulo, Subcategoria };

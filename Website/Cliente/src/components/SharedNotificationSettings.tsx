@@ -51,11 +51,11 @@ const SharedNotificationSettings = ({
     try {
       await updateUser(updatedUser);
     } catch (error) {
-      console.error("Failed to update user settings: ", error);
+      console.error("Falha ao atualizar as definições do utilizador, por: ", error);
     }
   };
 
-  if (!user) return <div>Please sign in to manage your settings.</div>;
+  if (!user) return <div>Por favor faça login para poder modificar as definições.</div>;
 
   return (
     <div className="notification-settings">
@@ -68,34 +68,40 @@ const SharedNotificationSettings = ({
           <div className="notification-settings__fields">
             <CustomFormField
               name="courseNotifications"
-              label="Course Notifications"
+              label="Notificações para cursos"
               type="switch"
             />
+            {/* <CustomFormField
+              name="QuizzesNotifications"
+              label="Notificações para Quizzes"
+              type="switch"
+            />
+            <CustomFormField
+              name="ManuaisNotifications"
+              label="Notificações para Manuais"
+              type="switch"
+            /> */}
             <CustomFormField
               name="emailAlerts"
-              label="Email Alerts"
+              label="Alerta por emails"
               type="switch"
             />
-            <CustomFormField
-              name="smsAlerts"
-              label="SMS Alerts"
-              type="switch"
-            />
+            
 
             <CustomFormField
               name="notificationFrequency"
-              label="Notification Frequency"
+              label="Frequencia de avisos"
               type="select"
               options={[
-                { value: "immediate", label: "Immediate" },
-                { value: "daily", label: "Daily" },
-                { value: "weekly", label: "Weekly" },
+                { value: "immediate", label: "Imediata" },
+                { value: "daily", label: "Diaria" },
+                { value: "weekly", label: "Semanal" },
               ]}
             />
           </div>
 
           <Button type="submit" className="notification-settings__submit">
-            Update Settings
+            Atualizar definições.
           </Button>
         </form>
       </Form>

@@ -5,6 +5,7 @@ import "./globals.css";
 import { Provider } from "react-redux";
 import Providers from "./providers";
 import { ClerkProvider } from "@clerk/nextjs"
+import { Toaster } from "sonner";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -29,6 +30,7 @@ export default function RootLayout({
         className={`${dmSans.className}`}>
           <Providers>
             <div className="root-layout">{children}</div></Providers>
+            <Toaster richColors closeButton />
       </body>
     </html>
     </ClerkProvider>

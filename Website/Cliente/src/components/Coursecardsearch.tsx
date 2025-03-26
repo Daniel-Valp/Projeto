@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import { ProcurarPeloCurso } from "@/types/Cursotipos"; // Importa a interface correta
+import { formatPrice } from "@/lib/utils";
 
 const CourseCardSearch: React.FC<ProcurarPeloCurso> = ({ curso, isSelected, onClick }) => {
     // Verifique se a imagem é externa ou local
@@ -34,6 +35,11 @@ const CourseCardSearch: React.FC<ProcurarPeloCurso> = ({ curso, isSelected, onCl
                 <div className="mt-2">
                     <p className="course-card-search__teacher">Por {curso.professornome}</p>
                     <div className="course-card-search__footer">
+                    <span className="course-card-search__hours">
+                      {Number(curso.horas) % 1 === 0
+                        ? Math.round(curso.horas) + (Math.round(curso.horas) === 1 ? " hora" : " horas")
+                        : parseFloat(curso.horas.toString()).toFixed(2) + (curso.horas === 1 ? " hora" : " horas")}
+                    </span>
                         <span className="course-card-search__enrollment">
                             {curso.enlistados?.length} Enlistados {/* ✅ Corrigido "lenght" → "length" */}
                         </span>
