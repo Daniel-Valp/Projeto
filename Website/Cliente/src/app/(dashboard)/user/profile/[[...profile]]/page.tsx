@@ -11,7 +11,6 @@ const UserProfilePage = () => {
         path='/user/profile'
         routing="path"
         appearance={{
-            baseTheme: dark,
             elements: {
                 scrollBox: "bg-customgreys-darkgrey",
                 navbar: {

@@ -30,7 +30,6 @@ const SignInComponent = () => {
   return (
     <SignIn
   appearance={{
-    baseTheme: dark,
     elements: {
       rootBox: "flex justify-center items-center py-5",
       cardBox: "shadow-none",

@@ -11,7 +11,6 @@ const TeacherProfilePage = () => {
         path='/teacher/profile'
         routing="path"
         appearance={{
-            baseTheme: dark,
             elements: {
                 scrollBox: "bg-customgreys-darkgrey",
                 navbar: {

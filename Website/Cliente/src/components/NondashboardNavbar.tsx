@@ -6,6 +6,7 @@ import { Bell, BookOpen } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
+
 const NonDashboardNavbar = () => {
   const { user } = useUser();
   const userRole = user?.publicMetadata?.userType as "student" | "teacher";
@@ -44,7 +45,6 @@ const NonDashboardNavbar = () => {
           <SignedIn>
             <UserButton
               appearance={{
-                baseTheme: dark,
                 elements: {
                   userButtonOuterIdentifier: "text-customgreys-dirtyGrey",
                   userButtonBox: "scale-90 sm:scale-100",

@@ -46,7 +46,6 @@ const Navbar = ({ isCoursePage }: { isCoursePage: boolean}) => {
 
           <UserButton
             appearance={{
-              baseTheme: dark,
               elements: {
                 userButtonOuterIdentifier: "text-customgreys-dirtyGrey",
                 userButtonBox: "scale-90 sm:scale-100",
