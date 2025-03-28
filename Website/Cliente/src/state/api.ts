@@ -77,6 +77,34 @@ export const api = createApi({
       providesTags: ["cursos"],
     }),
 
+    criarCurso: build.mutation<Curso, { teacherId: string; teacherName: string }>({
+      query: (body) => ({
+        url: `cursos`,  
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["cursos"],  // Invalida cache para atualizar lista de cursos
+    }),   
+    
+    apagarCurso: build.mutation<{ message: string }, string>({
+      query: (cursoid) => ({
+        url: `cursos/${cursoid}`,  
+        method: "DELETE",
+      }),
+      invalidatesTags: ["cursos"],  // Atualiza lista após deletar
+    }),    
+
+    atualizarCurso: build.mutation<Curso, { cursoid: string; formData: FormData }>({
+      query: ({ cursoid, formData }) => ({
+        url: `cursos/${cursoid}`,  
+        method: "PUT",
+        body: formData,
+      }),
+      invalidatesTags: (result, error, { cursoid }) => [
+        { type: "cursos", id: cursoid },
+      ],
+    }),    
+
     getCurso: build.query<Curso, string>({
       query: (id) => `cursos/${id}`,
       providesTags: (resultado, erro, id) => [{ type: "cursos", id }],
@@ -84,4 +112,11 @@ export const api = createApi({
   }),
 });
 
-export const { useUpdateUserMutation, useGetCursosQuery, useGetCursoQuery } = api;
+export const { 
+  useUpdateUserMutation, 
+  useGetCursosQuery, 
+  useGetCursoQuery,
+  useCriarCursoMutation,
+  useAtualizarCursoMutation,
+  useApagarCursoMutation,
+} = api;

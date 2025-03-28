@@ -1,5 +1,6 @@
 import { Curso, Secao, Capitulo } from "../models/cursomodels.js"; // Importação nomeada
 import { v4 as uuidv4 } from "uuid";
+import { getAuth } from "@clerk/express";
 // 📌 Função para listar TODOS os cursos com suas seções e capítulos
 export const listarCursos = async (req, res) => {
     const { categoria } = req.query;
@@ -81,7 +82,7 @@ export const criarCurso = async (req, res) => {
             categoria: "Sem categoria",
             imagem: "",
             horas: 0,
-            nivel: "Beginner",
+            nivel: "Iniciante",
             estado: "Draft",
             subcategoriaid: subcategoriaid || null,
             criadoem: new Date(),
@@ -91,5 +92,90 @@ export const criarCurso = async (req, res) => {
     }
     catch (error) {
         res.status(500).json({ message: "Erro ao criar o curso", error });
+    }
+};
+export const atualizarCurso = async (req, res) => {
+    const { cursoid } = req.params;
+    const updateData = { ...req.body };
+    const { userId } = getAuth(req);
+    if (!cursoid) {
+        res.status(400).json({ message: "ID do curso é obrigatório." });
+        return;
+    }
+    try {
+        // Buscar curso pelo ID
+        const curso = await Curso.findByPk(cursoid);
+        if (!curso) {
+            res.status(404).json({ message: "Curso não foi encontrado." });
+            return;
+        }
+        // Verificar se o usuário tem permissão para modificar
+        if (curso.getDataValue("professorid") !== userId) {
+            res.status(403).json({ message: "Não está autorizado a modificar este curso." });
+            return;
+        }
+        // Validar a hora
+        if (updateData.horas) {
+            const hora = parseInt(updateData.horas);
+            if (isNaN(hora) || hora <= 0) {
+                res.status(400).json({
+                    message: "Hora em formato inválido",
+                    error: "A hora precisa ser um valor numérico válido e maior que zero."
+                });
+                return;
+            }
+            updateData.horas = hora; // Mantendo sem multiplicação por 100
+        }
+        // Validar as seções do curso
+        if (updateData.secoes) {
+            try {
+                const sectionsData = typeof updateData.secoes === "string"
+                    ? JSON.parse(updateData.secoes)
+                    : updateData.secoes;
+                updateData.secoes = sectionsData.map((Secao) => ({
+                    ...Secao,
+                    Secaoid: Secao.Secaoid || uuidv4(),
+                    Capitulo: Array.isArray(Secao.capitulos)
+                        ? Secao.capitulos.map((Capitulo) => ({
+                            ...Capitulo,
+                            Capituloid: Capitulo.Capituloid || uuidv4(),
+                        }))
+                        : [],
+                }));
+            }
+            catch (error) {
+                res.status(400).json({ message: "Erro ao processar as seções", error });
+                return;
+            }
+        }
+        // Atualizar o curso com os novos dados
+        await curso.update(updateData);
+        res.json({ message: "Curso atualizado com sucesso", data: curso });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Erro ao atualizar o curso", error });
+    }
+};
+export const apagarCurso = async (req, res) => {
+    const { cursoid } = req.params;
+    const { userId } = getAuth(req);
+    try {
+        // Buscar curso pelo ID
+        const curso = await Curso.findByPk(cursoid);
+        if (!curso) {
+            res.status(404).json({ message: "Curso não foi encontrado." });
+            return;
+        }
+        // Verificar se o usuário tem permissão para apagar
+        if (curso.getDataValue("professorid") !== userId) {
+            res.status(403).json({ message: "Não está autorizado a apagar este curso." });
+            return;
+        }
+        // 🔥 Apagar o curso corretamente
+        await curso.destroy();
+        res.json({ message: "Curso apagado com sucesso" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Erro ao apagar o curso", error });
     }
 };

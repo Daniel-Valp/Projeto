@@ -129,11 +129,11 @@ export const atualizarCurso = async (req: Request, res: Response): Promise<void>
         }
 
         // Verificar se o usuário tem permissão para modificar
-        if ((curso as any).professorid !== userId) {
+        if (curso.getDataValue("professorid") !== userId) {
             res.status(403).json({ message: "Não está autorizado a modificar este curso." });
             return;
         }
-
+        
         // Validar a hora
         if (updateData.horas) {
             const hora = parseInt(updateData.horas);
@@ -176,5 +176,34 @@ export const atualizarCurso = async (req: Request, res: Response): Promise<void>
         res.json({ message: "Curso atualizado com sucesso", data: curso });
     } catch (error) {
         res.status(500).json({ message: "Erro ao atualizar o curso", error });
+    }
+};
+
+
+export const apagarCurso = async (req: Request, res: Response): Promise<void> => {
+    const { cursoid } = req.params;
+    const { userId } = getAuth(req);
+    
+    try {
+        // Buscar curso pelo ID
+        const curso = await Curso.findByPk(cursoid);
+
+        if (!curso) {
+            res.status(404).json({ message: "Curso não foi encontrado." });
+            return;
+        }
+
+        // Verificar se o usuário tem permissão para apagar
+        if (curso.getDataValue("professorid") !== userId) {
+            res.status(403).json({ message: "Não está autorizado a apagar este curso." });
+            return;
+        }
+
+        // 🔥 Apagar o curso corretamente
+        await curso.destroy();
+
+        res.json({ message: "Curso apagado com sucesso" });
+    } catch (error) {
+        res.status(500).json({ message: "Erro ao apagar o curso", error });
     }
 };
