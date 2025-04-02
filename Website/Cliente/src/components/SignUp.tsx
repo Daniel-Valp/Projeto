@@ -22,9 +22,9 @@ const SignUpComponent = () => {
 
     const userType = user?.publicMetadata?.userType as string;
     if (userType === "teacher") {
-      return "/teacher/courses";
+      return "/teacher/cursos";
     }
-    return "/user/courses";
+    return "/user/cursos";
   };
 
   return (

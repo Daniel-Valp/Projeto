@@ -38,14 +38,15 @@ const AppSidebar = () => {
       { icon: Briefcase, label: "Quizzes", href: "/user/quizzes" },
       { icon: Camera, label: "Videos", href: "/user/videos" },
       { icon: BookOpen, label: "Manuais", href: "/user/manuais" },
-      { icon: User, label: "Profile", href: "/user/profile" },
+      { icon: User, label: "Perfil", href: "/user/profile" },
       { icon: Settings, label: "Definições", href: "/user/settings" },
     ],
     teacher: [
-      { icon: BookOpen, label: "Cursos", href: "/teacher/courses" },
-      { icon: DollarSign, label: "Quizzes", href: "/teacher/" },
-
-      { icon: User, label: "Profile", href: "/teacher/profile" },
+      { icon: BookOpen, label: "Cursos", href: "/teacher/cursos" },
+      { icon: Briefcase, label: "Quizzes", href: "/teacher/quizzes" },
+      { icon: Camera, label: "Videos", href: "/teacher/videos" },
+      { icon: BookOpen, label: "Manuais", href: "/teacher/manuais" },
+      { icon: User, label: "Perfil", href: "/teacher/profile" },
       { icon: Settings, label: "Definições", href: "/teacher/settings" },
     ],
   };

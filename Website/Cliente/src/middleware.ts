@@ -8,19 +8,13 @@ const isTeacherRoute = createRouteMatcher(["/teacher/(.*)"]);
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
 
-  // If no user is signed in, let Clerk handle the redirect
-  if (!userId) {
-    return;
-  }
+  if (!userId) return; // Se não estiver logado, Clerk redireciona automaticamente
 
-  // Get the ClerkClient instance by calling clerkClient()
-  const client = await clerkClient();
-  // Fetch user data to get publicMetadata
-  const user = await client.users.getUser(userId);
+  const client = clerkClient();
+  const user = await (await client).users.getUser(userId);
   const userRole =
     (user.publicMetadata?.userType as "student" | "teacher") || "student";
 
-  // Debugging log to confirm userRole
   console.log(
     "Middleware - userId:",
     userId,
@@ -30,18 +24,16 @@ export default clerkMiddleware(async (auth, req) => {
     req.nextUrl.pathname
   );
 
-  if (isStudentRoute(req) && userRole !== "student") {
-    const url = new URL("/teacher/courses", req.url);
-    return NextResponse.redirect(url);
+  // Evita redirecionamento se o usuário já está na rota correta
+  if (isStudentRoute(req) && userRole !== "student" && req.nextUrl.pathname !== "/teacher/cursos") {
+    return NextResponse.redirect(new URL("/teacher/cursos", req.url));
   }
 
-  if (isTeacherRoute(req) && userRole !== "teacher") {
-    const url = new URL("/user/courses", req.url);
-    return NextResponse.redirect(url);
+  if (isTeacherRoute(req) && userRole !== "teacher" && req.nextUrl.pathname !== "/user/cursos") {
+    return NextResponse.redirect(new URL("/user/cursos", req.url));
   }
 
-  // No redirect needed, proceed with the request
-  return NextResponse.next();
+  return NextResponse.next(); // Continua a request normalmente
 });
 
 export const config = {

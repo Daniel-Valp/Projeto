@@ -1,5 +1,20 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../db.js";
+// 📌 Modelo da Categoria
+const Categoria = sequelize.define("Categoria", {
+    id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+    },
+    nome: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+}, {
+    timestamps: false,
+    tableName: "categorias",
+});
 // 📌 Modelo do Curso
 const Curso = sequelize.define("Curso", {
     cursoid: {
@@ -22,9 +37,14 @@ const Curso = sequelize.define("Curso", {
     descricao: {
         type: DataTypes.TEXT,
     },
-    categoria: {
-        type: DataTypes.STRING,
+    categoria_id: {
+        type: DataTypes.UUID,
         allowNull: false,
+        references: {
+            model: "categorias", // Nome correto da tabela
+            key: "id",
+        },
+        onDelete: "CASCADE",
     },
     imagem: {
         type: DataTypes.TEXT,
@@ -38,7 +58,7 @@ const Curso = sequelize.define("Curso", {
         allowNull: false,
     },
     horas: {
-        type: DataTypes.INTEGER, // Número de horas que o curso demora
+        type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 0,
     },
@@ -46,7 +66,7 @@ const Curso = sequelize.define("Curso", {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-            model: "subcategoria", // Nome da tabela de subcategorias
+            model: "subcategoria",
             key: "subcategoriaid",
         },
         onDelete: "CASCADE",
@@ -78,7 +98,7 @@ const Subcategoria = sequelize.define("Subcategoria", {
     timestamps: false,
     tableName: "subcategoria",
 });
-// 📌 Modelo da Seção (Secao)
+// 📌 Modelo da Seção
 const Secao = sequelize.define("Secao", {
     secaoid: {
         type: DataTypes.UUID,
@@ -89,7 +109,7 @@ const Secao = sequelize.define("Secao", {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-            model: Curso,
+            model: "curso",
             key: "cursoid",
         },
         onDelete: "CASCADE",
@@ -105,7 +125,7 @@ const Secao = sequelize.define("Secao", {
     timestamps: false,
     tableName: "secao",
 });
-// 📌 Modelo do Capítulo (Capitulo)
+// 📌 Modelo do Capítulo
 const Capitulo = sequelize.define("Capitulo", {
     capituloid: {
         type: DataTypes.UUID,
@@ -116,7 +136,7 @@ const Capitulo = sequelize.define("Capitulo", {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-            model: Secao,
+            model: "secao",
             key: "secaoid",
         },
         onDelete: "CASCADE",
@@ -145,13 +165,17 @@ const Capitulo = sequelize.define("Capitulo", {
     timestamps: false,
     tableName: "capitulo",
 });
-// 📌 Relacionamento entre Curso e Subcategoria
+// 📌 Relacionamentos
+// 🔹 Curso pertence a uma Categoria
+Categoria.hasMany(Curso, { foreignKey: "categoria_id", as: "cursos" });
+Curso.belongsTo(Categoria, { foreignKey: "categoria_id", as: "categoria" });
+// 🔹 Curso pertence a uma Subcategoria
 Subcategoria.hasMany(Curso, { foreignKey: "subcategoriaid", as: "cursos" });
 Curso.belongsTo(Subcategoria, { foreignKey: "subcategoriaid", as: "subcategoria" });
-// 📌 Relacionamento entre Curso e Secao
+// 🔹 Curso tem várias Seções
 Curso.hasMany(Secao, { foreignKey: "cursoid", as: "secoes" });
 Secao.belongsTo(Curso, { foreignKey: "cursoid", as: "curso" });
-// 📌 Relacionamento entre Secao e Capitulo
+// 🔹 Seção tem vários Capítulos
 Secao.hasMany(Capitulo, { foreignKey: "secaoid", as: "capitulos" });
 Capitulo.belongsTo(Secao, { foreignKey: "secaoid", as: "secao" });
-export { Curso, Secao, Capitulo, Subcategoria };
+export { Categoria, Curso, Secao, Capitulo, Subcategoria };

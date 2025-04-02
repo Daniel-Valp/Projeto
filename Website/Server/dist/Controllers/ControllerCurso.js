@@ -1,4 +1,4 @@
-import { Curso, Secao, Capitulo } from "../models/cursomodels.js"; // Importação nomeada
+import { Curso, Secao, Capitulo, Categoria } from "../models/cursomodels.js"; // Importação nomeada
 import { v4 as uuidv4 } from "uuid";
 import { getAuth } from "@clerk/express";
 // 📌 Função para listar TODOS os cursos com suas seções e capítulos
@@ -177,5 +177,15 @@ export const apagarCurso = async (req, res) => {
     }
     catch (error) {
         res.status(500).json({ message: "Erro ao apagar o curso", error });
+    }
+};
+export const listarCategorias = async (req, res) => {
+    try {
+        const categorias = await Categoria.findAll(); // Busca todas as categorias no banco de dados
+        res.json({ message: "Lista de categorias carregada com sucesso", data: categorias });
+    }
+    catch (error) {
+        console.error("Erro ao buscar categorias:", error);
+        res.status(500).json({ message: "Erro ao buscar categorias", error });
     }
 };

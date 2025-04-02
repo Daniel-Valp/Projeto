@@ -1,3 +1,9 @@
+"use client";
+
+import Header from '@/components/Header';
+import Loading from '@/components/Loading';
+import Toolbar from '@/components/Toolbar';
+import { Button } from '@/components/ui/button';
 import { useApagarCursoMutation, useCriarCursoMutation, useGetCursosQuery } from '@/state/api';
 import { Curso } from '@/types/Cursotipos';
 import { useUser } from '@clerk/nextjs';
@@ -17,7 +23,7 @@ const Cursos = () => {
   const [criarCurso] = useCriarCursoMutation();
   const [apagarCurso] = useApagarCursoMutation();
 
-  const [searchTerm, setSearchTerm] = useState(" ");
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectCategory] = useState("all");
 
   const filterCourses = useMemo(() => {
@@ -67,11 +73,28 @@ const Cursos = () => {
             toast.error("Erro ao criar curso. Tente novamente.");
         }
     };
+
+    if (isLoading) return <Loading />;
+    if (isError || !Cursos) return <div>Erro a carregar os cursos.</div>
     
 
-  return (
-    <div>page</div>
-  )
+  return <div className='teacher-courses'>
+    <Header
+        title='Cursos'
+        subtitle='Veja todos os cursos existentes'
+        rightElement={
+            <Button
+             onClick={handleCreateCourse}
+             className='teacher-courses__header'>
+                Criar Curso
+             </Button>
+        } 
+     />
+     <Toolbar
+        onSearch={setSearchTerm}
+        onCategoryChange={setSelectCategory}
+      />
+  </div>
 }
 
 export default Cursos
