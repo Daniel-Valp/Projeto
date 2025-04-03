@@ -2,8 +2,10 @@
 
 import Header from '@/components/Header';
 import Loading from '@/components/Loading';
+import TeacherCourseCard from '@/components/TeacherCourseCard';
 import Toolbar from '@/components/Toolbar';
 import { Button } from '@/components/ui/button';
+import { courseCategories } from '@/lib/utils';
 import { useApagarCursoMutation, useCriarCursoMutation, useGetCursosQuery } from '@/state/api';
 import { Curso } from '@/types/Cursotipos';
 import { useUser } from '@clerk/nextjs';
@@ -94,6 +96,27 @@ const Cursos = () => {
         onSearch={setSearchTerm}
         onCategoryChange={setSelectCategory}
       />
+<div className="teacher-courses__grid">
+  {filterCourses.map((curso) => {
+    // Adicionando o log para verificar os dados do 'curso'
+    console.log("Curso:", curso); // Verifica se 'curso' está correto e tem a categoria
+
+    return (
+      <TeacherCourseCard
+        key={curso.cursoid || curso.id} // Garante uma chave única válida
+        curso={curso} // Passando 'curso' corretamente
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        isOwner={curso.professorid === user?.id}
+      />
+    );
+  })}
+</div>
+
+
+
+  
+
   </div>
 }
 

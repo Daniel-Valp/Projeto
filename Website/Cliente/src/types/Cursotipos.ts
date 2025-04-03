@@ -1,22 +1,25 @@
 import { Secao } from "./Secçõestipo";
 
 export interface Curso {
+  categoria_id: string;
+  id: string;
   cursoid: string;
   professorid: string;
   professornome: string;
   titulo: string;
   descricao: string;
-  categoria: Categoria; // 🔥 Agora é um objeto Categoria
+  categoria: Categoria;
   imagem?: string;
   nivel: "Iniciante" | "Intermediario" | "Avançado";
   estado: "Rascunho" | "Publicado";
-  horas: number; // Duração do curso em horas
-  subcategoria: Subcategoria; // Se precisar carregar os detalhes da subcategoria
-  secoes: Secao[]; // Relacionamento com as seções
-  enlistados: any[];
-  criadoem: string; // Timestamp como string ISO
+  horas: number;
+  subcategoria: Subcategoria;
+  secoes: Secao[];
+  enlistados: number; // 🔥 AGORA é número, não array
+  criadoem: string;
   atualizadoem: string;
 }
+
 
 export interface Categoria { // 🔥 Novo tipo para refletir a tabela `categorias`
   id: string;
