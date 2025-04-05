@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Curso, Secao, Capitulo, Categoria } from "../models/cursomodels.js"; // Importação nomeada
+import { Curso, Secao, Capitulo, Categoria, Subcategoria } from "../models/cursomodels.js"; // Importação nomeada
 import { v4 as uuidv4 } from "uuid"
 import { getAuth } from "@clerk/express";
 
@@ -15,6 +15,7 @@ export const listarCursos = async (req: Request, res: Response): Promise<void> =
         }
 
         const cursos = await Curso.findAll({
+            attributes: { include: ["enlistados"] }, // 🔥 Força a inclusão de enlistados
             where: whereClause,
             include: [
                 {
@@ -219,3 +220,14 @@ export const listarCategorias = async (req: Request, res: Response): Promise<voi
         res.status(500).json({ message: "Erro ao buscar categorias", error });
     }
 };
+
+export const listarSubcategorias = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const subcategorias = await Subcategoria.findAll(); // Busca todas as subcategorias
+      res.json({ message: "Lista de subcategorias carregada com sucesso", data: subcategorias });
+    } catch (error) {
+      console.error("Erro ao buscar subcategorias:", error);
+      res.status(500).json({ message: "Erro ao buscar subcategorias", error });
+    }
+  };
+  

@@ -1,4 +1,4 @@
-import { Curso, Secao, Capitulo, Categoria } from "../models/cursomodels.js"; // Importação nomeada
+import { Curso, Secao, Capitulo, Categoria, Subcategoria } from "../models/cursomodels.js"; // Importação nomeada
 import { v4 as uuidv4 } from "uuid";
 import { getAuth } from "@clerk/express";
 // 📌 Função para listar TODOS os cursos com suas seções e capítulos
@@ -10,6 +10,7 @@ export const listarCursos = async (req, res) => {
             whereClause = { categoria };
         }
         const cursos = await Curso.findAll({
+            attributes: { include: ["enlistados"] }, // 🔥 Força a inclusão de enlistados
             where: whereClause,
             include: [
                 {
@@ -187,5 +188,15 @@ export const listarCategorias = async (req, res) => {
     catch (error) {
         console.error("Erro ao buscar categorias:", error);
         res.status(500).json({ message: "Erro ao buscar categorias", error });
+    }
+};
+export const listarSubcategorias = async (req, res) => {
+    try {
+        const subcategorias = await Subcategoria.findAll(); // Busca todas as subcategorias
+        res.json({ message: "Lista de subcategorias carregada com sucesso", data: subcategorias });
+    }
+    catch (error) {
+        console.error("Erro ao buscar subcategorias:", error);
+        res.status(500).json({ message: "Erro ao buscar subcategorias", error });
     }
 };

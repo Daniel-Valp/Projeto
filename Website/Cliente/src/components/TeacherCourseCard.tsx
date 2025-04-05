@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Pencil, Trash2, CheckCircle, Clock, BookOpen } from "lucide-react";
 import { Curso } from "@/types/Cursotipos";
-import { useGetCategoriasQuery } from "@/state/api";
+import { useGetCategoriasQuery, useGetSubcategoriasQuery } from "@/state/api";
 
 interface TeacherCourseCardProps {
   curso: Curso;
@@ -23,6 +23,7 @@ interface TeacherCourseCardProps {
 const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCardProps) => {
   // Buscando categorias
   const { data: categorias = [], isLoading } = useGetCategoriasQuery();
+  const { data: subcategorias = [], isLoading: isLoadingSub } = useGetSubcategoriasQuery();
 
   // Encontrando a categoria correspondente
   const categoriaNome = useMemo(() => {
@@ -30,6 +31,24 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
     const categoria = categorias.find((cat) => cat.id === curso.categoria_id);
     return categoria ? categoria.nome : "Categoria não disponível";
   }, [categorias, curso.categoria_id, isLoading]);
+    
+  const subcategoriaNome = useMemo(() => {
+    // Verifique se 'curso.subcategoria' existe e é um objeto válido
+    console.log("🚨 curso.subcategoria:", curso.subcategoria);
+
+    // Se existir subcategoria, retorna o nome
+    if (curso.subcategoria) {
+        return curso.subcategoria.nome || "Subcategoria não didddddddddsponível";
+    }
+
+    // Caso não exista subcategoria
+    return "Subcategoria não disponível";
+}, [curso.subcategoria]);
+
+
+
+
+  
 
   return (
     <Card className="course-card-teacher group">
@@ -54,8 +73,10 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
 
           {/* 📌 Exibição da Categoria */}
           <CardDescription className="course-card-teacher__category">
-            {categoriaNome}
-          </CardDescription>
+  {subcategoriaNome} - {categoriaNome}
+</CardDescription>
+
+
 
           {/* 📌 Status do Curso com Ícone */}
           <p className="flex items-center text-sm mb-2">
@@ -79,8 +100,7 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
 
           {/* 📌 Exibição da quantidade de seções */}
           {typeof curso.enlistados === "number" ? (
-  <p className="flex items-center gap-1 text-sm text-secondary bg-secondary/10 p-1 rounded">
-    <BookOpen className="w-4 h-4 text-primary" />
+  <p >
     <span className="font-bold text-white-100">{curso.enlistados}</span>
     {curso.enlistados === 1 ? " Aluno inscrito" : " Alunos inscritos"}
   </p>

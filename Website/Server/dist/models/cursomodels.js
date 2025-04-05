@@ -41,7 +41,7 @@ const Curso = sequelize.define("Curso", {
         type: DataTypes.UUID,
         allowNull: false,
         references: {
-            model: "categorias", // Nome correto da tabela
+            model: "categorias",
             key: "id",
         },
         onDelete: "CASCADE",
@@ -70,6 +70,11 @@ const Curso = sequelize.define("Curso", {
             key: "subcategoriaid",
         },
         onDelete: "CASCADE",
+    },
+    enlistados: {
+        type: DataTypes.INTEGER, // 🔥 Agora é um número, não um array!
+        allowNull: false,
+        defaultValue: 0, // Começa com 0 inscritos
     },
     criadoem: {
         type: DataTypes.DATE,

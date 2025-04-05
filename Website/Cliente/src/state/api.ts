@@ -77,6 +77,14 @@ export const api = createApi({
     }),
     
     
+    getSubcategorias: build.query<{ subcategoriaid: number; nome: string }[], void>({
+      query: () => "cursos/subcategorias", // Ajusta este endpoint conforme o que a tua API realmente usa
+      transformResponse: (response: unknown) => {
+        console.log("📦 Subcategorias brutas da API:", response);
+        return response as { subcategoriaid: number; nome: string }[];
+      },
+      providesTags: ["categorias"], // Opcional: usa um tag se quiseres invalidar em mutações
+    }),
     
     
 
@@ -130,4 +138,5 @@ export const {
   useAtualizarCursoMutation,
   useApagarCursoMutation,
   useGetCategoriasQuery,
+  useGetSubcategoriasQuery,
 } = api;
