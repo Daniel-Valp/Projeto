@@ -33,21 +33,22 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
   }, [categorias, curso.categoria_id, isLoading]);
     
   const subcategoriaNome = useMemo(() => {
-    // Verifique se 'curso.subcategoria' existe e é um objeto válido
-    console.log("🚨 curso.subcategoria:", curso.subcategoria);
-
-    // Se existir subcategoria, retorna o nome
-    if (curso.subcategoria) {
-        return curso.subcategoria.nome || "Subcategoria não didddddddddsponível";
+    console.log("📦 subcategorias da API: ", subcategorias);
+    console.log("📌 curso.subcategoriaid: ", curso.subcategoriaid);
+  
+    if (!curso.subcategoriaid) {
+      console.warn("⚠️ subcategoriaid não está definido no curso.");
+      return "Subcategoria não disponível";
     }
-
-    // Caso não exista subcategoria
-    return "Subcategoria não disponível";
-}, [curso.subcategoria]);
-
-
-
-
+  
+    const subcategoriaEncontrada = subcategorias.find(
+      (sub) => Number(sub.subcategoriaid) === Number(curso.subcategoriaid)
+    );
+  
+    return subcategoriaEncontrada?.nome || "Subcategoria não disponível";
+  }, [subcategorias, curso.subcategoriaid]);
+  
+  
   
 
   return (
@@ -73,8 +74,8 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
 
           {/* 📌 Exibição da Categoria */}
           <CardDescription className="course-card-teacher__category">
-  {subcategoriaNome} - {categoriaNome}
-</CardDescription>
+             {categoriaNome} - {subcategoriaNome}
+          </CardDescription>
 
 
 

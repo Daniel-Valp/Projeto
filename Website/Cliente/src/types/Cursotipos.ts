@@ -2,6 +2,7 @@ import { Secao } from "./Secçõestipo";
 
 export interface Curso {
   categoria_id: string;
+  subcategoriaid: number;
   id: string;
   cursoid: string;
   professorid: string;
@@ -9,13 +10,13 @@ export interface Curso {
   titulo: string;
   descricao: string;
   categoria: Categoria;
+  subcategoria: Subcategoria; // 👈 Manténs isto para outras partes que usem o objeto completo
   imagem?: string;
   nivel: "Iniciante" | "Intermediario" | "Avançado";
   estado: "Rascunho" | "Publicado";
   horas: number;
-  subcategoria: Subcategoria;
   secoes: Secao[];
-  enlistados: number; // 🔥 AGORA é número, não array
+  enlistados: number;
   criadoem: string;
   atualizadoem: string;
 }
