@@ -60,24 +60,22 @@ const Cursos = () => {
     };
     
     const handleCreateCourse = async () => {
-        if (!user) return;
-    
-        try {
-            const result = await criarCurso({
-                teacherId: user.id,
-                teacherName: user.fullName || "Professor desconhecido",
-            }).unwrap();
-    
-            toast.success("Curso criado com sucesso!"); // 🔥 Feedback visual
-    
-            router.push(`/teacher/courses/${result.cursoid}`);
-        } catch (error) {
-            toast.error("Erro ao criar curso. Tente novamente.");
-        }
-    };
-
-    if (isLoading) return <Loading />;
-    if (isError || !Cursos) return <div>Erro a carregar os cursos.</div>
+      if (!user) return;
+  
+      try {
+          const result = await criarCurso({
+              professorid: user.id,
+              professornome: user.fullName || "Professor desconhecido",
+          }).unwrap();
+  
+          toast.success("Curso criado com sucesso!");
+  
+          router.push(`/teacher/cursos/${result.cursoid}`); // 🔁 Corrigido "courses" -> "cursos"
+      } catch (error) {
+          toast.error("Erro ao criar curso. Tente novamente.");
+      }
+  };
+  
     
 
   return <div className='teacher-courses'>

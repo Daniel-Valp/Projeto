@@ -42,3 +42,17 @@ export interface CursoSelecionado {
   Curso: Curso;
   handleEnrollNow: (cursoid: string) => void;
 }
+
+import { z } from "zod";
+
+export const cursoFormSchema = z.object({
+  cursotitulo: z.string().min(1, "O título é obrigatório"),
+  cursodescricao: z.string().min(1, "A descrição é obrigatória"),
+  cursocategoria: z.string().min(1, "A categoria é obrigatória"),
+  cursosubcategoria: z.string().min(1, "A subcategoria é obrigatória"),
+  cursohoras: z.string().min(1, "As horas são obrigatórias"),
+  cursoestado: z.boolean(),
+});
+
+// 👇 aqui sim o tipo!
+export type CursoFormData = z.infer<typeof cursoFormSchema>;

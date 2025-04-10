@@ -4,9 +4,10 @@ export interface Capitulo {
   type: "Text" | "Quiz" | "Video";
   capitulotitulo: string;
   conteudo: string;
-  video?: string | null;
+  video?: string | File | null; // ✅ agora aceita vídeos novos (File) e existentes (string)
   freepreview: boolean;
 }
+
 
 export interface Secao {
   secaoid: string;

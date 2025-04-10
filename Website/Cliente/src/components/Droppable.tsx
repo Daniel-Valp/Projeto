@@ -11,6 +11,7 @@ import {
   openSectionModal,
   openChapterModal,
 } from "@/state";
+import { Secao, Capitulo } from "@/types/Secçõestipo";
 
 export default function DroppableComponent() {
   const dispatch = useAppDispatch();
@@ -35,10 +36,10 @@ export default function DroppableComponent() {
     const endIndex = result.destination.index;
 
     const updatedSections = [...sections];
-    const updatedChapters = [...updatedSections[sectionIndex].chapters];
+    const updatedChapters = [...updatedSections[sectionIndex].capitulos];
     const [reorderedChapter] = updatedChapters.splice(startIndex, 1);
     updatedChapters.splice(endIndex, 0, reorderedChapter);
-    updatedSections[sectionIndex].chapters = updatedChapters;
+    updatedSections[sectionIndex].capitulos = updatedChapters;
     dispatch(setSections(updatedSections));
   };
 
@@ -47,10 +48,10 @@ export default function DroppableComponent() {
       <Droppable droppableId="sections">
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            {sections.map((section: Section, sectionIndex: number) => (
+            {sections.map((section: Secao, sectionIndex: number) => (
               <Draggable
-                key={section.sectionId}
-                draggableId={section.sectionId}
+                key={`section-${section.secaoid}`}
+                draggableId={`section-${section.secaoid}`}
                 index={sectionIndex}
               >
                 {(draggableProvider) => (
@@ -64,7 +65,7 @@ export default function DroppableComponent() {
                     }`}
                   >
                     <SectionHeader
-                      section={section}
+                      secao={section}
                       sectionIndex={sectionIndex}
                       dragHandleProps={draggableProvider.dragHandleProps}
                     />
@@ -74,17 +75,17 @@ export default function DroppableComponent() {
                         handleChapterDragEnd(result, sectionIndex)
                       }
                     >
-                      <Droppable droppableId={`chapters-${section.sectionId}`}>
+                      <Droppable droppableId={`chapters-${section.secaoid}`}>
                         {(droppableProvider) => (
                           <div
                             ref={droppableProvider.innerRef}
                             {...droppableProvider.droppableProps}
                           >
-                            {section.chapters.map(
-                              (chapter: Chapter, chapterIndex: number) => (
+                            {section.capitulos.map(
+                              (chapter: Capitulo, chapterIndex: number) => (
                                 <Draggable
-                                  key={chapter.chapterId}
-                                  draggableId={chapter.chapterId}
+                                  key={`chapter-${chapter.capituloid}`}
+                                  draggableId={`chapter-${chapter.capituloid}`}
                                   index={chapterIndex}
                                 >
                                   {(draggableProvider) => (
@@ -120,7 +121,7 @@ export default function DroppableComponent() {
                     >
                       <Plus className="add-chapter-button__icon" />
                       <span className="add-chapter-button__text">
-                        Add Chapter
+                        Adcionar capitulo
                       </span>
                     </Button>
                   </div>
@@ -136,11 +137,11 @@ export default function DroppableComponent() {
 }
 
 const SectionHeader = ({
-  section,
+  secao,
   sectionIndex,
   dragHandleProps,
 }: {
-  section: Section;
+  secao: Secao;
   sectionIndex: number;
   dragHandleProps: any;
 }) => {
@@ -152,7 +153,7 @@ const SectionHeader = ({
         <div className="droppable-section__title-container">
           <div className="droppable-section__title">
             <GripVertical className="h-6 w-6 mb-1" />
-            <h3 className="text-lg font-medium">{section.sectionTitle}</h3>
+            <h3 className="text-lg font-medium">{secao.secaotitulo}</h3>
           </div>
           <div className="droppable-chapter__actions">
             <Button
@@ -175,9 +176,9 @@ const SectionHeader = ({
             </Button>
           </div>
         </div>
-        {section.sectionDescription && (
+        {secao.secaodescricao && (
           <p className="droppable-section__description">
-            {section.sectionDescription}
+            {secao.secaodescricao}
           </p>
         )}
       </div>
@@ -191,7 +192,7 @@ const ChapterItem = ({
   sectionIndex,
   draggableProvider,
 }: {
-  chapter: Chapter;
+  chapter: Capitulo;
   chapterIndex: number;
   sectionIndex: number;
   draggableProvider: any;
@@ -211,7 +212,7 @@ const ChapterItem = ({
     >
       <div className="droppable-chapter__title">
         <GripVertical className="h-4 w-4 mb-[2px]" />
-        <p className="text-sm">{`${chapterIndex + 1}. ${chapter.title}`}</p>
+        <p className="text-sm">{`${chapterIndex + 1}. ${chapter.capitulotitulo}`}</p>
       </div>
       <div className="droppable-chapter__actions">
         <Button

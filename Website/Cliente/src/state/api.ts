@@ -97,14 +97,17 @@ export const api = createApi({
       providesTags: ["cursos"],
     }),
 
-    criarCurso: build.mutation<Curso, { teacherId: string; teacherName: string }>({
-      query: (body) => ({
-        url: `cursos`,  
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["cursos"],
-    }),   
+    criarCurso: build.mutation<Curso, { professorid: string; professornome: string }>(
+      {
+        query: (body) => ({
+          url: `cursos`,
+          method: "POST",
+          body,
+        }),
+        invalidatesTags: ["cursos"],
+      }
+    ),
+    
     
     apagarCurso: build.mutation<{ message: string }, string>({
       query: (cursoid) => ({
@@ -123,12 +126,26 @@ export const api = createApi({
       invalidatesTags: ["cursos"],
     }),    
 
+    uploadVideo: build.mutation<any, { cursoId: string, secaoId: string, capituloId: string, nomeArquivo: string, tipoArquivo: string }>({
+      query: ({ cursoId, secaoId, capituloId, nomeArquivo, tipoArquivo }) => ({
+        url: `/cursos/${cursoId}/secoes/${secaoId}/capitulos/${capituloId}/upload`,
+        method: "POST",
+        body: {
+          nomeArquivo,
+          tipoArquivo,
+        },
+      }),
+    }),
+    
+
     getCurso: build.query<Curso, string>({
       query: (id) => `cursos/${id}`,
       providesTags: (resultado, erro, id) => [{ type: "cursos", id }],
     }),
   }),
 });
+
+
 
 export const { 
   useUpdateUserMutation, 
@@ -139,4 +156,5 @@ export const {
   useApagarCursoMutation,
   useGetCategoriasQuery,
   useGetSubcategoriasQuery,
+  useUploadVideoMutation,  // Aqui você adiciona o hook de upload de vídeo
 } = api;
