@@ -70,7 +70,7 @@ export const api = createApi({
     getCategorias: build.query<{ id: string; nome: string }[], void>({
       query: () => "cursos/categorias", 
       transformResponse: (response: unknown) => {
-        console.log("🎯 Resposta bruta da API:", response);
+        //console.log("🎯 Resposta bruta da API:", response);
         return response as { id: string; nome: string }[]; // 🔥 Faz um cast para um array
       },
       providesTags: ["categorias"],
@@ -80,7 +80,7 @@ export const api = createApi({
     getSubcategorias: build.query<{ subcategoriaid: number; nome: string }[], void>({
       query: () => "cursos/subcategorias", // Ajusta este endpoint conforme o que a tua API realmente usa
       transformResponse: (response: unknown) => {
-        console.log("📦 Subcategorias brutas da API:", response);
+        //console.log("📦 Subcategorias brutas da API:", response);
         return response as { subcategoriaid: number; nome: string }[];
       },
       providesTags: ["categorias"], // Opcional: usa um tag se quiseres invalidar em mutações
@@ -97,16 +97,18 @@ export const api = createApi({
       providesTags: ["cursos"],
     }),
 
-    criarCurso: build.mutation<Curso, { professorid: string; professornome: string }>(
-      {
-        query: (body) => ({
-          url: `cursos`,
-          method: "POST",
-          body,
-        }),
-        invalidatesTags: ["cursos"],
-      }
-    ),
+      criarCurso: build.mutation<
+    Curso, 
+    { professorid: string; professornome: string; categoria_id: number; subcategoriaid: number }
+  >({
+    query: (body) => ({
+      url: `cursos`,
+      method: "POST",
+      body,
+    }),
+    invalidatesTags: ["cursos"],
+  }),
+
     
     
     apagarCurso: build.mutation<{ message: string }, string>({

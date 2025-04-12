@@ -19,7 +19,7 @@ const Toolbar = ({ onSearch, onCategoryChange }: ToolbarProps) => {
   };
 
   // ✅ DEBUG: Exibe as categorias carregadas
-  console.log("✅ Dados da API no Toolbar:", categorias);
+  //console.log("✅ Dados da API no Toolbar:", categorias);
 
   // ✅ Atualiza categorias quando os dados forem carregados
   useEffect(() => {

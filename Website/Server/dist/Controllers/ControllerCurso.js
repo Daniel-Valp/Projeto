@@ -69,9 +69,17 @@ export const getCursoPorId = async (req, res) => {
 };
 export const criarCurso = async (req, res) => {
     try {
+        console.log("📥 Dados recebidos para criar curso:", req.body);
         const { professorid, professornome, subcategoriaid } = req.body;
-        if (!professorid || !professornome) {
-            res.status(400).json({ message: "Nome e ID do professor são necessários" });
+        // 👉 Substitui manualmente o categoria_id aqui
+        const categoria_id = "cdbcca83-2c95-4e51-ac14-ad1ba34f0df2";
+        console.log("➡️ professorid:", professorid);
+        console.log("➡️ professornome:", professornome);
+        console.log("➡️ categoria_id (fixo):", categoria_id);
+        console.log("➡️ subcategoriaid:", subcategoriaid);
+        if (!professorid || !professornome || !categoria_id || !subcategoriaid) {
+            console.log("⚠️ Faltando dados necessários");
+            res.status(400).json({ message: "Nome e ID do professor, categoria e subcategoria são necessários" });
             return;
         }
         const newCourse = await Curso.create({
@@ -80,89 +88,120 @@ export const criarCurso = async (req, res) => {
             professornome,
             titulo: "Curso sem título",
             descricao: "",
-            categoria: "Sem categoria",
+            categoria_id, // ✅ Usando o UUID fixo aqui
             imagem: "",
-            horas: 0,
             nivel: "Iniciante",
-            estado: "Draft",
-            subcategoriaid: subcategoriaid || null,
+            estado: "Rascunho",
+            horas: 0,
+            subcategoriaid,
+            enlistados: 0,
             criadoem: new Date(),
             atualizadoem: new Date(),
         });
+        console.log("✅ Novo curso criado:", newCourse);
         res.json({ message: "Curso criado com sucesso", data: newCourse });
     }
     catch (error) {
+        console.error("❌ Erro ao criar curso:", error);
         res.status(500).json({ message: "Erro ao criar o curso", error });
     }
 };
 export const atualizarCurso = async (req, res) => {
-    const { cursoid } = req.params;
+    const { id: cursoid } = req.params;
     const updateData = { ...req.body };
     const { userId } = getAuth(req);
+    console.log("🔧 Início da atualização do curso");
+    console.log("📦 Params:", req.params);
+    console.log("👤 Usuário autenticado:", userId);
+    console.log("📬 Dados recebidos:", updateData);
     if (!cursoid) {
+        console.log("❌ cursoid ausente");
         res.status(400).json({ message: "ID do curso é obrigatório." });
         return;
     }
     try {
-        // Buscar curso pelo ID
+        console.log("🔎 Procurando curso com ID:", cursoid);
         const curso = await Curso.findByPk(cursoid);
         if (!curso) {
+            console.log("⚠️ Curso não encontrado.");
             res.status(404).json({ message: "Curso não foi encontrado." });
             return;
         }
-        // Verificar se o usuário tem permissão para modificar
-        if (curso.getDataValue("professorid") !== userId) {
+        const professorIdNoCurso = curso.getDataValue("professorid");
+        console.log("👨‍🏫 Professor do curso:", professorIdNoCurso);
+        if (professorIdNoCurso !== userId) {
+            console.log("🚫 Permissão negada. ID do usuário:", userId);
             res.status(403).json({ message: "Não está autorizado a modificar este curso." });
             return;
         }
-        // Validar a hora
+        // Log da hora
         if (updateData.horas) {
+            console.log("⏱️ Hora recebida:", updateData.horas);
             const hora = parseInt(updateData.horas);
             if (isNaN(hora) || hora <= 0) {
+                console.log("❌ Hora inválida:", updateData.horas);
                 res.status(400).json({
                     message: "Hora em formato inválido",
                     error: "A hora precisa ser um valor numérico válido e maior que zero."
                 });
                 return;
             }
-            updateData.horas = hora; // Mantendo sem multiplicação por 100
+            updateData.horas = hora;
         }
-        // Validar as seções do curso
+        // Seções
         if (updateData.secoes) {
+            console.log("🧩 Seções recebidas (brutas):", updateData.secoes);
             try {
                 const sectionsData = typeof updateData.secoes === "string"
                     ? JSON.parse(updateData.secoes)
                     : updateData.secoes;
-                updateData.secoes = sectionsData.map((Secao) => ({
-                    ...Secao,
-                    Secaoid: Secao.Secaoid || uuidv4(),
-                    Capitulo: Array.isArray(Secao.capitulos)
-                        ? Secao.capitulos.map((Capitulo) => ({
-                            ...Capitulo,
-                            Capituloid: Capitulo.Capituloid || uuidv4(),
-                        }))
-                        : [],
-                }));
+                console.log("✅ Seções após parse:", sectionsData);
+                updateData.secoes = sectionsData.map((Secao) => {
+                    const novaSecao = {
+                        ...Secao,
+                        Secaoid: Secao.Secaoid || uuidv4(),
+                        Capitulo: Array.isArray(Secao.capitulos)
+                            ? Secao.capitulos.map((Capitulo) => ({
+                                ...Capitulo,
+                                Capituloid: Capitulo.Capituloid || uuidv4(),
+                            }))
+                            : [],
+                    };
+                    console.log("📚 Secao formatada:", novaSecao);
+                    return novaSecao;
+                });
             }
             catch (error) {
+                console.log("❌ Erro ao processar as seções:", error);
                 res.status(400).json({ message: "Erro ao processar as seções", error });
                 return;
             }
         }
-        // Atualizar o curso com os novos dados
-        await curso.update(updateData);
-        res.json({ message: "Curso atualizado com sucesso", data: curso });
+        console.log("📤 Dados finais para atualização:", updateData);
+        const atualizado = await curso.update(updateData);
+        console.log("✅ Curso atualizado com sucesso:", atualizado);
+        res.status(200).json({
+            data: {
+                message: "Curso atualizado com sucesso",
+                curso: atualizado,
+            }
+        });
     }
     catch (error) {
-        res.status(500).json({ message: "Erro ao atualizar o curso", error });
+        console.log("🔥 Erro inesperado durante atualização:", error);
+        res.status(500).json({
+            message: "Erro ao atualizar o curso",
+            error,
+        });
     }
 };
 export const apagarCurso = async (req, res) => {
-    const { cursoid } = req.params;
+    console.log("🔑 Parâmetros recebidos:", req.params); // Log para ver se o id está vindo correto
+    const { id } = req.params;
     const { userId } = getAuth(req);
     try {
         // Buscar curso pelo ID
-        const curso = await Curso.findByPk(cursoid);
+        const curso = await Curso.findByPk(id);
         if (!curso) {
             res.status(404).json({ message: "Curso não foi encontrado." });
             return;
@@ -174,7 +213,7 @@ export const apagarCurso = async (req, res) => {
         }
         // 🔥 Apagar o curso corretamente
         await curso.destroy();
-        res.json({ message: "Curso apagado com sucesso" });
+        res.json({ data: { message: "Curso apagado com sucesso" } });
     }
     catch (error) {
         res.status(500).json({ message: "Erro ao apagar o curso", error });

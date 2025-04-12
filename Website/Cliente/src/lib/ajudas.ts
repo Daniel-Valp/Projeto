@@ -1,7 +1,8 @@
 import { Secao } from "@/types/Secçõestipo";
-import { CursoFormData } from "@/types/Cursotipos";
+import { Categoria, CursoFormData, Subcategoria } from "@/types/Cursotipos";
 import { Capitulo } from "@/types/Secçõestipo";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
 
 export const criarCursoFormData = (
   data: CursoFormData,
@@ -55,6 +56,65 @@ export const fazerUploadVideos = async (
   return secoesAtualizadas;
 };
 
+export const useCategorias = () => {
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/cursos/categorias');
+        const data = await response.json();
+
+        if (data?.data) {
+          setCategorias(data.data);
+        } else {
+          toast.error("Erro ao carregar categorias");
+        }
+      } catch (err) {
+        setError("Erro ao carregar categorias");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategorias();
+  }, []);
+
+  return { categorias, loading, error };
+};
+
+export const useSubcategorias = () => {
+  const [subcategorias, setSubcategorias] = useState<Subcategoria[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+
+  useEffect(() => {
+    const fetchSubcategorias = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/cursos/subcategorias');
+        const data = await response.json();
+
+        if (data?.data) {
+          setSubcategorias(data.data);
+        } else {
+          toast.error("Erro ao carregar subcategorias");
+        }
+      } catch (err) {
+        setError("Erro ao carregar subcategorias");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSubcategorias();
+  }, []);
+
+  return { subcategorias, loading, error };
+};
 
 const subirVideo = async (
   capitulo: Capitulo,

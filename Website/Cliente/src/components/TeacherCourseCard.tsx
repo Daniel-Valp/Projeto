@@ -33,8 +33,8 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
   }, [categorias, curso.categoria_id, isLoading]);
     
   const subcategoriaNome = useMemo(() => {
-    console.log("📦 subcategorias da API: ", subcategorias);
-    console.log("📌 curso.subcategoriaid: ", curso.subcategoriaid);
+    //console.log("📦 subcategorias da API: ", subcategorias);
+    //console.log("📌 curso.subcategoriaid: ", curso.subcategoriaid);
   
     if (!curso.subcategoriaid) {
       console.warn("⚠️ subcategoriaid não está definido no curso.");
