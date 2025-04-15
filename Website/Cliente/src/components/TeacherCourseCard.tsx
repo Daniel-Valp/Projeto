@@ -126,7 +126,7 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
               <div>
                 <Button className="course-card-teacher__delete-button" onClick={() => onDelete(curso)}>
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Deletar
+                  Apagar
                 </Button>
               </div>
             </>

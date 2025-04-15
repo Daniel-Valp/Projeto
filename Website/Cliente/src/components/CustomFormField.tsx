@@ -91,22 +91,21 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
         );
       case "select":
         return (
-          <Select
-            value={field.value || (initialValue as string)}
-            defaultValue={field.value || (initialValue as string)}
-            onValueChange={field.onChange}
-          >
+          <Select value={field.value} onValueChange={field.onChange}>
             <SelectTrigger
               className={`w-full border-none bg-customgreys-primarybg p-4 ${inputClassName}`}
             >
-              <SelectValue placeholder={placeholder} />
+              <SelectValue>
+                {options?.find((option) => option.value === field.value)?.label ||
+                  placeholder}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent className="w-full bg-customgreys-primarybg border-customgreys-dirtyGrey shadow">
               {options?.map((option) => (
                 <SelectItem
                   key={option.value}
                   value={option.value}
-                  className={`cursor-pointer hover:!bg-gray-100 hover:!text-customgreys-darkGrey`}
+                  className="cursor-pointer hover:!bg-gray-100 hover:!text-customgreys-darkGrey"
                 >
                   {option.label}
                 </SelectItem>
@@ -129,24 +128,34 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
           </div>
         );
       case "file":
-        const ACCEPTED_VIDEO_TYPES = ["video/mp4", "video/webm", "video/ogg"];
-        const acceptedFileTypes = accept ? [accept] : ACCEPTED_VIDEO_TYPES;
+        const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+        const acceptedFileTypes = accept ? [accept] : ACCEPTED_IMAGE_TYPES;
+
+        const fileValue =
+          typeof field.value === "string"
+            ? [
+                {
+                  source: field.value,
+                  options: { type: "local" },
+                },
+              ]
+            : field.value
+            ? [field.value]
+            : [];
 
         return (
           <FilePond
-            className={`${inputClassName}`}
-            files={field.value ? [field.value] : []}
+            className={inputClassName}
+            files={fileValue}
             allowMultiple={multiple}
             onupdatefiles={(fileItems) => {
-              field.onChange(
-                multiple
-                  ? fileItems.map((fileItem) => fileItem.file)
-                  : fileItems[0]?.file
-              );
+              const file = fileItems[0]?.file;
+              field.onChange(file || null);
             }}
             acceptedFileTypes={acceptedFileTypes}
-            labelIdle={`Drag & Drop your files or <span class="filepond--label-action">Browse</span>`}
+            labelIdle={`Drag & Drop your image or <span class="filepond--label-action">Browse</span>`}
             credits={false}
+            name={name}
           />
         );
       case "number":
@@ -185,7 +194,6 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
     <FormField
       control={control}
       name={name}
-      defaultValue={initialValue}
       render={({ field }) => (
         <FormItem
           className={`${
@@ -199,7 +207,6 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
               >
                 {label}
               </FormLabel>
-
               {!disabled &&
                 isIcon &&
                 type !== "file" &&
@@ -220,6 +227,7 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
     />
   );
 };
+
 interface MultiInputFieldProps {
   name: string;
   control: any;
