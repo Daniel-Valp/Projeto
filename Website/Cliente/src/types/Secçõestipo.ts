@@ -10,6 +10,7 @@ export interface Capitulo {
 
 
 export interface Secao {
+  chapters: any;
   secaoid: string;
   cursoid: string;
   secaotitulo: string;

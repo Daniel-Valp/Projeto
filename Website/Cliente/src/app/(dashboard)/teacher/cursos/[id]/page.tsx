@@ -14,7 +14,7 @@ import {
 } from '@/state/api';
 import { useAppDispatch, useAppSelector } from '@/state/redux';
 import { openSectionModal, setSections } from '@/state';
-import { cursoFormSchema, CursoFormData } from '@/types/Cursotipos';
+import { cursoFormSchema, CursoFormData } from '@/lib/schemasajudas';
 import { criarCursoFormData, fazerUploadVideos } from '@/lib/ajudas';
 import { Form } from '@/components/ui/form';
 import Header from '@/components/Header';
@@ -22,6 +22,8 @@ import { CustomFormField } from '@/components/CustomFormField';
 import { Button } from '@/components/ui/button';
 import DroppableComponent from '@/components/Droppable';
 import { useEffect } from 'react';
+import ChapterModal from './ChapterModal';
+import SectionModal from './SectionModal';
 
 const CourseEditor = () => {
   const router = useRouter();
