@@ -5,6 +5,9 @@
     "moduleResolution": "node16",
     "rootDir": "./src",
     "outDir": "./dist",
+
+    "types": ["node"], // 👈 importante para `process.env`
+
     
     /* Permissões */
     "allowJs": true,

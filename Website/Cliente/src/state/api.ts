@@ -4,6 +4,28 @@ import { User } from "@clerk/nextjs/server";
 import { toast } from "sonner";
 import { Clerk } from "@clerk/clerk-js";
 
+// Adicione estas interfaces para os tipos de progresso
+interface SectionProgress {
+  sectionId: string;
+  completed: boolean;
+  progress: number;
+}
+
+interface UserCourseProgress {
+  userId: string;
+  courseId: string;
+  sections: SectionProgress[];
+  overallProgress: number;
+  lastAccessed?: Date;
+}
+
+interface Course {
+  category: string;
+  courseId: Key | null | undefined;
+  id: string;
+  title: string;
+  // outras propriedades do curso...
+}
 
 // 🔹 Define o `fetchBaseQuery` apenas uma vez
 const baseQuery = fetchBaseQuery({
@@ -55,8 +77,10 @@ const customBaseQuery: typeof baseQuery = async (args, api, extraOptions) => {
 export const api = createApi({
   baseQuery: customBaseQuery,
   reducerPath: "api",
-  tagTypes: ["cursos", "Users", "categorias"],
+  // Adicione "UserCourseProgress" aos tagTypes
+  tagTypes: ["cursos", "Users", "categorias", "UserCourseProgress"],
   endpoints: (build) => ({
+    // ... seus endpoints existentes ...
     
     updateUser: build.mutation<User, Partial<User> & { userId: string }>({
       query: ({ userId, ...updateUser }) => ({
@@ -70,24 +94,19 @@ export const api = createApi({
     getCategorias: build.query<{ id: string; nome: string }[], void>({
       query: () => "cursos/categorias", 
       transformResponse: (response: unknown) => {
-        //console.log("🎯 Resposta bruta da API:", response);
-        return response as { id: string; nome: string }[]; // 🔥 Faz um cast para um array
+        return response as { id: string; nome: string }[];
       },
       providesTags: ["categorias"],
     }),
     
-    
     getSubcategorias: build.query<{ subcategoriaid: number; nome: string }[], void>({
-      query: () => "cursos/subcategorias", // Ajusta este endpoint conforme o que a tua API realmente usa
+      query: () => "cursos/subcategorias",
       transformResponse: (response: unknown) => {
-        //console.log("📦 Subcategorias brutas da API:", response);
         return response as { subcategoriaid: number; nome: string }[];
       },
-      providesTags: ["categorias"], // Opcional: usa um tag se quiseres invalidar em mutações
+      providesTags: ["categorias"],
     }),
     
-    
-
     getCursos: build.query<Curso[], { category?: string }>({
       query: ({ category }) => {
         const params: Record<string, string> = {};
@@ -97,19 +116,17 @@ export const api = createApi({
       providesTags: ["cursos"],
     }),
 
-      criarCurso: build.mutation<
-    Curso, 
-    { professorid: string; professornome: string; categoria_id: number; subcategoriaid: number }
-  >({
-    query: (body) => ({
-      url: `cursos`,
-      method: "POST",
-      body,
+    criarCurso: build.mutation<
+      Curso, 
+      { professorid: string; professornome: string; categoria_id: number; subcategoriaid: number }
+    >({
+      query: (body) => ({
+        url: `cursos`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["cursos"],
     }),
-    invalidatesTags: ["cursos"],
-  }),
-
-    
     
     apagarCurso: build.mutation<{ message: string }, string>({
       query: (cursoid) => ({
@@ -139,15 +156,69 @@ export const api = createApi({
       }),
     }),
     
-
     getCurso: build.query<Curso, string>({
       query: (id) => `cursos/${id}`,
       providesTags: (resultado, erro, id) => [{ type: "cursos", id }],
     }),
+
+    // ===============
+    // USER COURSE PROGRESS
+    // =============== 
+    getUserEnrolledCourses: build.query<Course[], string>({
+      query: (userId) => `users/course-progress/${userId}/enrolled-courses`,
+      providesTags: ["UserCourseProgress"],
+    }),
+
+    getUserCourseProgress: build.query<
+      UserCourseProgress,
+      { userId: string; courseId: string }
+    >({
+      query: ({ userId, courseId }) =>
+        `users/course-progress/${userId}/courses/${courseId}`,
+      providesTags: ["UserCourseProgress"],
+    }),
+
+    updateUserCourseProgress: build.mutation<
+      UserCourseProgress,
+      {
+        userId: string;
+        courseId: string;
+        progressData: {
+          sections: SectionProgress[];
+        };
+      }
+    >({
+      query: ({ userId, courseId, progressData }) => ({
+        url: `users/course-progress/${userId}/courses/${courseId}`,
+        method: "PUT",
+        body: progressData,
+      }),
+      invalidatesTags: ["UserCourseProgress"],
+      async onQueryStarted(
+        { userId, courseId, progressData },
+        { dispatch, queryFulfilled }
+      ) {
+        const patchResult = dispatch(
+          api.util.updateQueryData(
+            "getUserCourseProgress",
+            { userId, courseId },
+            (draft) => {
+              Object.assign(draft, {
+                ...draft,
+                sections: progressData.sections,
+              });
+            }
+          )
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+        }
+      },
+    }),
   }),
 });
-
-
 
 export const { 
   useUpdateUserMutation, 
@@ -158,5 +229,9 @@ export const {
   useApagarCursoMutation,
   useGetCategoriasQuery,
   useGetSubcategoriasQuery,
-  useUploadVideoMutation,  // Aqui você adiciona o hook de upload de vídeo
+  useUploadVideoMutation,
+  // Adicione os novos hooks de progresso do usuário
+  useGetUserEnrolledCoursesQuery,
+  useGetUserCourseProgressQuery,
+  useUpdateUserCourseProgressMutation,
 } = api;
