@@ -3,6 +3,7 @@ import { BaseQueryApi, createApi, FetchArgs, fetchBaseQuery } from "@reduxjs/too
 import { User } from "@clerk/nextjs/server";
 import { toast } from "sonner";
 import { Clerk } from "@clerk/clerk-js";
+import { Key } from "react";
 
 // Adicione estas interfaces para os tipos de progresso
 interface SectionProgress {
@@ -164,7 +165,7 @@ export const api = createApi({
     // ===============
     // USER COURSE PROGRESS
     // =============== 
-    getUserEnrolledCourses: build.query<Course[], string>({
+    getUserEnrolledCourses: build.query<Curso[], string>({
       query: (userId) => `users/course-progress/${userId}/enrolled-courses`,
       providesTags: ["UserCourseProgress"],
     }),
