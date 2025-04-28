@@ -37,8 +37,9 @@ const Search = () => {
     };
 
     const handleEnrollNow = (cursoid: string) => {
-        router.push(`/detalhes?step=1£id=${cursoid}&showSignUp=false`);
-    }
+        router.push(`/detalhes?step=1&id=${cursoid}&showSignUp=false`);
+      };
+      
 
     return (
         <motion.div

@@ -10,22 +10,33 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/components/ui/sidebar";
 import Loading from "@/components/Loading";
-import { useCourseProgressData } from "@/hooks/useCourseProgressData";
+import { useCourseProgressData } from "../../../../../hooks/useCourseProgressData";
+
+import { Curso } from "@/types/Cursotipos";
+import { Secao, Capitulo } from "@/types/Secçõestipo";
+import { UserCourseProgress, SecaoProgresso, CapituloProgresso } from "@/types/progressostipo";
 
 const ChaptersSidebar = () => {
   const router = useRouter();
   const { setOpen } = useSidebar();
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
 
+  // Pegando o courseId e chapterId diretamente do hook
   const {
     user,
     course,
     userProgress,
-    chapterId,
-    courseId,
+    currentSection,
+    currentChapter,
     isLoading,
+    isChapterCompleted,
     updateChapterProgress,
+    hasMarkedComplete,
+    setHasMarkedComplete,
   } = useCourseProgressData();
+
+  const chapterId = currentChapter?.capituloid ?? "";  // Usando o chapterId correto do estado atual
+  const courseId = course?.cursoid ?? ""; // Usando o courseId correto do curso
 
   const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -54,19 +65,19 @@ const ChaptersSidebar = () => {
   return (
     <div ref={sidebarRef} className="chapters-sidebar">
       <div className="chapters-sidebar__header">
-        <h2 className="chapters-sidebar__title">{course.title}</h2>
+        <h2 className="chapters-sidebar__title">{course.titulo}</h2>
         <hr className="chapters-sidebar__divider" />
       </div>
-      {course.sections.map((section, index) => (
+      {course.secoes.map((section, index) => (
         <Section
-          key={section.sectionId}
+          key={section.secaoid}
           section={section}
           index={index}
           sectionProgress={userProgress.sections.find(
-            (s) => s.sectionId === section.sectionId
+            (s) => s.sectionId === section.secaoid
           )}
-          chapterId={chapterId as string}
-          courseId={courseId as string}
+          chapterId={chapterId}
+          courseId={courseId}
           expandedSections={expandedSections}
           toggleSection={toggleSection}
           handleChapterClick={handleChapterClick}
@@ -88,13 +99,13 @@ const Section = ({
   handleChapterClick,
   updateChapterProgress,
 }: {
-  section: any;
+  section: Secao;
   index: number;
-  sectionProgress: any;
+  sectionProgress: SecaoProgresso | undefined;
   chapterId: string;
   courseId: string;
   expandedSections: string[];
-  toggleSection: (sectionTitle: string) => void;
+  toggleSection: (sectionId: string) => void;
   handleChapterClick: (sectionId: string, chapterId: string) => void;
   updateChapterProgress: (
     sectionId: string,
@@ -103,19 +114,19 @@ const Section = ({
   ) => void;
 }) => {
   const completedChapters =
-    sectionProgress?.chapters.filter((c: any) => c.completed).length || 0;
-  const totalChapters = section.chapters.length;
-  const isExpanded = expandedSections.includes(section.sectionTitle);
+    sectionProgress?.chapters.filter((c) => c.completed).length || 0;
+  const totalChapters = section.capitulos.length;
+  const isExpanded = expandedSections.includes(section.secaoid);
 
   return (
     <div className="chapters-sidebar__section">
       <div
-        onClick={() => toggleSection(section.sectionTitle)}
+        onClick={() => toggleSection(section.secaoid)}
         className="chapters-sidebar__section-header"
       >
         <div className="chapters-sidebar__section-title-wrapper">
           <p className="chapters-sidebar__section-number">
-            Section 0{index + 1}
+            Seção 0{index + 1}
           </p>
           {isExpanded ? (
             <ChevronUp className="chapters-sidebar__chevron" />
@@ -124,11 +135,10 @@ const Section = ({
           )}
         </div>
         <h3 className="chapters-sidebar__section-title">
-          {section.sectionTitle}
+          {section.secaotitulo}
         </h3>
       </div>
       <hr className="chapters-sidebar__divider" />
-
       {isExpanded && (
         <div className="chapters-sidebar__section-content">
           <ProgressVisuals
@@ -158,40 +168,38 @@ const ProgressVisuals = ({
   completedChapters,
   totalChapters,
 }: {
-  section: any;
-  sectionProgress: any;
+  section: Secao;
+  sectionProgress: SecaoProgresso | undefined;
   completedChapters: number;
   totalChapters: number;
-}) => {
-  return (
-    <>
-      <div className="chapters-sidebar__progress">
-        <div className="chapters-sidebar__progress-bars">
-          {section.chapters.map((chapter: any) => {
-            const isCompleted = sectionProgress?.chapters.find(
-              (c: any) => c.chapterId === chapter.chapterId
-            )?.completed;
-            return (
-              <div
-                key={chapter.chapterId}
-                className={cn(
-                  "chapters-sidebar__progress-bar",
-                  isCompleted && "chapters-sidebar__progress-bar--completed"
-                )}
-              ></div>
-            );
-          })}
-        </div>
-        <div className="chapters-sidebar__trophy">
-          <Trophy className="chapters-sidebar__trophy-icon" />
-        </div>
+}) => (
+  <>
+    <div className="chapters-sidebar__progress">
+      <div className="chapters-sidebar__progress-bars">
+        {section.capitulos.map((chapter) => {
+          const isCompleted = sectionProgress?.chapters.find(
+            (c) => c.chapterId === chapter.capituloid
+          )?.completed;
+          return (
+            <div
+              key={chapter.capituloid}
+              className={cn(
+                "chapters-sidebar__progress-bar",
+                isCompleted && "chapters-sidebar__progress-bar--completed"
+              )}
+            ></div>
+          );
+        })}
       </div>
-      <p className="chapters-sidebar__progress-text">
-        {completedChapters}/{totalChapters} COMPLETED
-      </p>
-    </>
-  );
-};
+      <div className="chapters-sidebar__trophy">
+        <Trophy className="chapters-sidebar__trophy-icon" />
+      </div>
+    </div>
+    <p className="chapters-sidebar__progress-text">
+      {completedChapters}/{totalChapters} COMPLETO
+    </p>
+  </>
+);
 
 const ChaptersList = ({
   section,
@@ -201,8 +209,8 @@ const ChaptersList = ({
   handleChapterClick,
   updateChapterProgress,
 }: {
-  section: any;
-  sectionProgress: any;
+  section: Secao;
+  sectionProgress: SecaoProgresso | undefined;
   chapterId: string;
   courseId: string;
   handleChapterClick: (sectionId: string, chapterId: string) => void;
@@ -211,25 +219,23 @@ const ChaptersList = ({
     chapterId: string,
     completed: boolean
   ) => void;
-}) => {
-  return (
-    <ul className="chapters-sidebar__chapters">
-      {section.chapters.map((chapter: any, index: number) => (
-        <Chapter
-          key={chapter.chapterId}
-          chapter={chapter}
-          index={index}
-          sectionId={section.sectionId}
-          sectionProgress={sectionProgress}
-          chapterId={chapterId}
-          courseId={courseId}
-          handleChapterClick={handleChapterClick}
-          updateChapterProgress={updateChapterProgress}
-        />
-      ))}
-    </ul>
-  );
-};
+}) => (
+  <ul className="chapters-sidebar__chapters">
+    {section.capitulos.map((chapter, index) => (
+      <Chapter
+        key={chapter.capituloid}
+        chapter={chapter}
+        index={index}
+        sectionId={section.secaoid}
+        sectionProgress={sectionProgress}
+        chapterId={chapterId}
+        courseId={courseId}
+        handleChapterClick={handleChapterClick}
+        updateChapterProgress={updateChapterProgress}
+      />
+    ))}
+  </ul>
+);
 
 const Chapter = ({
   chapter,
@@ -241,10 +247,10 @@ const Chapter = ({
   handleChapterClick,
   updateChapterProgress,
 }: {
-  chapter: any;
+  chapter: Capitulo;
   index: number;
   sectionId: string;
-  sectionProgress: any;
+  sectionProgress: SecaoProgresso | undefined;
   chapterId: string;
   courseId: string;
   handleChapterClick: (sectionId: string, chapterId: string) => void;
@@ -255,15 +261,14 @@ const Chapter = ({
   ) => void;
 }) => {
   const chapterProgress = sectionProgress?.chapters.find(
-    (c: any) => c.chapterId === chapter.chapterId
+    (c) => c.chapterId === chapter.capituloid
   );
   const isCompleted = chapterProgress?.completed;
-  const isCurrentChapter = chapterId === chapter.chapterId;
+  const isCurrentChapter = chapterId === chapter.capituloid;
 
   const handleToggleComplete = (e: React.MouseEvent) => {
     e.stopPropagation();
-
-    updateChapterProgress(sectionId, chapter.chapterId, !isCompleted);
+    updateChapterProgress(sectionId, chapter.capituloid, !isCompleted);
   };
 
   return (
@@ -271,13 +276,13 @@ const Chapter = ({
       className={cn("chapters-sidebar__chapter", {
         "chapters-sidebar__chapter--current": isCurrentChapter,
       })}
-      onClick={() => handleChapterClick(sectionId, chapter.chapterId)}
+      onClick={() => handleChapterClick(sectionId, chapter.capituloid)}
     >
       {isCompleted ? (
         <div
           className="chapters-sidebar__chapter-check"
           onClick={handleToggleComplete}
-          title="Toggle completion status"
+          title="Marcar como não concluído"
         >
           <CheckCircle className="chapters-sidebar__check-icon" />
         </div>
@@ -296,7 +301,7 @@ const Chapter = ({
           "chapters-sidebar__chapter-title--current": isCurrentChapter,
         })}
       >
-        {chapter.title}
+        {chapter.capitulotitulo}
       </span>
       {chapter.type === "Text" && (
         <FileText className="chapters-sidebar__text-icon" />

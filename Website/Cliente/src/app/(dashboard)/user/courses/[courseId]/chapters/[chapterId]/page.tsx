@@ -1,84 +1,103 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
+import ReactPlayer from "react-player";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import ReactPlayer from "react-player";
+
 import Loading from "@/components/Loading";
-import { useCourseProgressData } from "@/hooks/useCourseProgressData";
+import ChaptersSidebar from "@/components/AppSidebar";
 
-const Course = () => {
-  const {
-    user,
-    course,
-    userProgress,
-    currentSection,
-    currentChapter,
-    isLoading,
-    isChapterCompleted,
-    updateChapterProgress,
-    hasMarkedComplete,
-    setHasMarkedComplete,
-  } = useCourseProgressData();
-  console.log("currentChapter.video:", currentChapter);
+import { Curso } from "@/types/Cursotipos";
+import { Secao, Capitulo } from "@/types/Secçõestipo";
+import { useGetCursosQuery } from "@/state/api";
 
+const CourseChapterPage = () => {
+  const { user } = useUser();
+  const { courseId, chapterId } = useParams(); // 👈 corrigido aqui
   const playerRef = useRef<ReactPlayer>(null);
 
+  const { data: cursos, isLoading } = useGetCursosQuery({});
+  const [curso, setCurso] = useState<Curso | null>(null);
+  const [secaoAtual, setSecaoAtual] = useState<Secao | null>(null);
+  const [capituloAtual, setCapituloAtual] = useState<Capitulo | null>(null);
+
+  useEffect(() => {
+    console.log("🚀 Params:", { courseId, chapterId }); // 👈 ajusta o log também
+    console.log("📦 Cursos carregados:", cursos);
+
+    if (!cursos || !courseId || !chapterId) { // 👈 usa courseId aqui também
+      console.warn("⚠️ Faltando dados necessários:", { cursos, courseId, chapterId });
+      return;
+    }
+
+    const cursoSelecionado = cursos.find((c: Curso) => c.cursoid === courseId); // 👈 aqui também
+    if (!cursoSelecionado) {
+      console.error("❌ Curso não encontrado com ID:", courseId);
+      return;
+    }
+
+    setCurso(cursoSelecionado);
+    console.log("✅ Curso encontrado:", cursoSelecionado);
+
+    const secao = cursoSelecionado.secoes?.find((s: Secao) =>
+      s.capitulos?.some((c: Capitulo) => c.capituloid === chapterId)
+    ) || null;
+
+    setSecaoAtual(secao);
+    console.log("📂 Seção atual:", secao);
+
+    const capitulo = secao?.capitulos?.find((c) => c.capituloid === chapterId) || null;
+    setCapituloAtual(capitulo);
+    console.log("🎬 Capítulo atual:", capitulo);
+  }, [cursos, courseId, chapterId]); // 👈 aqui também
+
+
   const handleProgress = ({ played }: { played: number }) => {
-    if (
-      played >= 0.8 &&
-      !hasMarkedComplete &&
-      currentChapter &&
-      currentSection &&
-      userProgress?.sections &&
-      !isChapterCompleted()
-    ) {
-      setHasMarkedComplete(true);
-      updateChapterProgress(
-        currentSection.sectionId,
-        currentChapter.chapterId,
-        true
-      );
+    if (played >= 0.8) {
+      console.log("✅ Capítulo assistido até 80%");
     }
   };
 
-  if (isLoading) return <Loading />;
-  if (!user) return <div>Please sign in to view this course.</div>;
-  if (!course || !userProgress) return <div>Error loading course</div>;
+  if (isLoading || !curso || !capituloAtual) {
+    console.log("⏳ Carregando... isLoading:", isLoading, "curso:", curso, "capituloAtual:", capituloAtual);
+    return <Loading />;
+  }
 
   return (
-    <div className="course">
-      <div className="course__container">
-        <div className="course__breadcrumb">
-          <div className="course__path">
-            {course.title} / {currentSection?.sectionTitle} /{" "}
-            <span className="course__current-chapter">
-              {currentChapter?.title}
-            </span>
+    <div className="course flex min-h-screen">
+      <aside className="w-[300px] border-r">
+        <ChaptersSidebar />
+      </aside>
+
+      <main className="flex-1 p-6">
+        <div className="course__breadcrumb mb-4">
+          <div className="course__path text-sm text-muted-foreground">
+            {curso.titulo} / {secaoAtual?.secaotitulo} /{" "}
+            <span className="font-semibold">{capituloAtual?.capitulotitulo}</span>
           </div>
-          <h2 className="course__title">{currentChapter?.title}</h2>
-          <div className="course__header">
-            <div className="course__instructor">
-              <Avatar className="course__avatar">
-                <AvatarImage alt={course.teacherName} />
-                <AvatarFallback className="course__avatar-fallback">
-                  {course.teacherName[0]}
-                </AvatarFallback>
-              </Avatar>
-              <span className="course__instructor-name">
-                {course.teacherName}
-              </span>
-            </div>
+          <h2 className="text-2xl font-bold mt-1">{capituloAtual?.capitulotitulo}</h2>
+          <div className="flex items-center gap-2 mt-2">
+            <Avatar className="h-8 w-8">
+              <AvatarImage alt={curso.professornome} />
+              <AvatarFallback>
+                {curso.professornome?.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm text-muted-foreground">{curso.professornome}</span>
           </div>
         </div>
 
-        <Card className="course__video">
-          <CardContent className="course__video-container">
-            {currentChapter?.video ? (
+        <Card className="mb-6">
+          <CardContent className="aspect-video">
+            {capituloAtual.video ? (
               <ReactPlayer
                 ref={playerRef}
-                url={currentChapter.video as string}
+                // url={capituloAtual.video}
                 controls
                 width="100%"
                 height="100%"
@@ -92,90 +111,56 @@ const Course = () => {
                 }}
               />
             ) : (
-              <div className="course__no-video">
-                No video available for this chapter.
+              <div className="flex items-center justify-center h-full text-muted-foreground">
+                Nenhum vídeo disponível para este capítulo.
               </div>
             )}
           </CardContent>
         </Card>
 
-        <div className="course__content">
-          <Tabs defaultValue="Notes" className="course__tabs">
-            <TabsList className="course__tabs-list">
-              <TabsTrigger className="course__tab" value="Notes">
-                Notes
-              </TabsTrigger>
-              <TabsTrigger className="course__tab" value="Resources">
-                Resources
-              </TabsTrigger>
-              <TabsTrigger className="course__tab" value="Quiz">
-                Quiz
-              </TabsTrigger>
-            </TabsList>
+        <Tabs defaultValue="Notes" className="w-full">
+          <TabsList>
+            <TabsTrigger value="Notes">Notas</TabsTrigger>
+            <TabsTrigger value="Resources">Recursos</TabsTrigger>
+            <TabsTrigger value="Quiz">Quiz</TabsTrigger>
+          </TabsList>
 
-            <TabsContent className="course__tab-content" value="Notes">
-              <Card className="course__tab-card">
-                <CardHeader className="course__tab-header">
-                  <CardTitle>Notes Content</CardTitle>
-                </CardHeader>
-                <CardContent className="course__tab-body">
-                  {currentChapter?.content}
-                </CardContent>
-              </Card>
-            </TabsContent>
+          <TabsContent value="Notes">
+            <Card>
+              <CardHeader>
+                <CardTitle>Notas do Capítulo</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {capituloAtual.conteudo || "Sem conteúdo disponível."}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-            <TabsContent className="course__tab-content" value="Resources">
-              <Card className="course__tab-card">
-                <CardHeader className="course__tab-header">
-                  <CardTitle>Resources Content</CardTitle>
-                </CardHeader>
-                <CardContent className="course__tab-body">
-                  {/* Add resources content here */}
-                </CardContent>
-              </Card>
-            </TabsContent>
+          <TabsContent value="Resources">
+            <Card>
+              <CardHeader>
+                <CardTitle>Recursos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                Nenhum recurso disponível.
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-            <TabsContent className="course__tab-content" value="Quiz">
-              <Card className="course__tab-card">
-                <CardHeader className="course__tab-header">
-                  <CardTitle>Quiz Content</CardTitle>
-                </CardHeader>
-                <CardContent className="course__tab-body">
-                  {/* Add quiz content here */}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-
-          <Card className="course__instructor-card">
-            <CardContent className="course__instructor-info">
-              <div className="course__instructor-header">
-                <Avatar className="course__instructor-avatar">
-                  <AvatarImage alt={course.teacherName} />
-                  <AvatarFallback className="course__instructor-avatar-fallback">
-                    {course.teacherName[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="course__instructor-details">
-                  <h4 className="course__instructor-name">
-                    {course.teacherName}
-                  </h4>
-                  <p className="course__instructor-title">Senior UX Designer</p>
-                </div>
-              </div>
-              <div className="course__instructor-bio">
-                <p>
-                  A seasoned Senior UX Designer with over 15 years of experience
-                  in creating intuitive and engaging digital experiences.
-                  Expertise in leading UX design projects.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+          <TabsContent value="Quiz">
+            <Card>
+              <CardHeader>
+                <CardTitle>Quiz</CardTitle>
+              </CardHeader>
+              <CardContent>
+                Quiz em breve!
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </main>
     </div>
   );
 };
 
-export default Course;
+export default CourseChapterPage;
