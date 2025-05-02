@@ -21,3 +21,21 @@ export interface Secao {
 export interface AccordionSecoes {
   sections: Secao[];
 }
+
+export interface CursoComSecoes {
+  cursoid: string;
+  professorid: string;
+  professornome: string;
+  titulo: string;
+  descricao: string;
+  categoria_id: string;
+  imagem: string;
+  nivel: string;
+  estado: string;
+  horas: string;
+  subcategoriaid: number;
+  enlistados: number;
+  criadoem: string;
+  atualizadoem: string;
+  secoes: Secao[];
+}

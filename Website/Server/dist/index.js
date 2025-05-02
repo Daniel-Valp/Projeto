@@ -18,6 +18,7 @@ app.get("/", (req, res) => {
 // Ativar rotas de cursos
 app.use("/cursos", CursoRoutes);
 app.use("/users/clerk", requireAuth(), userClerkRoutes);
+app.use("/users/course-progress", requireAuth(), userCourseProgressRoutes);
 app.use("/api/progresso", userCourseProgressRoutes);
 // Iniciar servidor
 const PORT = process.env.PORT || 5000;

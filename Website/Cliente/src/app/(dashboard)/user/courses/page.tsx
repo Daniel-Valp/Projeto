@@ -7,8 +7,8 @@ import CourseCard from "@/components/CourseCard";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
-import { useGetUserEnrolledCoursesQuery } from "@/state/api";
-import { Curso } from "@/types/Cursotipos";
+// import { useGetUserEnrolledCoursesQuery } from "@/state/api"; // ❌ Comentado: progresso
+// import { Curso } from "@/types/Cursotipos"; // ✅ Ainda usado abaixo, então mantido
 
 const CursosUsuario = () => {
   const { user, isLoaded } = useUser();
@@ -17,34 +17,35 @@ const CursosUsuario = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  const {
-    data: cursosInscritos = [],
-    isLoading,
-    isError,
-  } = useGetUserEnrolledCoursesQuery(user?.id ?? "", {
-    skip: !user || !isLoaded,
-  });
+  // ❌ Comentado: uso do progresso do curso
+  // const {
+  //   data: cursosInscritos = [],
+  //   isLoading,
+  //   isError,
+  // } = useGetUserEnrolledCoursesQuery(user?.id ?? "", {
+  //   skip: !user || !isLoaded,
+  // });
 
-  const cursosFiltrados = useMemo(() => {
-    // Força o tipo Curso[] pra evitar erro no filter/map
-    return (cursosInscritos as Curso[]).filter((curso) => {
-      const matchSearch = curso.titulo
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+  // ⛔ Removido o uso de cursos filtrados, pois não há cursos disponíveis agora
+  // const cursosFiltrados = useMemo(() => {
+  //   return (cursosInscritos as Curso[]).filter((curso) => {
+  //     const matchSearch = curso.titulo
+  //       .toLowerCase()
+  //       .includes(searchTerm.toLowerCase());
 
-      const matchCategory =
-        selectedCategory === "all" ||
-        curso.categoria?.id.toLowerCase() === selectedCategory.toLowerCase();
+  //     const matchCategory =
+  //       selectedCategory === "all" ||
+  //       curso.categoria?.id.toLowerCase() === selectedCategory.toLowerCase();
 
-      const matchSubcategory =
-        selectedCategory === "all" ||
-        curso.subcategoria?.subcategoriaid.toLowerCase() === selectedCategory.toLowerCase();
+  //     const matchSubcategory =
+  //       selectedCategory === "all" ||
+  //       curso.subcategoria?.subcategoriaid.toLowerCase() === selectedCategory.toLowerCase();
 
-      return matchSearch && (matchCategory || matchSubcategory);
-    });
-  }, [cursosInscritos, searchTerm, selectedCategory]);
+  //     return matchSearch && (matchCategory || matchSubcategory);
+  //   });
+  // }, [cursosInscritos, searchTerm, selectedCategory]);
 
-  const handleGoToCourse = (curso: Curso) => {
+  const handleGoToCourse = (curso: any) => {
     const primeiraSecao = curso.secoes?.[0];
     const primeiroCapitulo = primeiraSecao?.capitulos?.[0];
 
@@ -58,10 +59,8 @@ const CursosUsuario = () => {
     }
   };
 
-  if (!isLoaded || isLoading) return <Loading />;
+  if (!isLoaded) return <Loading />;
   if (!user) return <div>Por favor, autentique-se para ver os seus cursos.</div>;
-  if (isError || cursosInscritos.length === 0)
-    return <div>Você ainda não está inscrito em nenhum curso.</div>;
 
   return (
     <div className="user-courses">
@@ -71,13 +70,10 @@ const CursosUsuario = () => {
         onCategoryChange={setSelectedCategory}
       />
       <div className="user-courses__grid">
-        {(cursosFiltrados as Curso[]).map((curso) => (
-          <CourseCard
-            key={curso.cursoid}
-            course={curso}
-            onGoToCourse={handleGoToCourse}
-          />
-        ))}
+        {/* Nenhum curso listado porque os dados foram desabilitados */}
+        <div className="text-center text-muted col-span-full">
+          Funcionalidade temporariamente indisponível.
+        </div>
       </div>
     </div>
   );

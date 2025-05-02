@@ -24,6 +24,7 @@ app.get("/", (req, res) => {
 app.use("/cursos", CursoRoutes);
 app.use("/users/clerk", requireAuth(), userClerkRoutes);
 
+
 app.use("/api/progresso", userCourseProgressRoutes);
 
 

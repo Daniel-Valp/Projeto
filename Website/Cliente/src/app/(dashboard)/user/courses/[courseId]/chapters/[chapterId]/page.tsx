@@ -27,52 +27,56 @@ const CourseChapterPage = () => {
   const [capituloAtual, setCapituloAtual] = useState<Capitulo | null>(null);
 
   useEffect(() => {
-    console.log("🚀 Params:", { courseId, chapterId }); // 👈 ajusta o log também
-    console.log("📦 Cursos carregados:", cursos);
+    //console.log("🚀 Params:", { courseId, chapterId }); // 👈 ajusta o log também
+    //console.log("📦 Cursos carregados:", cursos);
 
     if (!cursos || !courseId || !chapterId) { // 👈 usa courseId aqui também
-      console.warn("⚠️ Faltando dados necessários:", { cursos, courseId, chapterId });
+      //console.warn("⚠️ Faltando dados necessários:", { cursos, courseId, chapterId });
       return;
     }
 
     const cursoSelecionado = cursos.find((c: Curso) => c.cursoid === courseId); // 👈 aqui também
     if (!cursoSelecionado) {
-      console.error("❌ Curso não encontrado com ID:", courseId);
+      //console.error("❌ Curso não encontrado com ID:", courseId);
       return;
     }
 
     setCurso(cursoSelecionado);
-    console.log("✅ Curso encontrado:", cursoSelecionado);
+    //console.log("✅ Curso encontrado:", cursoSelecionado);
 
     const secao = cursoSelecionado.secoes?.find((s: Secao) =>
       s.capitulos?.some((c: Capitulo) => c.capituloid === chapterId)
     ) || null;
 
     setSecaoAtual(secao);
-    console.log("📂 Seção atual:", secao);
+   // console.log("📂 Seção atual:", secao);
 
     const capitulo = secao?.capitulos?.find((c) => c.capituloid === chapterId) || null;
     setCapituloAtual(capitulo);
-    console.log("🎬 Capítulo atual:", capitulo);
+    //console.log("🎬 Capítulo atual:", capitulo);
   }, [cursos, courseId, chapterId]); // 👈 aqui também
 
 
   const handleProgress = ({ played }: { played: number }) => {
     if (played >= 0.8) {
-      console.log("✅ Capítulo assistido até 80%");
+      //console.log("✅ Capítulo assistido até 80%");
     }
   };
 
   if (isLoading || !curso || !capituloAtual) {
-    console.log("⏳ Carregando... isLoading:", isLoading, "curso:", curso, "capituloAtual:", capituloAtual);
+   // console.log("⏳ Carregando... isLoading:", isLoading, "curso:", curso, "capituloAtual:", capituloAtual);
     return <Loading />;
   }
 
   return (
     <div className="course flex min-h-screen">
       <aside className="w-[300px] border-r">
-        <ChaptersSidebar />
-      </aside>
+  {/* Só renderiza se o hook já tiver carregado o curso e capítulo */}
+  {curso && capituloAtual && (
+    <ChaptersSidebar />
+  )}
+</aside>
+
 
       <main className="flex-1 p-6">
         <div className="course__breadcrumb mb-4">
