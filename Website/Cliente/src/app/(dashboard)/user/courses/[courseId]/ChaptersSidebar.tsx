@@ -35,13 +35,14 @@ const ChaptersSidebar = () => {
     if (courseId) fetchCourse();
   }, [courseId]);
 
-  const toggleSection = (titulo: string) => {
+  const toggleSection = (secaoid: string) => {
     setExpandedSections((prev) =>
-      prev.includes(titulo)
-        ? prev.filter((t) => t !== titulo)
-        : [...prev, titulo]
+      prev.includes(secaoid)
+        ? prev.filter((id) => id !== secaoid)
+        : [...prev, secaoid]
     );
   };
+  
 
   const handleChapterClick = (sectionId: string, chapterId: string) => {
     router.push(`/user/courses/${courseId}/chapters/${chapterId}`, {
@@ -53,7 +54,7 @@ const ChaptersSidebar = () => {
   if (!course) return <div>Erro ao carregar o curso</div>;
 
   return (
-    <div ref={sidebarRef} className="chapters-sidebar">
+    <div ref={sidebarRef} className="chapters-sidebar overflow-x-hidden">
       <div className="chapters-sidebar__header">
         <h2 className="chapters-sidebar__title">{course.titulo}</h2>
         <hr className="chapters-sidebar__divider" />
@@ -63,14 +64,14 @@ const ChaptersSidebar = () => {
         // Garantir que não estamos duplicando as seções
         if (!secao || !secao.capitulos || !secao.capitulos.length) return null;
 
-        const isExpanded = expandedSections.includes(secao.secaotitulo);
+        const isExpanded = expandedSections.includes(secao.secaoid);
         const totalChapters = secao.capitulos.length;
         const completedChapters = 0; // Progresso pode ser integrado aqui
 
         return (
           <div key={secao.secaoid} className="chapters-sidebar__section">
             <div
-              onClick={() => toggleSection(secao.secaotitulo)}
+              onClick={() => toggleSection(secao.secaoid)}
               className="chapters-sidebar__section-header"
             >
               <div className="chapters-sidebar__section-title-wrapper">

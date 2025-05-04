@@ -41,7 +41,7 @@ const CourseCardSearch: React.FC<ProcurarPeloCurso> = ({ curso, isSelected, onCl
                         : parseFloat(curso.horas.toString()).toFixed(2) + (curso.horas === 1 ? " hora" : " horas")}
                     </span>
                         <span className="course-card-search__enrollment">
-                            {curso.enlistados?.length} Enlistados {/* ✅ Corrigido "lenght" → "length" */}
+                        {curso?.enlistados}  Enlistados {/* ✅ Corrigido "lenght" → "length" */}
                         </span>
                     </div>
                 </div>

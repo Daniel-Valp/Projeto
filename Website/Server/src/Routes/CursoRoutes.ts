@@ -9,7 +9,8 @@ import {
   getCursoPorId,
   listarCursos,
   listarSubcategorias,
-  listarCategorias
+  listarCategorias,
+  enlistarUsuario
 } from "../Controllers/ControllerCurso.js";
 import { requireAuth } from "@clerk/express";
 
@@ -23,11 +24,15 @@ router.get("/", listarCursos);
 router.get("/categorias", listarCategorias);
 router.get("/subcategorias", listarSubcategorias); // 👈 IMPORTANTE estar antes
 
+router.post("/:cursoid/enlistar", enlistarUsuario);
+
 // 📝 Essa rota genérica SEMPRE por último
 router.get("/:id", getCursoPorId);
 
 router.post("/", requireAuth(), criarCurso);
 router.put("/:id", requireAuth(), upload.single("image"), atualizarCurso);
 router.delete("/:id", requireAuth(), apagarCurso);
+
+
 
 export default router;

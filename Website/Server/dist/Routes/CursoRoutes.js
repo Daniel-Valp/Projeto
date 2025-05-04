@@ -1,7 +1,7 @@
 // routes/curso.js
 import express from "express";
 import multer from "multer";
-import { apagarCurso, atualizarCurso, criarCurso, getCursoPorId, listarCursos, listarSubcategorias, listarCategorias } from "../Controllers/ControllerCurso.js";
+import { apagarCurso, atualizarCurso, criarCurso, getCursoPorId, listarCursos, listarSubcategorias, listarCategorias, enlistarUsuario } from "../Controllers/ControllerCurso.js";
 import { requireAuth } from "@clerk/express";
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -10,6 +10,7 @@ router.get("/", listarCursos);
 // ✅ MANTÉM essas duas ANTES do :id
 router.get("/categorias", listarCategorias);
 router.get("/subcategorias", listarSubcategorias); // 👈 IMPORTANTE estar antes
+router.post("/:cursoid/enlistar", enlistarUsuario);
 // 📝 Essa rota genérica SEMPRE por último
 router.get("/:id", getCursoPorId);
 router.post("/", requireAuth(), criarCurso);

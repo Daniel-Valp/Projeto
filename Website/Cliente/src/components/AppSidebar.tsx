@@ -26,7 +26,8 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-const AppSidebar = () => {
+const AppSidebar = ({ className }: { className?: string }) => {
+
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
   const pathname = usePathname();
@@ -60,10 +61,12 @@ const AppSidebar = () => {
 
   return (
     <Sidebar
-      collapsible="icon"
-      style={{ height: "100vh" }}
-      className="bg-customgreys-primarybg border-none shadow-lg"
-    >
+    collapsible="icon"
+    style={{ height: "100vh" }}
+    className={cn("bg-customgreys-primarybg border-none shadow-lg", className)}
+  >
+  
+
       <SidebarHeader>
         <SidebarMenu className="app-sidebar__menu">
           <SidebarMenuItem>

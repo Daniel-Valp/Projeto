@@ -281,3 +281,29 @@ export const listarSubcategorias = async (req: Request, res: Response): Promise<
     }
   };
   
+
+export const enlistarUsuario = async (req: Request, res: Response): Promise<void> => {
+    const { cursoid } = req.params;
+    const { userId } = getAuth(req); // Pega o ID do usuário logado
+  
+    try {
+      const curso = await Curso.findByPk(cursoid);
+  
+      if (!curso) {
+        res.status(404).json({ message: "Curso não encontrado." });
+        return;
+      }
+  
+      // ✅ Incrementa os enlistados (pode ser um número ou array, dependendo da modelagem)
+      const enlistadosAtuais = curso.getDataValue("enlistados") || 0;
+      curso.set("enlistados", enlistadosAtuais + 1);
+  
+      await curso.save();
+  
+      res.status(200).json({ message: "Usuário inscrito com sucesso", curso });
+    } catch (error) {
+      console.error("Erro ao inscrever usuário:", error);
+      res.status(500).json({ message: "Erro ao inscrever usuário", error });
+    }
+};
+  

@@ -36,9 +36,10 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <div className="dashboard">
-        <AppSidebar />
+      <AppSidebar className={isCoursePage ? "hidden absolute" : ""} />
+
         <div className="dashboard__content">
-          {courseId && <ChaptersSidebar courseId={""} />}
+          {courseId && <ChaptersSidebar/>}
           <div
             className={cn(
               "dashboard__main",
