@@ -69,37 +69,43 @@ export const getCursoPorId = async (req, res) => {
 };
 export const criarCurso = async (req, res) => {
     try {
-        console.log("📥 Dados recebidos para criar curso:", req.body);
         const { professorid, professornome, subcategoriaid } = req.body;
-        // 👉 Substitui manualmente o categoria_id aqui
-        const categoria_id = "cdbcca83-2c95-4e51-ac14-ad1ba34f0df2";
-        console.log("➡️ professorid:", professorid);
-        console.log("➡️ professornome:", professornome);
-        console.log("➡️ categoria_id (fixo):", categoria_id);
-        console.log("➡️ subcategoriaid:", subcategoriaid);
-        if (!professorid || !professornome || !categoria_id || !subcategoriaid) {
-            console.log("⚠️ Faltando dados necessários");
-            res.status(400).json({ message: "Nome e ID do professor, categoria e subcategoria são necessários" });
+        console.log("📥 Dados recebidos no corpo da requisição:", req.body);
+        if (!professorid || !professornome || !subcategoriaid) {
+            console.log("⚠️ Campos obrigatórios ausentes");
+            res.status(400).json({ message: "Campos obrigatórios ausentes" });
             return;
         }
-        const newCourse = await Curso.create({
-            cursoid: uuidv4(),
+        const categoriaDefault = 'cdbcca83-2c95-4e51-ac14-ad1ba34f0df2'; // deve existir na tabela "categorias"
+        console.log("🆕 UUID gerado para categoria:", categoriaDefault);
+        const categoriaVerificada = await Categoria.findByPk(categoriaDefault);
+        if (!categoriaVerificada) {
+            console.error("❌ Categoria não foi persistida no banco!");
+            res.status(500).json({ message: "Erro ao salvar categoria no banco" });
+            return;
+        }
+        const novoCurso = await Curso.create({
             professorid,
             professornome,
             titulo: "Curso sem título",
             descricao: "",
-            categoria_id, // ✅ Usando o UUID fixo aqui
+            categoria_id: categoriaDefault,
             imagem: "",
             nivel: "Iniciante",
             estado: "Rascunho",
             horas: 0,
-            subcategoriaid,
+            subcategoriaid, // <- já vem do req.body
             enlistados: 0,
             criadoem: new Date(),
             atualizadoem: new Date(),
         });
-        console.log("✅ Novo curso criado:", newCourse);
-        res.json({ message: "Curso criado com sucesso", data: newCourse });
+        console.log("✅ Curso criado com sucesso:", novoCurso);
+        res.status(201).json({
+            data: {
+                curso: novoCurso,
+                message: "Curso criado com sucesso"
+            }
+        });
     }
     catch (error) {
         console.error("❌ Erro ao criar curso:", error);
@@ -109,90 +115,74 @@ export const criarCurso = async (req, res) => {
 export const atualizarCurso = async (req, res) => {
     const { id: cursoid } = req.params;
     const updateData = { ...req.body };
-    const { userId } = getAuth(req);
-    console.log("🔧 Início da atualização do curso");
-    console.log("📦 Params:", req.params);
-    console.log("👤 Usuário autenticado:", userId);
-    console.log("📬 Dados recebidos:", updateData);
+    const { userId } = getAuth(req); // Assume que isso retorna o ID do professor autenticado
+    console.log("🔄 Requisição para atualizar curso:", cursoid);
+    console.log("📥 Dados recebidos para atualização:", updateData);
     if (!cursoid) {
-        console.log("❌ cursoid ausente");
         res.status(400).json({ message: "ID do curso é obrigatório." });
         return;
     }
     try {
-        console.log("🔎 Procurando curso com ID:", cursoid);
         const curso = await Curso.findByPk(cursoid);
         if (!curso) {
-            console.log("⚠️ Curso não encontrado.");
+            console.warn("⚠️ Curso não encontrado:", cursoid);
             res.status(404).json({ message: "Curso não foi encontrado." });
             return;
         }
-        const professorIdNoCurso = curso.getDataValue("professorid");
-        console.log("👨‍🏫 Professor do curso:", professorIdNoCurso);
-        if (professorIdNoCurso !== userId) {
-            console.log("🚫 Permissão negada. ID do usuário:", userId);
-            res.status(403).json({ message: "Não está autorizado a modificar este curso." });
+        if (curso.getDataValue("professorid") !== userId) {
+            console.warn("⛔ Acesso não autorizado para o curso:", cursoid);
+            res.status(403).json({ message: "Não autorizado." });
             return;
         }
-        // Log da hora
-        if (updateData.horas) {
-            console.log("⏱️ Hora recebida:", updateData.horas);
-            const hora = parseInt(updateData.horas);
-            if (isNaN(hora) || hora <= 0) {
-                console.log("❌ Hora inválida:", updateData.horas);
-                res.status(400).json({
-                    message: "Hora em formato inválido",
-                    error: "A hora precisa ser um valor numérico válido e maior que zero."
-                });
-                return;
-            }
-            updateData.horas = hora;
-        }
-        // Seções
+        await curso.update({
+            ...updateData,
+            atualizadoem: new Date(),
+        });
+        console.log("✅ Curso atualizado com dados básicos.");
         if (updateData.secoes) {
-            console.log("🧩 Seções recebidas (brutas):", updateData.secoes);
-            try {
-                const sectionsData = typeof updateData.secoes === "string"
-                    ? JSON.parse(updateData.secoes)
-                    : updateData.secoes;
-                console.log("✅ Seções após parse:", sectionsData);
-                updateData.secoes = sectionsData.map((Secao) => {
-                    const novaSecao = {
-                        ...Secao,
-                        Secaoid: Secao.Secaoid || uuidv4(),
-                        Capitulo: Array.isArray(Secao.capitulos)
-                            ? Secao.capitulos.map((Capitulo) => ({
-                                ...Capitulo,
-                                Capituloid: Capitulo.Capituloid || uuidv4(),
-                            }))
-                            : [],
-                    };
-                    console.log("📚 Secao formatada:", novaSecao);
-                    return novaSecao;
+            const secoesRecebidas = typeof updateData.secoes === "string"
+                ? JSON.parse(updateData.secoes)
+                : updateData.secoes;
+            console.log("🔄 Seções recebidas:", secoesRecebidas);
+            // Remove capítulos e seções anteriores
+            await Capitulo.destroy({
+                where: { secaoid: secoesRecebidas.map((s) => s.secaoid) },
+            });
+            await Secao.destroy({ where: { cursoid } });
+            console.log("🗑️ Seções e capítulos antigos apagados.");
+            // Recria novas seções e capítulos
+            for (const secao of secoesRecebidas) {
+                const novaSecao = await Secao.create({
+                    secaoid: secao.secaoid || uuidv4(),
+                    cursoid,
+                    secaotitulo: secao.secaotitulo,
+                    secaodescricao: secao.secaodescricao || "",
                 });
-            }
-            catch (error) {
-                console.log("❌ Erro ao processar as seções:", error);
-                res.status(400).json({ message: "Erro ao processar as seções", error });
-                return;
+                console.log("➕ Nova seção criada:", novaSecao.toJSON());
+                if (Array.isArray(secao.capitulos)) {
+                    for (const capitulo of secao.capitulos) {
+                        const novoCapitulo = await Capitulo.create({
+                            capituloid: capitulo.capituloid || uuidv4(),
+                            secaoid: novaSecao.getDataValue("secaoid"),
+                            type: capitulo.type || "Video",
+                            capitulotitulo: capitulo.capitulotitulo,
+                            conteudo: capitulo.conteudo || "",
+                            video: capitulo.video || "",
+                            freepreview: capitulo.freepreview || false,
+                        });
+                        console.log("📚 Capítulo criado:", novoCapitulo.toJSON());
+                    }
+                }
             }
         }
-        console.log("📤 Dados finais para atualização:", updateData);
-        const atualizado = await curso.update(updateData);
-        console.log("✅ Curso atualizado com sucesso:", atualizado);
         res.status(200).json({
-            data: {
-                message: "Curso atualizado com sucesso",
-                curso: atualizado,
-            }
+            message: "Curso atualizado com sucesso",
+            data: curso,
         });
     }
     catch (error) {
-        console.log("🔥 Erro inesperado durante atualização:", error);
-        res.status(500).json({
-            message: "Erro ao atualizar o curso",
-            error,
-        });
+        console.error("🔥 Erro ao atualizar curso:", error);
+        res.status(500).json({ message: "Erro ao atualizar o curso", error });
     }
 };
 export const apagarCurso = async (req, res) => {

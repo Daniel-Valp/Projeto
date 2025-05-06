@@ -98,27 +98,29 @@ const CourseChapterPage = () => {
 
         <Card className="mb-6">
           <CardContent className="aspect-video">
-            {capituloAtual.video ? (
-              <ReactPlayer
-                ref={playerRef}
-                // url={capituloAtual.video}
-                controls
-                width="100%"
-                height="100%"
-                onProgress={handleProgress}
-                config={{
-                  file: {
-                    attributes: {
-                      controlsList: "nodownload",
-                    },
-                  },
-                }}
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full text-muted-foreground">
-                Nenhum vídeo disponível para este capítulo.
-              </div>
-            )}
+          {capituloAtual.video ? (
+            <ReactPlayer
+  ref={playerRef}
+  url={typeof capituloAtual.video === "string" ? capituloAtual.video : undefined}
+  controls
+  width="100%"
+  height="100%"
+  onProgress={handleProgress}
+  config={{
+    file: {
+      attributes: {
+        controlsList: "nodownload",
+      },
+    },
+  }}
+/>
+
+) : (
+  <div className="flex items-center justify-center h-full text-muted-foreground">
+    Nenhum vídeo disponível para este capítulo.
+  </div>
+)}
+
           </CardContent>
         </Card>
 

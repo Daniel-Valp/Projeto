@@ -4,14 +4,23 @@ import { z } from "zod";
 export const chapterSchema = z.object({
   capitulotitulo: z.string().min(1, "O título do capítulo é obrigatório"),
   conteudo: z.string().min(1, "O conteúdo do capítulo é obrigatório"),
-  video: z
-    .union([z.string(), z.instanceof(File)])
-    .optional()
-    .nullable(),
+  video: z.union([
+    z.string().url("O vídeo deve ser um link válido"),
+    z.literal(""),
+    z.undefined()
+  ]), // 👈 aceita link, vazio ou indefinido
 });
 
+
+
+
 // 🔹 Tipo inferido automaticamente do schema (para usar no formulário)
-export type ChapterFormData = z.infer<typeof chapterSchema>;
+export type ChapterFormData = {
+  capitulotitulo: string;
+  conteudo: string;
+  video?: string; // apenas string agora
+};
+
 
 
 // 🔹 Schema para o formulário de curso (que já tinhas)

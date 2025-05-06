@@ -47,20 +47,22 @@ const ChapterModal = () => {
 
   useEffect(() => {
     if (chapter) {
-        methods.reset({
-            capitulotitulo: chapter.capitulotitulo,
-            conteudo: chapter.conteudo,
-            video: chapter.video ?? undefined, // garante compatibilidade com o tipo
-          });
-          
+      methods.reset({
+        capitulotitulo: chapter.capitulotitulo,
+        conteudo: chapter.conteudo,
+        video: typeof chapter.video === 'string' ? chapter.video : undefined,
+      });
     } else {
       methods.reset({
         capitulotitulo: '',
         conteudo: '',
-        video: '',
+        video: undefined,
       });
     }
   }, [chapter, methods]);
+  
+  
+  
 
   const onClose = () => {
     dispatch(closeChapterModal());
@@ -125,41 +127,25 @@ const ChapterModal = () => {
               placeholder="Digite o conteúdo"
             />
 
-            <FormField
-              control={methods.control}
-              name="video"
-              render={({ field: { onChange, value } }) => (
-                <FormItem>
-                  <FormLabel className="text-sm">Vídeo do Capítulo</FormLabel>
-                  <FormControl>
-                    <div>
+              <FormField
+                control={methods.control}
+                name="video"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm">Link do Vídeo (YouTube)</FormLabel>
+                    <FormControl>
                       <Input
-                        type="file"
-                        accept="video/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            onChange(file);
-                          }
-                        }}
-                        className="cursor-pointer bg-customgreys-darkGrey py-2"
+                        type="url"
+                        placeholder="https://www.youtube.com/watch?v=..."
+                        {...field}
+                        className="bg-customgreys-darkGrey py-2"
                       />
-                      {typeof value === 'string' && value && (
-                        <div className="text-sm mt-2">
-                          Vídeo atual: {value.split('/').pop()}
-                        </div>
-                      )}
-                      {value instanceof File && (
-                        <div className="text-sm mt-2">
-                          Arquivo selecionado: {value.name}
-                        </div>
-                      )}
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
 
             <div className="chapter-modal__actions mt-4 flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={onClose}>
