@@ -16,6 +16,7 @@ const ChaptersSidebar = () => {
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const [course, setCourse] = useState<CursoComSecoes | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [viewedChapters, setViewedChapters] = useState<string[]>([]); // Estado local para capítulos visualizados
 
   const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -42,13 +43,37 @@ const ChaptersSidebar = () => {
         : [...prev, secaoid]
     );
   };
-  
 
   const handleChapterClick = (sectionId: string, chapterId: string) => {
+    // Primeiro marca como visto
+    setViewedChapters((prev) =>
+      prev.includes(chapterId) ? prev : [...prev, chapterId]
+    );
+  
+    // Depois navega
     router.push(`/user/courses/${courseId}/chapters/${chapterId}`, {
       scroll: false,
     });
   };
+
+
+  // codigo para guardar o progresso do curso
+
+/*   useEffect(() => {
+  const stored = sessionStorage.getItem("viewedChapters");
+  if (stored) {
+    setViewedChapters(JSON.parse(stored));
+  }
+}, []);
+
+useEffect(() => {
+  // Só salva se já estiver carregado algo antes (evita sobrescrever com [])
+  if (viewedChapters.length > 0) {
+    sessionStorage.setItem("viewedChapters", JSON.stringify(viewedChapters));
+  }
+}, [viewedChapters]); */
+
+    
 
   if (isLoading) return <Loading />;
   if (!course) return <div>Erro ao carregar o curso</div>;
@@ -61,12 +86,14 @@ const ChaptersSidebar = () => {
       </div>
 
       {course.secoes.map((secao, index) => {
-        // Garantir que não estamos duplicando as seções
         if (!secao || !secao.capitulos || !secao.capitulos.length) return null;
 
         const isExpanded = expandedSections.includes(secao.secaoid);
         const totalChapters = secao.capitulos.length;
-        const completedChapters = 0; // Progresso pode ser integrado aqui
+const completedChapters = secao.capitulos.filter((cap) =>
+  viewedChapters.includes(cap.capituloid)
+).length;
+
 
         return (
           <div key={secao.secaoid} className="chapters-sidebar__section">
@@ -94,19 +121,28 @@ const ChaptersSidebar = () => {
             {isExpanded && (
               <div className="chapters-sidebar__section-content">
                 <div className="chapters-sidebar__progress">
-                  <div className="chapters-sidebar__progress-bars">
-                    {secao.capitulos.map((capitulo) => (
-                      <div
-                        key={capitulo.capituloid}
-                        className="chapters-sidebar__progress-bar"
-                      />
-                    ))}
-                  </div>
-                  <div className="chapters-sidebar__trophy">
-                    <Trophy className="chapters-sidebar__trophy-icon" />
-                  </div>
-                </div>
-                <p className="chapters-sidebar__progress-text">
+  <div className="chapters-sidebar__progress-bars flex gap-1">
+    {secao.capitulos.map((capitulo) => (
+      <div
+        key={capitulo.capituloid}
+        className={cn(
+          "h-2 flex-1 rounded bg-gray-300",
+          viewedChapters.includes(capitulo.capituloid) && "bg-green-500"
+        )}
+      />
+    ))}
+  </div>
+  <div className="chapters-sidebar__trophy ml-2">
+    <Trophy
+      className={cn(
+        "chapters-sidebar__trophy-icon transition-colors",
+        completedChapters === totalChapters && "text-[#FFD700]"
+      )}
+    />
+  </div>
+</div>
+
+                <p className="chapters-sidebar__progress-text text-xs text-muted-foreground mt-1">
                   {completedChapters}/{totalChapters} COMPLETED
                 </p>
 

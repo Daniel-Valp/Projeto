@@ -15,21 +15,30 @@ export const listarCursos = async (req: Request, res: Response): Promise<void> =
         }
 
         const cursos = await Curso.findAll({
-            attributes: { include: ["enlistados"] }, // 🔥 Força a inclusão de enlistados
-            where: whereClause,
-            include: [
+          attributes: { include: ["enlistados"] },
+          where: whereClause,
+          include: [
+            {
+              model: Secao,
+              as: "secoes",
+              include: [
                 {
-                    model: Secao,
-                    as: "secoes",
-                    include: [
-                        {
-                            model: Capitulo,
-                            as: "capitulos",
-                        },
-                    ],
+                  model: Capitulo,
+                  as: "capitulos",
                 },
-            ],
+              ],
+            },
+            {
+              model: Categoria,
+              as: "categoria",
+            },
+            {
+              model: Subcategoria,
+              as: "subcategoria",
+            },
+          ],
         });
+        
 
         res.json({ message: "Lista de cursos completa", data: cursos });
     } catch (error) {
@@ -40,42 +49,50 @@ export const listarCursos = async (req: Request, res: Response): Promise<void> =
 
 // 📌 Função para buscar UM curso pelo ID (completo)
 export const getCursoPorId = async (req: Request, res: Response): Promise<void> => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    console.log("🔍 ID recebido:", id); // 👀 Verifica se o ID está correto
+  console.log("🔍 ID recebido:", id); // 👀 Verifica se o ID está correto
 
-    if (!id) {
-        res.status(400).json({ message: "ID do curso não fornecido" });
-        return;
-    }
+  if (!id) {
+      res.status(400).json({ message: "ID do curso não fornecido" });
+      return;
+  }
 
-    try {
-        const curso = await Curso.findOne({
-            where: { cursoid: id }, // Verifica se cursoid é a chave correta
-            include: [
-                {
-                    model: Secao,
-                    as: "secoes",
-                    include: [
-                        {
-                            model: Capitulo,
-                            as: "capitulos",
-                        },
-                    ],
-                },
-            ],
-        });
+  try {
+      const curso = await Curso.findOne({
+          where: { cursoid: id }, // Verifica se cursoid é a chave correta
+          include: [
+              {
+                  model: Secao,
+                  as: "secoes",
+                  include: [
+                      {
+                          model: Capitulo,
+                          as: "capitulos",
+                      },
+                  ],
+              },
+              {
+                  model: Categoria,
+                  as: "categoria", // ⬅️ Garante que o alias bate com o definido no modelo
+              },
+              {
+                  model: Subcategoria,
+                  as: "subcategoria", // ⬅️ Mesmo aqui
+              },
+          ],
+      });
 
-        if (!curso) {
-            res.status(404).json({ message: "Curso não encontrado" });
-            return;
-        }
+      if (!curso) {
+          res.status(404).json({ message: "Curso não encontrado" });
+          return;
+      }
 
-        res.json({ message: "Curso encontrado", data: curso });
-    } catch (error) {
-        console.error("❌ Erro ao buscar curso:", error);
-        res.status(500).json({ message: "Erro ao buscar curso", error });
-    }
+      res.json({ message: "Curso encontrado", data: curso });
+  } catch (error) {
+      console.error("❌ Erro ao buscar curso:", error);
+      res.status(500).json({ message: "Erro ao buscar curso", error });
+  }
 };
 
 export const criarCurso = async (req: Request, res: Response): Promise<void> => {

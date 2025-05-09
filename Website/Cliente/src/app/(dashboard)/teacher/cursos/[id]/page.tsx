@@ -52,7 +52,18 @@ const CourseEditor = () => {
   });
 
   useEffect(() => {
-    if (!curso || !categorias.length || !subcategorias.length) return;
+    console.log("🟨 useEffect ativado");
+  
+    if (!curso || categorias.length === 0 || subcategorias.length === 0) {
+      console.log("⛔ Dados ainda não prontos");
+      return;
+    }
+  
+    console.log("🧩 curso.categoria:", curso.categoria);
+    console.log("🧩 curso.subcategoria:", curso.subcategoria);
+  
+    // ⬅️ Adiciona este log aqui
+    console.log("🧪 curso.secoes recebido:", curso.secoes);
   
     const valores = {
       cursotitulo: curso.titulo || "",
@@ -63,10 +74,21 @@ const CourseEditor = () => {
       cursoestado: curso.estado === "Publicado",
     };
   
-    methods.reset(valores);
-    dispatch(setSections(curso.secoes || []));
-  }, [curso?.id, categorias.length, subcategorias.length]);
+    console.log("✅ Valores para reset:", valores);
   
+    methods.reset(valores);
+    dispatch(setSections(curso.secoes || [])); // <- este é o alvo
+  }, [curso, categorias, subcategorias]);
+  
+  
+  
+  
+
+  useEffect(() => {
+    console.log("📦 Sections no componente:", sections);
+  }, [sections]);
+  
+
 
   const onSubmit: SubmitHandler<CursoFormData> = async (data) => {
     try {

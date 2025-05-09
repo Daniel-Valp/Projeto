@@ -17,6 +17,9 @@ export default function DroppableComponent() {
   const dispatch = useAppDispatch();
   const { sections } = useAppSelector((state) => state.global.courseEditor);
 
+  console.log("🧪 Sections dentro de DroppableComponent:", sections);
+
+
   const handleSectionDragEnd = (result: any) => {
     if (!result.destination) return;
 
@@ -48,86 +51,95 @@ export default function DroppableComponent() {
       <Droppable droppableId="sections">
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            {sections.map((section: Secao, sectionIndex: number) => (
-              <Draggable
-                key={`section-${section.secaoid}`}
-                draggableId={`section-${section.secaoid}`}
-                index={sectionIndex}
-              >
-                {(draggableProvider) => (
-                  <div
-                    ref={draggableProvider.innerRef}
-                    {...draggableProvider.draggableProps}
-                    className={`droppable-section ${
-                      sectionIndex % 2 === 0
-                        ? "droppable-section--even"
-                        : "droppable-section--odd"
-                    }`}
-                  >
-                    <SectionHeader
-                      secao={section}
-                      sectionIndex={sectionIndex}
-                      dragHandleProps={draggableProvider.dragHandleProps}
-                    />
+            {sections.map((section: Secao, sectionIndex: number) => {
+  console.log("🎯 Renderizando seção:", section.secaotitulo);
 
-                    <DragDropContext
-                      onDragEnd={(result) =>
-                        handleChapterDragEnd(result, sectionIndex)
-                      }
-                    >
-                      <Droppable droppableId={`chapters-${section.secaoid}`}>
-                        {(droppableProvider) => (
-                          <div
-                            ref={droppableProvider.innerRef}
-                            {...droppableProvider.droppableProps}
-                          >
-                            {section.capitulos.map(
-                              (chapter: Capitulo, chapterIndex: number) => (
-                                <Draggable
-                                  key={`chapter-${chapter.capituloid}`}
-                                  draggableId={`chapter-${chapter.capituloid}`}
-                                  index={chapterIndex}
-                                >
-                                  {(draggableProvider) => (
-                                    <ChapterItem
-                                      chapter={chapter}
-                                      chapterIndex={chapterIndex}
-                                      sectionIndex={sectionIndex}
-                                      draggableProvider={draggableProvider}
-                                    />
-                                  )}
-                                </Draggable>
-                              )
-                            )}
-                            {droppableProvider.placeholder}
-                          </div>
-                        )}
-                      </Droppable>
-                    </DragDropContext>
+  return (
+    <Draggable
+      key={`section-${section.secaoid}`}
+      draggableId={`section-${section.secaoid}`}
+      index={sectionIndex}
+    >
+      {(draggableProvider) => (
+        <div
+          ref={draggableProvider.innerRef}
+          {...draggableProvider.draggableProps}
+          className={`droppable-section ${
+            sectionIndex % 2 === 0
+              ? "droppable-section--even"
+              : "droppable-section--odd"
+          }`}
+        >
+          <SectionHeader
+            secao={section}
+            sectionIndex={sectionIndex}
+            dragHandleProps={draggableProvider.dragHandleProps}
+          />
 
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        dispatch(
-                          openChapterModal({
-                            sectionIndex,
-                            chapterIndex: null,
-                          })
-                        )
-                      }
-                      className="add-chapter-button group"
-                    >
-                      <Plus className="add-chapter-button__icon" />
-                      <span className="add-chapter-button__text">
-                        Adcionar capitulo
-                      </span>
-                    </Button>
-                  </div>
-                )}
-              </Draggable>
-            ))}
+          <DragDropContext
+            onDragEnd={(result) =>
+              handleChapterDragEnd(result, sectionIndex)
+            }
+          >
+            <Droppable droppableId={`chapters-${section.secaoid}`}>
+              {(droppableProvider) => (
+                <div
+                  ref={droppableProvider.innerRef}
+                  {...droppableProvider.droppableProps}
+                >
+                  {section.capitulos.map(
+                    (chapter: Capitulo, chapterIndex: number) => {
+                      console.log("📘 Renderizando capítulo:", chapter.capitulotitulo);
+
+                      return (
+                        <Draggable
+                          key={`chapter-${chapter.capituloid}`}
+                          draggableId={`chapter-${chapter.capituloid}`}
+                          index={chapterIndex}
+                        >
+                          {(draggableProvider) => (
+                            <ChapterItem
+                              chapter={chapter}
+                              chapterIndex={chapterIndex}
+                              sectionIndex={sectionIndex}
+                              draggableProvider={draggableProvider}
+                            />
+                          )}
+                        </Draggable>
+                      );
+                    }
+                  )}
+                  {droppableProvider.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              dispatch(
+                openChapterModal({
+                  sectionIndex,
+                  chapterIndex: null,
+                })
+              )
+            }
+            className="add-chapter-button group"
+          >
+            <Plus className="add-chapter-button__icon" />
+            <span className="add-chapter-button__text">
+              Adcionar capitulo
+            </span>
+          </Button>
+        </div>
+      )}
+    </Draggable>
+  );
+})}
+
             {provided.placeholder}
           </div>
         )}

@@ -10,7 +10,7 @@ export const listarCursos = async (req, res) => {
             whereClause = { categoria };
         }
         const cursos = await Curso.findAll({
-            attributes: { include: ["enlistados"] }, // 🔥 Força a inclusão de enlistados
+            attributes: { include: ["enlistados"] },
             where: whereClause,
             include: [
                 {
@@ -22,6 +22,14 @@ export const listarCursos = async (req, res) => {
                             as: "capitulos",
                         },
                     ],
+                },
+                {
+                    model: Categoria,
+                    as: "categoria",
+                },
+                {
+                    model: Subcategoria,
+                    as: "subcategoria",
                 },
             ],
         });
@@ -53,6 +61,14 @@ export const getCursoPorId = async (req, res) => {
                             as: "capitulos",
                         },
                     ],
+                },
+                {
+                    model: Categoria,
+                    as: "categoria", // ⬅️ Garante que o alias bate com o definido no modelo
+                },
+                {
+                    model: Subcategoria,
+                    as: "subcategoria", // ⬅️ Mesmo aqui
                 },
             ],
         });

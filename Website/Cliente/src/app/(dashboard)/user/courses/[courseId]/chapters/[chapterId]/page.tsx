@@ -70,12 +70,12 @@ const CourseChapterPage = () => {
 
   return (
     <div className="course flex min-h-screen">
-      <aside className="w-[300px] border-r">
+       
   {/* Só renderiza se o hook já tiver carregado o curso e capítulo */}
   {curso && capituloAtual && (
     <ChaptersSidebar />
   )}
-</aside>
+
 
 
       <main className="flex-1 p-6">
@@ -96,33 +96,34 @@ const CourseChapterPage = () => {
           </div>
         </div>
 
-        <Card className="mb-6">
-          <CardContent className="aspect-video">
-          {capituloAtual.video ? (
-            <ReactPlayer
-  ref={playerRef}
-  url={typeof capituloAtual.video === "string" ? capituloAtual.video : undefined}
-  controls
-  width="100%"
-  height="100%"
-  onProgress={handleProgress}
-  config={{
-    file: {
-      attributes: {
-        controlsList: "nodownload",
-      },
-    },
-  }}
-/>
-
+        {capituloAtual.video ? (
+  <Card className="mb-6">
+    <CardContent className="aspect-video">
+      <ReactPlayer
+        ref={playerRef}
+        url={typeof capituloAtual.video === "string" ? capituloAtual.video : undefined}
+        controls
+        width="100%"
+        height="100%"
+        onProgress={handleProgress}
+        config={{
+          file: {
+            attributes: {
+              controlsList: "nodownload",
+            },
+          },
+        }}
+      />
+    </CardContent>
+  </Card>
 ) : (
-  <div className="flex items-center justify-center h-full text-muted-foreground">
-    Nenhum vídeo disponível para este capítulo.
-  </div>
+  <Card className="mb-6">
+    <CardHeader>
+      <CardTitle>Sem video disponivel</CardTitle>
+    </CardHeader>
+  </Card>
 )}
 
-          </CardContent>
-        </Card>
 
         <Tabs defaultValue="Notes" className="w-full">
           <TabsList>
