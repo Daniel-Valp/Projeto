@@ -34,6 +34,7 @@ export const cursoFormSchema = z.object({
   cursosubcategoria: z.string().min(1, "A subcategoria é obrigatória"),
   cursohoras: z.string().min(1, "As horas são obrigatórias"),
   cursoestado: z.boolean(),
+  cursoimagem: z.any().optional(), // aceita File, string ou nada
 });
 
 export type CursoFormData = z.infer<typeof cursoFormSchema>;

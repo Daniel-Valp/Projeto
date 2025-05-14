@@ -57,7 +57,9 @@ const Search = () => {
                     transition={{ duration: 0.5, delay: 0.2 }}
                     className="search__courses-grid"
                 >
-                    {cursos.map((curso) => (
+                    {cursos
+                      .filter((curso) => curso.estado === "Publicado") // ou curso.status === "publicado"
+                    .map((curso) => (
                         <CourseCardSearch
                             key={curso.cursoid}
                             curso={curso}

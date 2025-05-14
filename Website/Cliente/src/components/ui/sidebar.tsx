@@ -225,7 +225,7 @@ const Sidebar = React.forwardRef<
         {/* This is what handles the sidebar gap on desktop */}
         <div
   className={cn(
-    "relative h-svh flex-grow bg-transparent transition-[width] duration-200 ease-linear", // tirar o flex grow caso queira que o sidebar esteja ao lado do chaptersidebar
+    "relative h-svh w-[--sidebar-width] bg-transparent transition-[width] duration-200 ease-linear", // adicionar o w-[--sidebar-width] caso queira que o sidebar esteja ao lado do chaptersidebar
     "group-data-[collapsible=offcanvas]:w-0",
     "group-data-[side=right]:rotate-180",
     variant === "floating" || variant === "inset"

@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from 'next/navigation';
-import { useForm, SubmitHandler } from 'react-hook-form'; 
+import { useForm, SubmitHandler, Controller } from 'react-hook-form'; 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { ArrowLeft, Plus } from 'lucide-react';
@@ -21,7 +21,7 @@ import Header from '@/components/Header';
 import { CustomFormField } from '@/components/CustomFormField';
 import { Button } from '@/components/ui/button';
 import DroppableComponent from '@/components/Droppable';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import ChapterModal from './ChapterModal';
 import SectionModal from './SectionModal';
 
@@ -38,6 +38,9 @@ const CourseEditor = () => {
 
   const dispatch = useAppDispatch();
   const { sections } = useAppSelector((state) => state.global.courseEditor);
+
+  const [imagePreview, setImagePreview] = useState<string | null>(curso?.imagem || null);
+
 
   const methods = useForm<CursoFormData>({
     resolver: zodResolver(cursoFormSchema),
@@ -78,6 +81,11 @@ const CourseEditor = () => {
   
     methods.reset(valores);
     dispatch(setSections(curso.secoes || [])); // <- este é o alvo
+
+
+    if (curso.imagem) {
+      setImagePreview(curso.imagem);
+    }
   }, [curso, categorias, subcategorias]);
   
   
@@ -94,12 +102,17 @@ const CourseEditor = () => {
     try {
       const secoesAtualizadas = await fazerUploadVideos(sections, id, uploadVideo);
       const formData = criarCursoFormData(data, secoesAtualizadas);
-
+  
+      // 👇 ADICIONA ISTO PARA VERIFICAR OS CAMPOS ENVIADOS
+      for (let [key, value] of formData.entries()) {
+        console.log(`📦 ${key}:`, value);
+      }
+  
       await updateCourse({
         cursoid: id,
         formData: formData,
       }).unwrap();
-
+  
       refetch();
       toast.success("Curso atualizado com sucesso!");
     } catch (error) {
@@ -107,6 +120,7 @@ const CourseEditor = () => {
       toast.error("Falha ao atualizar o curso");
     }
   };
+  
 
   if (isLoading || isLoadingCategorias || isLoadingSubcategorias) {
     return <p>A carregar curso e categorias...</p>;
@@ -169,6 +183,8 @@ const CourseEditor = () => {
                   label="Descrição do Curso"
                   type="textarea"
                   placeholder="Escreva a sua descrição aqui"
+                  inputClassName="min-h-[200px]" // Aplica ao textarea diretamente
+
                 />
 
                 <CustomFormField
@@ -199,6 +215,35 @@ const CourseEditor = () => {
                   type="number"
                   placeholder="0"
                 />
+
+<Controller
+  name="cursoimagem"
+  control={methods.control}
+  render={({ field }) => (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Imagem do Curso</label>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setImagePreview(imageUrl);
+            field.onChange(file); // passa o ficheiro ao react-hook-form
+          }
+        }}
+      />
+    </div>
+  )}
+/>
+
+{imagePreview && (
+  <img src={imagePreview} alt="Preview da imagem" className="mt-2 rounded-md w-full max-w-md" />
+)}
+                
+                
+
               </div>
             </div>
 

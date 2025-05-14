@@ -184,6 +184,17 @@ export const criarCurso = async (req: Request, res: Response): Promise<void> => 
         return;
       }
   
+      // ✅ Processa imagem recebida via upload (multer)
+      if (req.file) {
+        const buffer = req.file.buffer;
+        const base64Image = buffer.toString("base64");
+        const mimeType = req.file.mimetype;
+        const dataUrl = `data:${mimeType};base64,${base64Image}`;
+        updateData.imagem = dataUrl;
+  
+        console.log("🖼️ Nova imagem recebida e processada.");
+      }
+  
       await curso.update({
         ...updateData,
         atualizadoem: new Date(),
@@ -198,7 +209,6 @@ export const criarCurso = async (req: Request, res: Response): Promise<void> => 
   
         console.log("🔄 Seções recebidas:", secoesRecebidas);
   
-        // Remove capítulos e seções anteriores
         await Capitulo.destroy({
           where: { secaoid: secoesRecebidas.map((s: { secaoid: string }) => s.secaoid) },
         });
@@ -207,7 +217,6 @@ export const criarCurso = async (req: Request, res: Response): Promise<void> => 
   
         console.log("🗑️ Seções e capítulos antigos apagados.");
   
-        // Recria novas seções e capítulos
         for (const secao of secoesRecebidas) {
           const novaSecao = await Secao.create({
             secaoid: secao.secaoid || uuidv4(),
@@ -245,6 +254,7 @@ export const criarCurso = async (req: Request, res: Response): Promise<void> => 
       res.status(500).json({ message: "Erro ao atualizar o curso", error });
     }
   };
+  
   
   
 

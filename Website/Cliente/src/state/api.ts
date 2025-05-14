@@ -100,7 +100,9 @@ export const api = createApi({
       providesTags: ["categorias"],
     }),
     
-    getSubcategorias: build.query<{ subcategoriaid: number; nome: string }[], void>({
+    getSubcategorias: build.query<{
+      id: Key | null | undefined; subcategoriaid: number; nome: string 
+}[], void>({
       query: () => "cursos/subcategorias",
       transformResponse: (response: unknown) => {
         return response as { subcategoriaid: number; nome: string }[];

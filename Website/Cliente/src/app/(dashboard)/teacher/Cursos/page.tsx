@@ -22,26 +22,29 @@ const Cursos = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectCategory] = useState<string>("all");
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("all");
+
 
   const filterCourses = useMemo(() => {
     if (!Cursos?.length) return [];
-
+  
     return Cursos.filter((curso) => {
       const matchesSearch = searchTerm
         ? curso.titulo.toLowerCase().includes(searchTerm.toLowerCase())
         : true;
-
+  
       const matchesCategory =
         selectedCategory === "all" ||
-        curso.categoria.id.toLowerCase() === selectedCategory.toLowerCase(); // Comparando pela categoria id
-
+        curso.categoria.id.toLowerCase() === selectedCategory.toLowerCase();
+  
       const matchesSubcategory =
-        selectedCategory === "all" ||
-        curso.subcategoria.subcategoriaid.toLowerCase() === selectedCategory.toLowerCase(); // Comparando pela subcategoria id
-
-      return matchesSearch && (matchesCategory || matchesSubcategory);
+        selectedSubcategory === "all" ||
+        String(curso.subcategoria?.subcategoriaid) === selectedSubcategory;
+  
+      return matchesSearch && matchesCategory && matchesSubcategory;
     });
-  }, [Cursos, searchTerm, selectedCategory]);
+  }, [Cursos, searchTerm, selectedCategory, selectedSubcategory]);
+  
 
   const handleEdit = (curso: Curso) => {
     router.push(`/teacher/cursos/${curso.cursoid}`);
@@ -97,7 +100,12 @@ const Cursos = () => {
           </Button>
         }
       />
-      <Toolbar onSearch={setSearchTerm} onCategoryChange={setSelectCategory} />
+      <Toolbar 
+  onSearch={setSearchTerm} 
+  onCategoryChange={setSelectCategory} 
+  onSubcategoryChange={setSelectedSubcategory} 
+/>
+
       <div className="teacher-courses__grid">
         {filterCourses.map((curso) => {
           // Adicionando o log para verificar os dados do 'curso'

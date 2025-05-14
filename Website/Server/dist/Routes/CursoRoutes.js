@@ -14,6 +14,6 @@ router.post("/:cursoid/enlistar", enlistarUsuario);
 // 📝 Essa rota genérica SEMPRE por último
 router.get("/:id", getCursoPorId);
 router.post("/", requireAuth(), criarCurso);
-router.put("/:id", requireAuth(), upload.single("image"), atualizarCurso);
+router.put("/:id", requireAuth(), upload.single("imagem"), atualizarCurso);
 router.delete("/:id", requireAuth(), apagarCurso);
 export default router;

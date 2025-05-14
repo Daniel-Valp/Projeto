@@ -6,35 +6,70 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useGetCategoriasQuery } from "@/state/api"; // 🔥 Hook para buscar categorias da API
+import { useGetCategoriasQuery, useGetSubcategoriasQuery } from "@/state/api"; // 🔥 Hook para buscar categorias e subcategorias da API
 
-const Toolbar = ({ onSearch, onCategoryChange }: ToolbarProps) => {
+interface ToolbarProps {
+  onSearch: (searchTerm: string) => void;
+  onCategoryChange: (categoryId: string) => void;
+  onSubcategoryChange: (subcategoryId: string) => void; // Adicionando onSubcategoryChange à interface
+}
+
+const Toolbar = ({ onSearch, onCategoryChange, onSubcategoryChange }: ToolbarProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: categorias = [], isLoading, isError, error } = useGetCategoriasQuery(); // 🔥 Obtém categorias
-  const [categoriasLista, setCategoriasLista] = useState<{ id: string; nome: string }[]>([]);
 
+  // Buscando categorias e subcategorias
+  const { data: categorias = [], isLoading: isLoadingCategorias, isError, error } = useGetCategoriasQuery(); 
+  const { data: subcategorias = [], isLoading: isLoadingSubcategorias } = useGetSubcategoriasQuery(); 
+
+  // Estado local para armazenar categorias e subcategorias
+  const [categoriasLista, setCategoriasLista] = useState<{ id: string; nome: string }[]>([]);
+  const [subcategoriasLista, setSubcategoriasLista] = useState<{ id: string; nome: string }[]>([]);
+
+  // Função de busca
   const handleSearch = (value: string) => {
     setSearchTerm(value);
     onSearch(value);
   };
 
-  // ✅ DEBUG: Exibe as categorias carregadas
-  //console.log("✅ Dados da API no Toolbar:", categorias);
-
-  // ✅ Atualiza categorias quando os dados forem carregados
+  // Atualiza categorias quando os dados forem carregados
   useEffect(() => {
     if (categorias.length > 0) {
       setCategoriasLista(categorias);
     }
   }, [categorias]);
 
-  // ✅ DEBUG: Exibe erro se houver problema na API
+  // Atualiza subcategorias quando os dados forem carregados
   useEffect(() => {
-    if (error) console.error("❌ Erro ao buscar categorias:", error);
+    console.log("🔍 Subcategorias recebidas da API:", subcategorias);
+  
+    if (subcategorias.length > 0) {
+      const subcategoriasFormatadas = subcategorias.map((subcategoria) => ({
+        id: subcategoria.subcategoriaid.toString(), // ✅ Usa o subcategoriaid corretamente
+        nome: subcategoria.nome,
+      }));
+      
+  
+      // Verificar se há chaves duplicadas
+      const ids = subcategoriasFormatadas.map((s) => s.id);
+      const idsDuplicados = ids.filter((id, i) => ids.indexOf(id) !== i);
+      if (idsDuplicados.length > 0) {
+        console.error("🚨 Subcategorias com chaves duplicadas:", idsDuplicados);
+      }
+  
+      setSubcategoriasLista(subcategoriasFormatadas);
+    }
+  }, [subcategorias]);
+  
+  // Exibe erro se houver problema na API
+  useEffect(() => {
+    if (error) {
+      console.error("❌ Erro ao buscar categorias:", error);
+    }
   }, [error]);
 
   return (
     <div className="toolbar">
+      {/* Filtro de Pesquisa */}
       <input
         type="text"
         value={searchTerm}
@@ -42,6 +77,8 @@ const Toolbar = ({ onSearch, onCategoryChange }: ToolbarProps) => {
         placeholder="Procurar cursos"
         className="toolbar__search"
       />
+
+      {/* Filtro de Categorias */}
       <Select onValueChange={onCategoryChange}>
         <SelectTrigger className="toolbar__select">
           <SelectValue placeholder="Categorias" />
@@ -50,20 +87,56 @@ const Toolbar = ({ onSearch, onCategoryChange }: ToolbarProps) => {
           <SelectItem value="all" className="toolbar__select-item">
             Todas as categorias
           </SelectItem>
-          {isLoading ? (
-            <SelectItem value="loading" disabled>Carregando...</SelectItem> 
+          {isLoadingCategorias ? (
+            <SelectItem value="loading" disabled>
+              Carregando categorias...
+            </SelectItem>
           ) : isError ? (
-            <SelectItem value="error" disabled>Erro ao carregar categorias</SelectItem> 
+            <SelectItem value="error" disabled>
+              Erro ao carregar categorias
+            </SelectItem>
           ) : (
-            categoriasLista.map((categoria) => (
+            categoriasLista
+  .filter((categoria) => categoria.id) // Remove categorias sem ID
+  .map((categoria) => (
+    <SelectItem
+      key={categoria.id}
+      value={categoria.id}
+      className="toolbar__select-item"
+    >
+      {categoria.nome}
+    </SelectItem>
+))
+
+          )}
+        </SelectContent>
+      </Select>
+
+      {/* Filtro de Subcategorias */}
+      <Select onValueChange={onSubcategoryChange}>
+        <SelectTrigger className="toolbar__select">
+          <SelectValue placeholder="Subcategorias" />
+        </SelectTrigger>
+        <SelectContent className="white hover:white">
+          <SelectItem value="all" className="toolbar__select-item">
+            Todas as subcategorias
+          </SelectItem>
+          {isLoadingSubcategorias ? (
+            <SelectItem value="loading" disabled>
+              Carregando subcategorias...
+            </SelectItem>
+          ) : (
+            subcategoriasLista.map((subcategoria, index) => (
               <SelectItem
-                key={categoria.id}
-                value={categoria.id || "unknown"} 
+                key={subcategoria.id ?? `subcategoria-${index}`}
+                value={subcategoria.id ?? `subcategoria-${index}`}
                 className="toolbar__select-item"
               >
-                {categoria.nome}
+                {subcategoria.nome}
               </SelectItem>
             ))
+            
+
           )}
         </SelectContent>
       </Select>

@@ -193,8 +193,12 @@ const Landing = () => {
       </div>
 
       <div className="landing__courses">
-  {cursos &&
-    cursos.slice(0, 4).map((curso, index) => (
+      {cursos &&
+  cursos
+    .filter((curso) => curso.estado === "Publicado") // 👈 só cursos publicados
+    .slice(0, 4)
+    .map((curso, index) => (
+
       <motion.div
         key={curso.cursoid}
         initial={{ y: 50, opacity: 0 }}

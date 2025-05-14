@@ -150,6 +150,15 @@ export const atualizarCurso = async (req, res) => {
             res.status(403).json({ message: "Não autorizado." });
             return;
         }
+        // ✅ Processa imagem recebida via upload (multer)
+        if (req.file) {
+            const buffer = req.file.buffer;
+            const base64Image = buffer.toString("base64");
+            const mimeType = req.file.mimetype;
+            const dataUrl = `data:${mimeType};base64,${base64Image}`;
+            updateData.imagem = dataUrl;
+            console.log("🖼️ Nova imagem recebida e processada.");
+        }
         await curso.update({
             ...updateData,
             atualizadoem: new Date(),
@@ -160,13 +169,11 @@ export const atualizarCurso = async (req, res) => {
                 ? JSON.parse(updateData.secoes)
                 : updateData.secoes;
             console.log("🔄 Seções recebidas:", secoesRecebidas);
-            // Remove capítulos e seções anteriores
             await Capitulo.destroy({
                 where: { secaoid: secoesRecebidas.map((s) => s.secaoid) },
             });
             await Secao.destroy({ where: { cursoid } });
             console.log("🗑️ Seções e capítulos antigos apagados.");
-            // Recria novas seções e capítulos
             for (const secao of secoesRecebidas) {
                 const novaSecao = await Secao.create({
                     secaoid: secao.secaoid || uuidv4(),

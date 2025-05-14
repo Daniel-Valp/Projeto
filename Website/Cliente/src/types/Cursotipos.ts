@@ -1,5 +1,8 @@
-import { cursoFormSchema } from "../lib/schemasajudas";
+import { CursoFormData, cursoFormSchema } from "../lib/schemasajudas";
 import { Secao } from "./Secçõestipo";
+
+export type { CursoFormData }; // 🔁 reexportação correta
+
 
 export interface Curso {
   categoria_id: string;
@@ -44,4 +47,6 @@ export interface CursoSelecionado {
   handleEnrollNow: (cursoid: string) => void;
 }
 
+
+export { cursoFormSchema };
 

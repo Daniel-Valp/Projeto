@@ -17,10 +17,17 @@ export const criarCursoFormData = (
   formData.append("horas", data.cursohoras);
   formData.append("estado", data.cursoestado ? "Publicado" : "Rascunho");
 
+  // Adicionar imagem, se existir
+  if (data.cursoimagem instanceof File) {
+    formData.append("imagem", data.cursoimagem);
+  }
+
   formData.append("secoes", JSON.stringify(secoes));
 
   return formData;
 };
+
+
 
 export const fazerUploadVideos = async (
   secoesLocais: Secao[],

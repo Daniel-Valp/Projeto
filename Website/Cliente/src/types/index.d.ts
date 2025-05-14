@@ -169,7 +169,9 @@ declare global {
   interface ToolbarProps {
     onSearch: (search: string) => void;
     onCategoryChange: (category: string) => void;
+    onSubcategoryChange: (subcategory: string) => void;  // Adicionando a função para o filtro de subcategoria
   }
+  
 
   interface ChapterModalProps {
     isOpen: boolean;

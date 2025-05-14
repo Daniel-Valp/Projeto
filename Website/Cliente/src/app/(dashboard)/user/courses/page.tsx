@@ -65,10 +65,12 @@ const CursosUsuario = () => {
   return (
     <div className="user-courses">
       <Header title="Meus Cursos" subtitle="Veja os cursos em que está inscrito" />
-      <Toolbar
-        onSearch={setSearchTerm}
-        onCategoryChange={setSelectedCategory}
-      />
+      <Toolbar 
+  onSearch={setSearchTerm} 
+  onCategoryChange={setSelectedCategory} 
+  onSubcategoryChange={setSelectedCategory} 
+/>
+
       <div className="user-courses__grid">
         {/* Nenhum curso listado porque os dados foram desabilitados */}
         <div className="text-center text-muted col-span-full">

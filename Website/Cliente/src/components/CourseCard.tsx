@@ -19,14 +19,22 @@ const CourseCard = ({ course, onGoToCourse }: CourseCardProps) => {
   return (
     <Card className="course-card group" onClick={() => onGoToCourse(course)}>
       <CardHeader className="course-card__header">
-        <Image
-          src={course.imagem || "/placeholder.png"}
-          alt={course.titulo}
-          width={400}
-          height={350}
-          className="course-card__image"
-          priority
-        />
+      <Image
+  src={
+    course.imagem
+      ? course.imagem.startsWith("http")
+        ? course.imagem
+        : `http://localhost:5000/uploads/${course.imagem}`
+      : "/placeholder.png"
+  }
+  alt={course.titulo}
+  width={400}
+  height={350}
+  className="course-card__image object-cover rounded-md"
+  priority
+  unoptimized
+/>
+
       </CardHeader>
       <CardContent className="course-card__content">
         <CardTitle className="course-card__title">
