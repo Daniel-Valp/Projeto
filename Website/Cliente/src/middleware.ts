@@ -4,36 +4,37 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 
 const isStudentRoute = createRouteMatcher(["/user/(.*)"]);
 const isTeacherRoute = createRouteMatcher(["/teacher/(.*)"]);
+const isAdminRoute = createRouteMatcher(["/admin/(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
-
-  if (!userId) return; // Se não estiver logado, Clerk redireciona automaticamente
+  if (!userId) return;
 
   const client = clerkClient();
   const user = await (await client).users.getUser(userId);
   const userRole =
-    (user.publicMetadata?.userType as "student" | "teacher") || "student";
+    (user.publicMetadata?.userType as "student" | "teacher" | "admin") || "student";
 
-  console.log(
-    "Middleware - userId:",
-    userId,
-    "userRole:",
-    userRole,
-    "Path:",
-    req.nextUrl.pathname
-  );
+  console.log("Middleware - userId:", userId, "userRole:", userRole, "Path:", req.nextUrl.pathname);
 
-  // Evita redirecionamento se o usuário já está na rota correta
-  if (isStudentRoute(req) && userRole !== "student" && req.nextUrl.pathname !== "/teacher/cursos") {
-    return NextResponse.redirect(new URL("/teacher/cursos", req.url));
+  // 🔁 Redireciona admin → teacher
+  if (isAdminRoute(req) && userRole !== "admin") {
+    const newPath = req.nextUrl.pathname.replace(/^\/admin/, "/teacher");
+    return NextResponse.redirect(new URL(newPath, req.url));
   }
+  
 
-  if (isTeacherRoute(req) && userRole !== "teacher" && req.nextUrl.pathname !== "/user/cursos") {
+  // ⚠️ Bloqueia student de acessar teacher
+  if (isTeacherRoute(req) && userRole !== "teacher" && userRole !== "admin") {
     return NextResponse.redirect(new URL("/user/cursos", req.url));
   }
 
-  return NextResponse.next(); // Continua a request normalmente
+  // ⚠️ Bloqueia teacher de acessar student
+  if (isStudentRoute(req) && userRole !== "student" && userRole !== "admin") {
+    return NextResponse.redirect(new URL("/teacher/cursos", req.url));
+  }
+
+  return NextResponse.next();
 });
 
 export const config = {

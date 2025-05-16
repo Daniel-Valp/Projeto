@@ -20,6 +20,8 @@ import {
   PanelLeft,
   Settings,
   User,
+  ChartArea,
+  UserCog,
 } from "lucide-react";
 import Loading from "./Loading";
 import Image from "next/image";
@@ -50,14 +52,35 @@ const AppSidebar = ({ className }: { className?: string }) => {
       { icon: User, label: "Perfil", href: "/teacher/profile" },
       { icon: Settings, label: "Definições", href: "/teacher/settings" },
     ],
+    admin: [
+      { icon: BookOpen, label: "Cursos", href: "/teacher/cursos" },
+      { icon: Briefcase, label: "Quizzes", href: "/teacher/quizzes" },
+      { icon: Camera, label: "Videos", href: "/teacher/videos" },
+      { icon: BookOpen, label: "Manuais", href: "/teacher/manuais" },
+      { icon: User, label: "Perfil", href: "/teacher/profile" },
+      { icon: Settings, label: "Definições", href: "/teacher/settings" },
+      { icon: ChartArea, label: "Gráficos", href: "/admin/graph" },
+      { icon: UserCog, label: "Utilizadores", href: "/admin/users" },
+
+    ],
+    
   };
 
   if (!isLoaded) return <Loading />;
   if (!user) return <div>User not found</div>;
 
   const userType =
-    (user.publicMetadata.userType as "student" | "teacher") || "student";
-  const currentNavLinks = navLinks[userType];
+  (user.publicMetadata.userType as "student" | "teacher" | "admin") || "student";
+
+  console.log("userType =>", userType);
+
+
+
+  const currentNavLinks = navLinks[userType] || [];
+
+  console.log("currentNavLinks", currentNavLinks);
+
+
 
   return (
     <Sidebar

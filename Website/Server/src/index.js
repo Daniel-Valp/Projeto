@@ -1,10 +1,11 @@
 import express from "express";
 import cors from "cors";
-import CursoRoutes from "./Routes/CursoRoutes.js";  // 👈 Certifique-se de adicionar ".js"
-import { clerkMiddleware, createClerkClient, requireAuth } from "@clerk/express";
-import userClerkRoutes from "./Routes/userClerkRoutes.js"
+import CursoRoutes from "./Routes/CursoRoutes.js";
+import userClerkRoutes from "./Routes/userClerkRoutes.js";
 import userCourseProgressRoutes from "./Routes/usercourseprogress.js";
+import graphRoutes from "./dist/Routes/graphroutes.js";
 
+import { clerkMiddleware, createClerkClient, requireAuth } from "@clerk/express";
 
 const app = express();
 app.use(express.json());
@@ -13,19 +14,18 @@ app.use(clerkMiddleware());
 
 export const clerkClient = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY
-})
+});
 
 // Rota inicial
 app.get("/", (req, res) => {
   res.send("Servidor rodando!");
 });
 
-// Ativar rotas de cursos
+// Rotas
 app.use("/cursos", CursoRoutes);
 app.use("/users/clerk", requireAuth(), userClerkRoutes);
-
-
 app.use("/api/progresso", userCourseProgressRoutes);
+app.use("/api", graphRoutes);
 
 
 // Iniciar servidor
