@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
-import CursoRoutes from "./Routes/CursoRoutes.js";
-import userClerkRoutes from "./Routes/userClerkRoutes.js";
-import userCourseProgressRoutes from "./Routes/usercourseprogress.js";
-import graphRoutes from "./dist/Routes/graphroutes.js";
+import CursoRoutes from "./Routes/CursoRoutes"; 
+import userClerkRoutes from "./Routes/userClerkRoutes";
+import userCourseProgressRoutes from "./Routes/usercourseprogress";
+import graphRoutes from "./Routes/graphroutes"; // ✅ CERTO
 
 import { clerkMiddleware, createClerkClient, requireAuth } from "@clerk/express";
 

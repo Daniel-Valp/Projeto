@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { clerkClient } from "../index.js";
+import { clerkClient } from "../index";
 
 export const updateUser = async (
   req: Request,

@@ -1,6 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
-import sequelize from "../db.js";
-import { Curso } from "./cursomodels.js"; // Importa o modelo do curso
+import sequelize from "../db";
+import { Curso } from "./cursomodels"; // Importa o modelo do curso
 
 // 📌 Interface para o ProgressoCapitulo
 interface ProgressoCapituloAttributes {

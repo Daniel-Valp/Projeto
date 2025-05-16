@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Curso, Secao, Capitulo, Categoria, Subcategoria } from "../models/cursomodels.js"; // Importação nomeada
+import { Curso, Secao, Capitulo, Categoria, Subcategoria } from "../models/cursomodels"; // Importação nomeada
 import { v4 as uuidv4 } from "uuid"
 import { getAuth } from "@clerk/express";
 

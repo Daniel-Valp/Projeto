@@ -1,43 +1,60 @@
-import { Request, Response } from "express";
-import sequelize from "../db.js"; // ajuste o caminho conforme seu projeto
+import { RequestHandler } from "express";
+import sequelize from "../db";
 
-export const getCourseStats = async (req: Request, res: Response) => {
+export const getCourseStats: RequestHandler = async (req, res) => {
   try {
-    const [totalCursos, _metadata] = await sequelize.query(`
-      SELECT COUNT(*) as total FROM courses
+    const [totalCursos] = await sequelize.query(`
+      SELECT COUNT(*) as total FROM curso
     `) as [{ total: string }[], unknown];
 
-    const [porCategoria, _metadata1] = await sequelize.query(`
-      SELECT categoria_id, COUNT(*) as total
-      FROM courses
-      GROUP BY categoria_id
-    `) as [{ categoria_id: string; total: string }[], unknown];
+    const [porCategoria] = await sequelize.query(`
+        SELECT c.nome, COUNT(*) as total
+        FROM curso cu
+        JOIN categorias c ON cu.categoria_id = c.id
+        GROUP BY c.nome
+      `) as [{ nome: string; total: string }[], unknown];
+      
 
-    const [porNivel, _metadata2] = await sequelize.query(`
+    const [porNivel] = await sequelize.query(`
       SELECT nivel, COUNT(*) as total
-      FROM courses
+      FROM curso
       GROUP BY nivel
     `) as [{ nivel: string; total: string }[], unknown];
+
+    const [porSubcategoria] = await sequelize.query(`
+        SELECT s.nome, COUNT(*) as total
+        FROM curso cu
+        JOIN subcategoria s ON cu.subcategoriaid = s.subcategoriaid
+        GROUP BY s.nome
+      `) as [{ nome: string; total: string }[], unknown];
+      
+      const subcategoriasFormatadas = porSubcategoria.map(s => ({
+        nome: s.nome,
+        total: parseInt(s.total),
+      }));
+      
 
     const total = parseInt(totalCursos[0]?.total || "0");
 
     const categoriasFormatadas = porCategoria.map(c => ({
-      categoria_id: c.categoria_id,
-      total: parseInt(c.total),
-    }));
+        nome: c.nome,
+        total: parseInt(c.total),
+      }));
+      
 
     const niveisFormatados = porNivel.map(n => ({
       nivel: n.nivel,
       total: parseInt(n.total),
     }));
 
-    return res.json({
+    res.json({
       totalCursos: total,
       cursosPorCategoria: categoriasFormatadas,
       cursosPorNivel: niveisFormatados,
+      cursosPorSubcategoria: subcategoriasFormatadas, // 👈 novo campo!
     });
   } catch (error) {
     console.error("Erro ao buscar estatísticas dos cursos:", error);
-    return res.status(500).json({ error: "Erro ao buscar dados" });
+    res.status(500).json({ error: "Erro ao buscar dados" });
   }
 };

@@ -11,7 +11,7 @@ import {
   listarSubcategorias,
   listarCategorias,
   enlistarUsuario
-} from "../Controllers/ControllerCurso.js";
+} from "../Controllers/ControllerCurso";
 import { requireAuth } from "@clerk/express";
 
 const router = express.Router();

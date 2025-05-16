@@ -4,9 +4,9 @@ import {
   ProgressoCursoUsuario,
   ProgressoSecao,
   ProgressoCapitulo,
-} from "../models/userprogress.js";
-import { Curso } from "../models/cursomodels.js"; // já definido por ti
-import { calculateOverallProgress, mergeSections } from "../utils/utils.js";
+} from "../models/userprogress";
+import { Curso } from "../models/cursomodels"; // já definido por ti
+import { calculateOverallProgress, mergeSections } from "../utils/utils";
 
 export const getUserEnrolledCourses = async (
   req: Request,

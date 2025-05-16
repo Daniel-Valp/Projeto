@@ -3,7 +3,7 @@ import {
   getUserCourseProgress,
   getUserEnrolledCourses,
   updateUserCourseProgress,
-} from "../Controllers/userCourseProgresscontroler.js"; // ← garante que tens ".js" no final se usares ES Modules
+} from "../Controllers/userCourseProgresscontroler"; // ← garante que tens ".js" no final se usares ES Modules
 
 const router = express.Router();
 
