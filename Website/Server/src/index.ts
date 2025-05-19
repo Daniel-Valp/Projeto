@@ -6,6 +6,7 @@ import userCourseProgressRoutes from "./Routes/usercourseprogress";
 import graphRoutes from "./Routes/graphroutes"; // ✅ CERTO
 
 import { clerkMiddleware, createClerkClient, requireAuth } from "@clerk/express";
+import utilizadoresrota from "./Routes/utilizadoresrota";
 
 const app = express();
 app.use(express.json());
@@ -26,7 +27,7 @@ app.use("/cursos", CursoRoutes);
 app.use("/users/clerk", requireAuth(), userClerkRoutes);
 app.use("/api/progresso", userCourseProgressRoutes);
 app.use("/api", graphRoutes);
-
+app.use("/api/users", utilizadoresrota);
 
 // Iniciar servidor
 const PORT = process.env.PORT || 5000;
