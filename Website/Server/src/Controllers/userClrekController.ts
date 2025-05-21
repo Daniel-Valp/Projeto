@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { clerkClient } from "../index";
+import { clerkClient } from "../utils/clerk"; // ajusta o caminho conforme a estrutura
 
 export const updateUser = async (
   req: Request,

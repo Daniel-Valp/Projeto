@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from 'sonner';
+
 
 type Role = "student" | "teacher" | "admin";
 
@@ -30,24 +32,34 @@ export default function UserAdminPage() {
 };
 
 
-  const updateRole = async (userId: string, role: Role) => {
-    try {
-      console.log(`🔧 Atualizando papel de ${userId} para ${role}`);
-      setLoading(true);
-      const res = await fetch("/api/admin/update-role", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, role }),
-      });
-      console.log("🧾 Resposta da atualização:", await res.json());
 
-      await fetchUsers();
-    } catch (error) {
-      console.error("❌ Erro ao atualizar papel do usuário:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+const updateRole = async (userId: string, role: Role) => {
+  const confirmar = window.confirm("Tem a certeza que deseja alterar o estatuto deste utilizador?");
+  if (!confirmar) return;
+
+  try {
+    console.log(`🔧 Atualizando papel de ${userId} para ${role}`);
+    setLoading(true);
+
+    const res = await fetch("http://localhost:5000/api/usersupdate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, role }),
+    });
+
+    const data = await res.json();
+    console.log("🧾 Resposta da atualização:", data);
+
+    toast.success("Utilizador atualizado com sucesso.");
+    await fetchUsers();
+  } catch (error) {
+    console.error("❌ Erro ao atualizar papel do usuário:", error);
+    toast.error("❌ Erro ao atualizar o utilizador.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const roleLabel: Record<Role, string> = {
     student: "Aluno",
@@ -66,7 +78,7 @@ export default function UserAdminPage() {
 
   return (
     <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-white">
-      <h1 className="text-2xl font-bold mb-6">Gerenciar Usuários</h1>
+      <h1 className="text-2xl font-bold mb-6">Gerenciar utilizadores</h1>
 
       <table className="w-full table-auto border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
         <thead className="bg-gray-100 dark:bg-gray-800 text-left">

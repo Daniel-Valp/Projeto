@@ -7,15 +7,13 @@ import graphRoutes from "./Routes/graphroutes"; // ✅ CERTO
 
 import { clerkMiddleware, createClerkClient, requireAuth } from "@clerk/express";
 import utilizadoresrota from "./Routes/utilizadoresrota";
+import { clerkClient } from "./utils/clerk";
+
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(clerkMiddleware());
-
-export const clerkClient = createClerkClient({
-  secretKey: process.env.CLERK_SECRET_KEY
-});
 
 // Rota inicial
 app.get("/", (req, res) => {
@@ -28,6 +26,18 @@ app.use("/users/clerk", requireAuth(), userClerkRoutes);
 app.use("/api/progresso", userCourseProgressRoutes);
 app.use("/api", graphRoutes);
 app.use("/api/users", utilizadoresrota);
+
+
+import updateUserRouter from "./Routes/utilizadoresupdaterota";
+app.use("/api/usersupdate", updateUserRouter); // ✅
+
+
+import videoRoutes from "./Routes/videoRoutes";
+app.use("/api/videos", videoRoutes);
+
+
+
+
 
 // Iniciar servidor
 const PORT = process.env.PORT || 5000;
