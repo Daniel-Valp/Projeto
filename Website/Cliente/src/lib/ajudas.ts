@@ -27,6 +27,13 @@ export const criarCursoFormData = (
   return formData;
 };
 
+// lib/utils.ts
+export function getYouTubeThumbnail(url: string): string {
+  const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
+  return match?.[1]
+    ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`
+    : "/placeholder.png";
+}
 
 
 export const fazerUploadVideos = async (

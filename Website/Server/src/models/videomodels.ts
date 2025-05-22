@@ -1,16 +1,36 @@
 import sequelize from "../db"; // ou onde definiste a instância do Sequelize
 
 export async function getAllVideos() {
-  const [rows] = await sequelize.query("SELECT * FROM videos ORDER BY created_at DESC");
+  const [rows] = await sequelize.query(`
+    SELECT 
+      v.*,
+      c.nome AS categoria_nome,
+      s.nome AS subcategoria_nome
+    FROM videos v
+    LEFT JOIN categorias c ON v.category_id = c.id
+    LEFT JOIN subcategoria s ON v.subcategory_id = s.subcategoriaid
+    ORDER BY v.created_at DESC
+  `);
   return rows;
 }
 
+
 export async function getVideoById(id: number) {
-  const [rows]: any = await sequelize.query("SELECT * FROM videos WHERE id = ?", {
+  const [rows]: any = await sequelize.query(`
+    SELECT 
+      v.*,
+      c.nome AS categoria_nome,
+      s.nome AS subcategoria_nome
+    FROM videos v
+    LEFT JOIN categorias c ON v.category_id = c.id
+    LEFT JOIN subcategoria s ON v.subcategory_id = s.subcategoriaid
+    WHERE v.id = ?
+  `, {
     replacements: [id],
   });
   return rows[0];
 }
+
 
 export async function createVideo(video: {
   title: string;

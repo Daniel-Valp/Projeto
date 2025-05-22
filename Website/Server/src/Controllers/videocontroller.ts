@@ -26,3 +26,4 @@ export async function deleteVideo(req: Request, res: Response) {
   await videoModel.deleteVideo(Number(req.params.id));
   res.status(204).send();
 }
+
