@@ -8,5 +8,6 @@ router.get("/:id", videoController.getVideo);
 router.post("/", videoController.createVideo);
 router.put("/:id", videoController.updateVideo);
 router.delete("/:id", videoController.deleteVideo);
+router.patch("/videos/:id/status", videoController.updateVideoStatus);
 
 export default router;

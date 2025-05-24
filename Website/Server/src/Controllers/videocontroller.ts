@@ -27,3 +27,17 @@ export async function deleteVideo(req: Request, res: Response) {
   res.status(204).send();
 }
 
+export async function updateVideoStatus(req: Request, res: Response) {
+  const videoId = Number(req.params.id);
+  const { status } = req.body;
+
+  if (!["rascunho", "publicado"].includes(status)) {
+    return res.status(400).json({ message: "Status inválido" });
+  }
+
+  const updated = await videoModel.updateVideo(videoId, { status });
+  res.json(updated);
+}
+
+
+

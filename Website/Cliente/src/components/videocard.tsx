@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import { Eye, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface Video {
   id: number;
@@ -22,7 +23,6 @@ interface Video {
 
 interface VideoCardProps {
   video: Video;
-  onGoToVideo?: (video: Video) => void;
   onEdit?: (video: Video) => void;
   onDelete?: (video: Video) => void;
 }
@@ -36,32 +36,57 @@ const getYoutubeThumbnail = (url: string) => {
     : "/placeholder.png";
 };
 
-const VideoCard = ({ video, onGoToVideo, onEdit, onDelete }: VideoCardProps) => {
+const VideoCard = ({ video, onEdit, onDelete }: VideoCardProps) => {
+  const router = useRouter();
+
+  const handleViewVideo = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    router.push(`/videos/${video.id}`);
+  };
+
   return (
     <Card
-      className="group cursor-pointer hover:shadow-xl transition-all duration-200 border rounded-2xl overflow-hidden"
-      onClick={() => onGoToVideo?.(video)}
-    >
-      <CardHeader className="p-0">
-        <Image
-          src={getYoutubeThumbnail(video.url)}
-          alt={video.title}
-          width={400}
-          height={225}
-          className="w-full h-48 object-cover"
-          unoptimized
-        />
-      </CardHeader>
+  className="group flex flex-col h-full cursor-pointer hover:shadow-xl transition-all duration-200 border rounded-2xl overflow-hidden"
+  onClick={handleViewVideo}
+>
 
-      <CardContent className="p-4 space-y-3">
+      <CardHeader className="p-0">
+  <div className="w-full h-44 overflow-hidden">
+    <Image
+      src={getYoutubeThumbnail(video.url)}
+      alt={video.title}
+      width={400}
+      height={225}
+      className="w-full h-full object-cover"
+      unoptimized
+    />
+  </div>
+</CardHeader>
+
+
+      <CardContent className="p-4 space-y-3 flex-grow">
+
         <CardTitle className="text-xl font-bold text-gray-800 dark:text-gray-100">
           {video.title}
         </CardTitle>
 
-        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 gap-2">
-          <Eye className="w-4 h-4" />
-          <span>Status: {video.status}</span>
-        </div>
+<div className="flex items-center text-sm gap-2">
+  <Eye className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+  <span className="text-gray-700 dark:text-gray-300">Status:</span>
+  <span
+    className={`px-2 py-0.5 text-xs font-medium rounded-full
+      ${
+        video.status === "publicado"
+          ? "bg-green-100 text-green-800 dark:bg-green-800/20 dark:text-green-300"
+          : "bg-red-100 text-red-800 dark:bg-red-800/20 dark:text-red-300"
+      }
+    `}
+  >
+    {video.status === "publicado" ? "Publicado" : "Rascunho"}
+  </span>
+</div>
+
+
 
         <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 gap-2">
           <Users className="w-4 h-4" />
@@ -80,10 +105,7 @@ const VideoCard = ({ video, onGoToVideo, onEdit, onDelete }: VideoCardProps) => 
 
       <CardFooter className="p-4 flex items-center justify-between">
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onGoToVideo?.(video);
-          }}
+          onClick={handleViewVideo}
           className="text-sm text-blue-600 hover:underline"
         >
           Ver vídeo →
