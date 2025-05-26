@@ -49,28 +49,36 @@ export default function VideoFormPage() {
   });
 
   useEffect(() => {
-    async function fetchVideo() {
-      if (!videoId) return;
+  async function fetchVideo() {
+    const idNumber = Number(videoId);
 
-      try {
-        const res = await fetch(`http://localhost:5000/api/videos/${videoId}`);
-        if (!res.ok) throw new Error("Erro ao buscar vídeo");
-
-        const video = await res.json();
-        setStatus(video.status === "publicado" ? "publicado" : "rascunho");
-
-        methods.reset({
-          title: video.title || "",
-          url: video.url || "",
-          categoria: video.category_id || "",
-          subcategoria: String(video.subcategory_id) || "",
-        });
-      } catch (error) {
-        toast.error("Não foi possível carregar os dados do vídeo para edição.");
-      }
+    if (!videoId || isNaN(idNumber)) {
+      // Evita fazer requisição inválida
+      console.warn("ID de vídeo inválido:", videoId);
+      return;
     }
-    fetchVideo();
-  }, [videoId, methods]);
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/videos/${idNumber}`);
+      if (!res.ok) throw new Error("Erro ao buscar vídeo");
+
+      const video = await res.json();
+      setStatus(video.status === "publicado" ? "publicado" : "rascunho");
+
+      methods.reset({
+        title: video.title || "",
+        url: video.url || "",
+        categoria: video.category_id || "",
+        subcategoria: String(video.subcategory_id) || "",
+      });
+    } catch (error) {
+      toast.error("Não foi possível carregar os dados do vídeo para edição.");
+    }
+  }
+
+  fetchVideo();
+}, [videoId, methods]); 
+
 
   const onSubmit: SubmitHandler<VideoFormData> = async (data) => {
     try {
@@ -104,27 +112,34 @@ export default function VideoFormPage() {
   };
 
   const handleToggleStatus = async () => {
-    const novoStatus = status === "rascunho" ? "publicado" : "rascunho";
-    setStatus(novoStatus);
+  const idNumber = Number(videoId);
 
-    try {
-      const res = await fetch(`http://localhost:5000/api/videos/${videoId}`, {
-  method: "PUT",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ status: novoStatus }),
-});
+  if (!videoId || isNaN(idNumber)) {
+    toast.error("ID de vídeo inválido. Não é possível alterar o status.");
+    return;
+  }
 
+  const novoStatus = status === "rascunho" ? "publicado" : "rascunho";
+  setStatus(novoStatus);
 
-      if (!res.ok) throw new Error("Erro ao atualizar status do vídeo");
+  try {
+    const res = await fetch(`http://localhost:5000/api/videos/${idNumber}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: novoStatus }),
+    });
 
-      toast.success(`Status alterado para ${novoStatus}`);
-    } catch (error) {
-      toast.error("Falha ao atualizar status");
-      console.error(error);
-      // Reverter o toggle se der erro
-      setStatus(status);
-    }
-  };
+    if (!res.ok) throw new Error("Erro ao atualizar status do vídeo");
+
+    toast.success(`Status alterado para ${novoStatus}`);
+  } catch (error) {
+    toast.error("Falha ao atualizar status");
+    console.error(error);
+    // Reverter o toggle se der erro
+    setStatus(status);
+  }
+};
+
 
   if (loadingCategorias || loadingSubcategorias) {
     return <p>A carregar categorias...</p>;
