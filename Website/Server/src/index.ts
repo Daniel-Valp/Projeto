@@ -9,6 +9,8 @@ import { clerkMiddleware, createClerkClient, requireAuth } from "@clerk/express"
 import utilizadoresrota from "./Routes/utilizadoresrota";
 import { clerkClient } from "./utils/clerk";
 
+import path from "path";
+
 
 const app = express();
 app.use(express.json());
@@ -36,7 +38,23 @@ import videoRoutes from "./Routes/videoRoutes";
 app.use("/api/videos", videoRoutes);
 
 
+import manualRoutes from "./Routes/manualrota";
+app.use("/api", manualRoutes);
 
+
+
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "..", "uploads"), {
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith(".pdf")) {
+        res.setHeader("Content-Type", "application/pdf");
+
+        // ⚠️ Não força o "inline" nem "attachment" aqui — deixa o navegador decidir baseado no `download` ou não no front.
+      }
+    },
+  })
+);
 
 
 // Iniciar servidor
