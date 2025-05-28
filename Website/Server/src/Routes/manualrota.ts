@@ -28,7 +28,14 @@ const upload = multer({ storage });
 
 
 // ✅ Usa o middleware do multer para processar 'arquivo_pdf'
-router.post("/manuais", upload.single("arquivo_pdf"), createManual);
+router.post(
+  "/manuais",
+  upload.fields([
+    { name: "arquivo_pdf", maxCount: 1 },
+    { name: "imagem_capa_url", maxCount: 1 },
+  ]),
+  createManual
+);
 
 router.get("/manuais", getManuais);
 router.get("/manuais/:id", getManualById);
