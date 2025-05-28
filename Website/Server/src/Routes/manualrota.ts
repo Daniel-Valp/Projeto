@@ -1,6 +1,8 @@
 // src/Routes/manualroutes.ts
 import express from "express";
 import multer from "multer";
+import path from "path";
+
 import {
   createManual,
   getManuais,
@@ -11,8 +13,7 @@ import {
 
 const router = express.Router();
 
-import path from "path";
-
+// 📁 Configuração do Multer para salvar arquivos em disco
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -26,8 +27,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-
-// ✅ Usa o middleware do multer para processar 'arquivo_pdf'
+// ✅ Criar manual com upload de PDF e imagem
 router.post(
   "/manuais",
   upload.fields([
@@ -37,9 +37,23 @@ router.post(
   createManual
 );
 
+// ✅ Obter todos os manuais
 router.get("/manuais", getManuais);
+
+// ✅ Obter manual específico
 router.get("/manuais/:id", getManualById);
-router.put("/manuais/:id", updateManual);
+
+// ✅ Atualizar manual com suporte a upload de arquivos (imagem/pdf)
+router.put(
+  "/manuais/:id",
+  upload.fields([
+    { name: "arquivo_pdf", maxCount: 1 },
+    { name: "imagem_capa_url", maxCount: 1 },
+  ]),
+  updateManual
+);
+
+// ✅ Remover manual
 router.delete("/manuais/:id", deleteManual);
 
 export default router;

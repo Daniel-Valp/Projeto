@@ -81,14 +81,22 @@ export const updateManual = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
 
-    // Se houver upload de PDF, use o novo caminho
-    const finalPdfUrl = req.file
-      ? `/uploads/pdfs/${req.file.filename}`
+    const files = req.files as {
+      [fieldname: string]: Express.Multer.File[];
+    };
+
+    const finalPdfUrl = files?.["arquivo_pdf"]?.[0]
+      ? `/uploads/${files["arquivo_pdf"][0].filename}`
       : req.body.arquivo_pdf_url;
+
+    const finalImagemUrl = files?.["imagem_capa_url"]?.[0]
+      ? `/uploads/${files["imagem_capa_url"][0].filename}`
+      : req.body.imagem_capa_url;
 
     const manualData = {
       ...req.body,
       arquivo_pdf_url: finalPdfUrl,
+      imagem_capa_url: finalImagemUrl,
     };
 
     const [updated] = await Manual.update(manualData, {
@@ -106,6 +114,7 @@ export const updateManual = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Erro ao atualizar manual" });
   }
 };
+
 
 import fs from 'fs';
 import path from 'path';
