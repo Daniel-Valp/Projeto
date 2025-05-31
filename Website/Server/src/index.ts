@@ -11,6 +11,10 @@ import { clerkClient } from "./utils/clerk";
 
 import path from "path";
 
+import { setupAssociations } from "./models/associations";
+
+setupAssociations();
+
 
 const app = express();
 app.use(express.json());
@@ -55,6 +59,17 @@ app.use(
     },
   })
 );
+
+
+import quizRoutes from "./Routes/quizzroutes";
+import quizPerguntasRoutes from "./Routes/quizzperguntasroutes";
+import quizRespostasRoutes from "./Routes/quizzrespostasroutes";
+
+app.use("/api/quizzes", quizRoutes);
+app.use("/api/quizzes", quizPerguntasRoutes);
+app.use("/api/quizzes", quizRespostasRoutes);
+
+
 
 
 // Iniciar servidor
