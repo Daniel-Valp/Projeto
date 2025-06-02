@@ -65,9 +65,12 @@ import quizRoutes from "./Routes/quizzroutes";
 import quizPerguntasRoutes from "./Routes/quizzperguntasroutes";
 import quizRespostasRoutes from "./Routes/quizzrespostasroutes";
 
-app.use("/api/quizzes", quizRoutes);
-app.use("/api/quizzes", quizPerguntasRoutes);
-app.use("/api/quizzes", quizRespostasRoutes);
+// Coloca respostas e perguntas ANTES das rotas genéricas
+app.use("/api/quizzes", quizRespostasRoutes); // <- primeiro
+app.use("/api/quizzes", quizPerguntasRoutes); // <- depois
+
+app.use("/api/quizzes", quizRoutes); // <- por último
+
 
 
 

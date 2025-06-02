@@ -57,7 +57,7 @@ QuizResposta.init(
   {
     sequelize,
     modelName: "QuizResposta",
-    tableName: "quiz_respostas",
+    tableName: "quiz_respostas_aluno",
     timestamps: false,
   }
 );

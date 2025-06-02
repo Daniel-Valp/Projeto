@@ -23,10 +23,7 @@ type QuizPerguntaCreation = Optional<
   "id" | "criado_em" | "editado_em"
 >;
 
-class QuizPergunta
-  extends Model<QuizPerguntaAttributes, QuizPerguntaCreation>
-  implements QuizPerguntaAttributes
-{
+class QuizPergunta extends Model<QuizPerguntaAttributes, QuizPerguntaCreation> implements QuizPerguntaAttributes {
   public id!: string;
   public quiz_id!: string;
   public pergunta!: string;
@@ -38,6 +35,7 @@ class QuizPergunta
   public criado_em?: Date;
   public editado_em?: Date;
 }
+
 
 QuizPergunta.init(
   {
@@ -93,8 +91,5 @@ QuizPergunta.init(
     timestamps: false,
   }
 );
-
-
-
 
 export default QuizPergunta;

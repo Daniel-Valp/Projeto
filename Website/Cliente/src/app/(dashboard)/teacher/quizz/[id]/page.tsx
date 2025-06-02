@@ -4,6 +4,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
+import { useUser } from "@clerk/nextjs";
+
 
 interface Pergunta {
   id: string;
@@ -25,6 +27,8 @@ interface Quiz {
 export default function QuizPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { user } = useUser();
+
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [respostas, setRespostas] = useState<Record<string, string>>({});
@@ -75,19 +79,49 @@ export default function QuizPage() {
     }));
   };
 
-  const verificarResultado = () => {
-    if (!quiz) return;
+  const verificarResultado = async () => {
+      console.log("📌 verificarResultado chamada"); // <--- AQUI
 
-    let corretas = 0;
+  if (!quiz) return;
 
-    quiz.perguntas.forEach((p) => {
-      if (respostas[p.id] === p.resposta_correta) {
-        corretas++;
-      }
-    });
+  let corretas = 0;
 
-    setResultado(corretas);
-  };
+  quiz.perguntas.forEach((p) => {
+    if (respostas[p.id] === p.resposta_correta) {
+      corretas++;
+    }
+  });
+
+  setResultado(corretas);
+
+  // Enviar resultado para o backend
+  try {
+  const response = await fetch(`http://localhost:5000/api/quizzes/${quiz.id}/respostas`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      aluno_email: user?.emailAddresses?.[0]?.emailAddress || "aluno@anonimo.com",
+      respostas,
+      resultado: {
+        acertos: corretas,
+        total: quiz.perguntas.length,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erro ao enviar resultado. Status: ${response.status}`);
+  }
+
+  console.log("📨 Resultado enviado com sucesso");
+} catch (error) {
+  console.error("❌ Erro ao enviar resultado:", error);
+}
+
+};
+
 
   if (loading) return <p className="p-6 text-white">Carregando quiz...</p>;
   if (!quiz) return <p className="p-6 text-white">Quiz não encontrado.</p>;
@@ -180,10 +214,11 @@ export default function QuizPage() {
       </div>
 
       {!quizConcluido && (
-        <Button onClick={verificarResultado} className="mt-6">
-          Ver Resultado
-        </Button>
-      )}
+  <Button onClick={verificarResultado} className="mt-6">
+    Ver Resultado
+  </Button>
+)}
+
 
       {quizConcluido && (
         <p className="text-lg font-bold mt-4">
