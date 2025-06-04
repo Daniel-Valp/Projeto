@@ -22,12 +22,12 @@ const NonDashboardNavbar = () => {
           <div className="flex items-center gap-4">
             <div className="relative group">
               <Link
-                href="/search"
+                href="/"
                 className="nondashboard-navbar__search-input"
                 scroll={false}
               >
-                <span className="hidden sm:inline">Procurar Material</span>
-                <span className="sm:hidden">Procurar</span>
+                <span className="hidden sm:inline">Pagina principal</span>
+                <span className="sm:hidden">Principal</span>
               </Link>
               <BookOpen
                 className="nondashboard-navbar__search-icon"

@@ -123,7 +123,7 @@ export default function QuizzesPage() {
   };
 
   const handleCreateQuiz = () => {
-    router.push("/teacher/quizzes/create");
+    router.push("/teacher/quizz/create");
   };
 
   return (
@@ -153,7 +153,7 @@ export default function QuizzesPage() {
             <QuizCard
               key={quiz.id}
               quiz={quiz}
-              onEdit={() => router.push(`/teacher/quizzes/create?id=${quiz.id}`)}
+              onEdit={() => router.push(`/teacher/quizz/create?id=${quiz.id}`)}
               onDelete={handleDelete}
             />
           ))

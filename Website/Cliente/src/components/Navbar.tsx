@@ -23,13 +23,13 @@ const Navbar = ({ isCoursePage }: { isCoursePage: boolean}) => {
           <div className="flex items-center gap-4">
             <div className="relative group">
               <Link
-                href="/search" 
+                href="/" 
                 className={cn("dashboard-navbar__search-input", {
                     "!bg-customgreys-secondarybg": isCoursePage
                 })}
               >
-                <span className="hidden sm:inline">Procurar Material</span>
-                <span className="sm:hidden">Procurar</span>
+                <span className="hidden sm:inline">Pagina principal</span>
+                <span className="sm:hidden">Principal</span>
               </Link>
               <BookOpen
                 className="dashboard-navbar__search-icon"

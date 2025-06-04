@@ -13,6 +13,13 @@ import Coursecardsearch from "@/components/Coursecardsearch";
 import { useUser } from "@clerk/nextjs";
 import AppSidebar from "@/components/AppSidebar";
 
+import ManualCard from "@/components/manualcard"; // 👈 o nome que você usou
+import QuizCard from "@/components/quizzcardshow";
+import VideoCardshow from "@/components/videocardshow";
+import QuizCardshow from "@/components/quizzcardshow";
+import ManualCardshow from "@/components/manualcardshow";
+
+
 const LoadingSkeleton = () => {
   return (
     <div className="landing-skeleton">
@@ -68,6 +75,13 @@ const sections = [
     buttonText: "Ver vídeos",
     images: ["/images/video1.jpg", "/images/video2.jpg", "/images/video3.jpg"],
   },
+  {
+    id: "Quizzes",
+    title: "Quizzes",
+    description: "Descobre vídeos educativos para aprofundar os teus conhecimentos.",
+    buttonText: "Ver vídeos",
+    images: ["/images/video1.jpg", "/images/video2.jpg", "/images/video3.jpg"],
+  },
 ];
 
 const Landing = () => {
@@ -76,7 +90,11 @@ const Landing = () => {
   const [currentSection, setCurrentSection] = useState(0);
   const currentImage = useCarousel({ totalImages: 3 });
   const { data: cursos, isLoading, isError } = useGetCursosQuery({});
-  const [curso, setCurso] = useState<any>(null); // Pode ser ajustado para o tipo correto do seu curso
+
+  const [curso, setCurso] = useState<any>(null); 
+  const [manuais, setManuais] = useState<any[]>([]);
+  const [quizzes, setQuizzes] = useState<any[]>([]);
+  const [videos, setVideos] = useState<any[]>([]);
 
 
   const router = useRouter();
@@ -98,6 +116,49 @@ const Landing = () => {
 
     fetchCurso();
   }, []); // Executar apenas uma vez quando o componente for montado
+
+  useEffect(() => {
+  const fetchManuais = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/manuais");
+      const data = await response.json();
+      setManuais(data);
+    } catch (error) {
+      console.error("Erro ao buscar manuais:", error);
+    }
+  };
+
+  fetchManuais();
+}, []);
+
+useEffect(() => {
+  const fetchQuizzes = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/quizzes");
+      const data = await response.json();
+      setQuizzes(data);
+    } catch (error) {
+      console.error("Erro ao buscar quizzes:", error);
+    }
+  };
+
+  fetchQuizzes();
+}, []);
+
+useEffect(() => {
+  const fetchVideos = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/videos");
+      const data = await response.json();
+      setVideos(data);
+    } catch (error) {
+      console.error("Erro ao buscar vídeos:", error);
+    }
+  };
+
+  fetchVideos();
+}, []);
+
   
   // Alternar entre cursos e manuais
   const handleNext = () => setCurrentSection((prev) => (prev + 1) % sections.length);
@@ -180,7 +241,16 @@ const Landing = () => {
 
       {/* Seção de cursos e botão de criação de teste */}
       <div className="landing__featured">
-        <h2 className="landing__featured-title">Ultimos cursos</h2>
+        <div className="flex items-center justify-between landing__featured-title-wrapper">
+  <h2 className="landing__featured-title">Últimos cursos</h2>
+  <a
+    href="http://localhost:3000/teacher/cursos"
+    className="text-sm font-medium text-blue-600 hover:underline hover:text-blue-800 transition"
+  >
+    Ver todos os cursos →
+  </a>
+</div>
+
         <p className="landing__featured-description">
           Desde iniciante a profissional aqui podes encontrar todo o tipo de cursos que te ajudam no dia a dia na vida da informatica.
         </p>
@@ -212,6 +282,133 @@ const Landing = () => {
       </motion.div>
     ))}
 </div>
+
+<div className="landing__featured">
+  <div className="flex items-center justify-between landing__featured-title-wrapper">
+  <h2 className="landing__featured-title">Últimos manuais</h2>
+  <a
+    href="http://localhost:3000/teacher/manuais"
+    className="text-sm font-medium text-white-600 hover:underline hover:text-blue-800 transition"
+  >
+    Ver todos os manuais →
+  </a>
+</div>
+
+  
+  <p className="landing__featured-description">
+    Aprofunda os teus conhecimentos com manuais detalhados e acessíveis. Aprende ao teu ritmo com conteúdos completos.
+  </p>
+
+  <div className="landing__tags">
+    {["Leitura técnica", "Passo a passo", "PDF", "Autodidacta", "Teoria"].map((tag, index) => (
+      <span key={index} className="landing__tag">{tag}</span>
+    ))}
+  </div>
+</div>
+
+<div className="landing__courses">
+  {manuais &&
+    manuais
+      .filter((manual) => manual.status === "publicado")
+      .slice(0, 4)
+      .map((manual, index) => (
+        <motion.div
+          key={manual.id}
+          initial={{ y: 50, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: index * 0.2 }}
+          viewport={{ amount: 0.4 }}
+          className="cursor-pointer"
+        >
+          <ManualCardshow manual={manual} />
+        </motion.div>
+      ))}
+</div>
+
+<div className="landing__featured">
+  <div className="flex items-center justify-between landing__featured-title-wrapper">
+  <h2 className="landing__featured-title">Últimos vídeos</h2>
+  <a
+    href="http://localhost:3000/teacher/videos"
+    className="text-sm font-medium text-blue-600 hover:underline hover:text-blue-800 transition"
+  >
+    Ver todos os vídeos →
+  </a>
+</div>
+
+  <p className="landing__featured-description">
+    Aprende de forma visual e prática com vídeos educativos. Ideal para reforçar a teoria com exemplos reais.
+  </p>
+
+  <div className="landing__tags">
+    {["Visual", "Tutorial", "Explicativo", "Prático", "Dinâmico"].map((tag, index) => (
+      <span key={index} className="landing__tag">{tag}</span>
+    ))}
+  </div>
+</div>
+
+<div className="landing__courses">
+  {videos &&
+    videos
+      .filter((video) => video.status === "publicado")
+      .slice(0, 4)
+      .map((video) => (
+        <motion.div
+          key={video.id}
+          initial={{ y: 50, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ amount: 0.4 }}
+          className="cursor-pointer"
+        >
+          <VideoCardshow video={video} />
+        </motion.div>
+      ))}
+</div>
+
+<div className="landing__featured">
+ <div className="flex items-center justify-between landing__featured-title-wrapper">
+  <h2 className="landing__featured-title">Últimos quizzes</h2>
+  <a
+    href="http://localhost:3000/teacher/quizz"
+    className="text-sm font-medium text-blue-600 hover:underline hover:text-blue-800 transition"
+  >
+    Ver todos os quizzes →
+  </a>
+</div>
+
+  <p className="landing__featured-description">
+    Testa os teus conhecimentos com quizzes interativos. Descobre o que já sabes e onde podes melhorar.
+  </p>
+
+  <div className="landing__tags">
+    {["Avaliação", "Rápido", "Interativo", "Desafios", "Conhecimento"].map((tag, index) => (
+      <span key={index} className="landing__tag">{tag}</span>
+    ))}
+  </div>
+</div>
+
+<div className="landing__courses">
+  {quizzes &&
+    quizzes
+      .filter((quiz) => quiz.status === "publicado")
+      .slice(0, 4)
+      .map((quiz) => (
+        <motion.div
+          key={quiz.id}
+          initial={{ y: 50, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ amount: 0.4 }}
+          className="cursor-pointer"
+        >
+          <QuizCardshow quiz={quiz} />
+        </motion.div>
+      ))}
+</div>
+
+
+
 
     </motion.div>
   );

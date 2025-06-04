@@ -38,7 +38,7 @@ const AppSidebar = ({ className }: { className?: string }) => {
   const navLinks = {
     student: [
       { icon: BookOpen, label: "Cursos", href: "/user/courses" },
-      { icon: Briefcase, label: "Quizzes", href: "/user/quizzes" },
+      { icon: Briefcase, label: "Quizzes", href: "/user/quizz" },
       { icon: Camera, label: "Videos", href: "/user/videos" },
       { icon: BookOpen, label: "Manuais", href: "/user/manuais" },
       { icon: User, label: "Perfil", href: "/user/profile" },
@@ -46,7 +46,7 @@ const AppSidebar = ({ className }: { className?: string }) => {
     ],
     teacher: [
       { icon: BookOpen, label: "Cursos", href: "/teacher/cursos" },
-      { icon: Briefcase, label: "Quizzes", href: "/teacher/quizzes" },
+      { icon: Briefcase, label: "Quizzes", href: "/teacher/quizz" },
       { icon: Camera, label: "Videos", href: "/teacher/videos" },
       { icon: BookOpen, label: "Manuais", href: "/teacher/manuais" },
       { icon: User, label: "Perfil", href: "/teacher/profile" },
@@ -54,7 +54,7 @@ const AppSidebar = ({ className }: { className?: string }) => {
     ],
     admin: [
       { icon: BookOpen, label: "Cursos", href: "/teacher/cursos" },
-      { icon: Briefcase, label: "Quizzes", href: "/teacher/quizzes" },
+      { icon: Briefcase, label: "Quizzes", href: "/teacher/quizz" },
       { icon: Camera, label: "Videos", href: "/teacher/videos" },
       { icon: BookOpen, label: "Manuais", href: "/teacher/manuais" },
       { icon: User, label: "Perfil", href: "/teacher/profile" },

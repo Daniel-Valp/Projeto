@@ -1,9 +1,9 @@
 import express from "express";
-import { getCourseStats } from "../Controllers/graphcontroller";
+import { getContentStats  } from "../Controllers/graphcontroller";
 
 const router = express.Router();
 
-router.get("/graph", getCourseStats);
+router.get("/graph", getContentStats );
 console.log("Graph routes carregadas");
 
 

@@ -10,20 +10,45 @@ import {
   PieChart,
   Pie,
   Cell,
-  LabelList,
 } from "recharts";
-import { useEffect, useState } from "react";
-import { BarChart3, PieChart as PieIcon, LayoutDashboard } from "lucide-react";
+import { JSX, useEffect, useState } from "react";
+import {
+  BookOpenCheck,
+  BarChart3,
+  PieChart as PieIcon,
+  GraduationCap,
+  ListOrdered,
+  FileCheck2,
+  Video,
+  FileText,
+} from "lucide-react";
 
-type CourseStats = {
+type ContentStats = {
   type: string;
   count: number;
 };
 
-export default function AdminGraphPage() {
-  const [data, setData] = useState<CourseStats[]>([]);
-  const [totalCourses, setTotalCourses] = useState(0);
-  const [subcatData, setSubcatData] = useState<CourseStats[]>([]);
+export default function AdminContentGraph() {
+  const [typeData, setTypeData] = useState<ContentStats[]>([]);
+  const [contentCategoryData, setContentCategoryData] = useState<ContentStats[]>([]);
+
+  // Cursos
+  const [courseCategoryData, setCourseCategoryData] = useState<ContentStats[]>([]);
+  const [courseSubCategoryData, setCourseSubCategoryData] = useState<ContentStats[]>([]);
+
+  // Quizzes
+  const [quizCategoryData, setQuizCategoryData] = useState<ContentStats[]>([]);
+  const [quizSubCategoryData, setQuizSubCategoryData] = useState<ContentStats[]>([]);
+
+  // Vídeos
+  const [videoCategoryData, setVideoCategoryData] = useState<ContentStats[]>([]);
+  const [videoSubCategoryData, setVideoSubCategoryData] = useState<ContentStats[]>([]);
+
+  // Manuais
+  const [manualCategoryData, setManualCategoryData] = useState<ContentStats[]>([]);
+  const [manualSubCategoryData, setManualSubCategoryData] = useState<ContentStats[]>([]);
+
+  const [totalContent, setTotalContent] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,34 +57,55 @@ export default function AdminGraphPage() {
         console.error("Erro ao buscar dados:", res.statusText);
         return;
       }
+
       const json = await res.json();
 
-      const stats = json.cursosPorCategoria.map((c: { nome: string; total: number }) => ({
-        type: c.nome,
-        count: c.total,
-      }));
+      // Pizza tipo
+      setTypeData(json.conteudosPorTipo || []);
 
-      const subcatStats = json.cursosPorSubcategoria.map((s: { nome: string; total: number }) => ({
-        type: s.nome,
-        count: s.total,
-      }));
+      // Conteúdos por categoria (geral)
+      setContentCategoryData(json.conteudosPorCategoria || []);
 
-      setData(stats);
-      setTotalCourses(json.totalCursos);
-      setSubcatData(subcatStats);
+
+      setTotalContent(json.totalConteudos || 0);
+
+      // Cursos categoria e subcategoria
+      setCourseCategoryData(json.cursosPorCategoria || []);
+
+      setCourseSubCategoryData(json.cursosPorSubcategoria || []);
+
+
+      // Para quizzes, videos e manuais, supondo que o backend retorne assim:
+      // ex: json.quizzesPorCategoria, json.quizzesPorSubcategoria etc.
+
+      setQuizCategoryData(json.quizzesPorCategoria || []);
+
+
+      setQuizSubCategoryData(json.quizzesPorSubcategoria || []);
+
+
+      setVideoCategoryData(json.videosPorCategoria || []);
+
+
+      setVideoSubCategoryData(json.videosPorSubcategoria || []);
+
+
+      setManualCategoryData(json.manuaisPorCategoria || []);
+
+
+      setManualSubCategoryData(json.manuaisPorSubcategoria || []);
+
     };
+
     fetchData();
   }, []);
 
   const COLORS = ["#6366F1", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#3B82F6", "#14B8A6"];
 
-  const renderCustomizedLabel = ({
-    percent,
-  }: {
-    percent: number;
-  }) => `${(percent * 100).toFixed(0)}%`;
+  const renderCustomizedLabel = ({ percent }: { percent: number }) =>
+    `${(percent * 100).toFixed(0)}%`;
 
-  const LegendList = ({ entries }: { entries: CourseStats[] }) => (
+  const LegendList = ({ entries }: { entries: ContentStats[] }) => (
     <ul className="mt-4 space-y-1 text-sm">
       {entries.map((entry, index) => (
         <li key={index} className="flex items-center gap-2">
@@ -73,82 +119,149 @@ export default function AdminGraphPage() {
     </ul>
   );
 
+  const CustomBar = ({
+    title,
+    data,
+    icon,
+  }: {
+    title: string;
+    data: ContentStats[];
+    icon: JSX.Element;
+  }) => (
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-lg transition hover:shadow-xl">
+      <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+        {icon} {title}
+      </h3>
+      {data.length === 0 ? (
+        <p className="text-gray-500 dark:text-gray-400">Sem dados disponíveis</p>
+      ) : (
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={data}>
+            <XAxis dataKey="type" tick={{ fill: "#9CA3AF", fontSize: 11 }} />
+            <YAxis allowDecimals={false} tick={{ fill: "#9CA3AF", fontSize: 11 }} />
+            <Tooltip />
+            <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+  {data.map((_, index) => (
+    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+  ))}
+</Bar>
+
+          </BarChart>
+        </ResponsiveContainer>
+      )}
+    </div>
+  );
+
   return (
     <div className="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
-      <h1 className="text-3xl font-extrabold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-        <LayoutDashboard className="w-6 h-6 text-indigo-500" /> Estatísticas dos Cursos
+      <h1 className="text-3xl font-extrabold text-gray-800 dark:text-white mb-6 flex items-center gap-2">
+        <BookOpenCheck className="w-6 h-6 text-indigo-500" />
+        Estatísticas de Conteúdos
       </h1>
 
-      <p className="text-lg text-gray-700 dark:text-gray-300 mb-8">
-        Total de cursos: <strong className="text-indigo-600 dark:text-indigo-400">{totalCourses}</strong>
+      <p className="text-lg text-gray-700 dark:text-gray-300 mb-10">
+        Total de conteúdos:{" "}
+        <strong className="text-indigo-600 dark:text-indigo-400">{totalContent}</strong>
       </p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Gráfico de Barras */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg transition hover:shadow-xl">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-indigo-500" /> Cursos por Categoria (Barras)
-          </h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={data}>
-              <XAxis dataKey="type" tick={{ fill: "#9CA3AF", fontSize: 12 }} />
-              <YAxis allowDecimals={false} tick={{ fill: "#9CA3AF", fontSize: 12 }} />
-              <Tooltip />
-              <Bar dataKey="count" fill="#6366F1" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+      {/* Distribuição por tipo - pizza */}
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mb-12 transition hover:shadow-xl max-w-md mx-auto">
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+          <PieIcon className="w-5 h-5 text-indigo-500" /> Distribuição por Tipo
+        </h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie
+              data={typeData}
+              dataKey="count"
+              nameKey="type"
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              label={renderCustomizedLabel}
+            >
+              {typeData.map((entry, index) => (
+                <Cell key={`cell-type-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
+        <LegendList entries={typeData} />
+      </div>
 
-        {/* Gráfico de Pizza por Categoria */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg transition hover:shadow-xl">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-            <PieIcon className="w-5 h-5 text-indigo-500" /> Cursos por Categoria (Pizza)
-          </h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={data}
-                dataKey="count"
-                nameKey="type"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                label={renderCustomizedLabel}
-              >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-          <LegendList entries={data} />
-        </div>
+      {/* Conteúdos por categoria */}
+      <CustomBar
+        title="Conteúdos por Categoria"
+        data={contentCategoryData}
+        icon={<BarChart3 className="w-5 h-5 text-indigo-500" />}
+      />
 
-        {/* Gráfico de Pizza por Subcategoria */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg transition hover:shadow-xl col-span-1 lg:col-span-2">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-            <PieIcon className="w-5 h-5 text-indigo-500" /> Cursos por Subcategoria (Pizza)
-          </h2>
-          <ResponsiveContainer width="100%" height={350}>
-            <PieChart>
-              <Pie
-                data={subcatData}
-                dataKey="count"
-                nameKey="type"
-                cx="50%"
-                cy="50%"
-                outerRadius={120}
-                label={renderCustomizedLabel}
-              >
-                {subcatData.map((entry, index) => (
-                  <Cell key={`cell-subcat-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-          <LegendList entries={subcatData} />
+      {/* Linha Cursos */}
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Cursos</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <CustomBar
+            title="Cursos por Categoria"
+            data={courseCategoryData}
+            icon={<GraduationCap className="w-5 h-5 text-green-600" />}
+          />
+          <CustomBar
+            title="Cursos por Subcategoria"
+            data={courseSubCategoryData}
+            icon={<ListOrdered className="w-5 h-5 text-green-400" />}
+          />
+        </div>
+      </div>
+
+      {/* Linha Quizzes */}
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Quizzes</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <CustomBar
+            title="Quizzes por Categoria"
+            data={quizCategoryData}
+            icon={<FileCheck2 className="w-5 h-5 text-orange-500" />}
+          />
+          <CustomBar
+            title="Quizzes por Subcategoria"
+            data={quizSubCategoryData}
+            icon={<ListOrdered className="w-5 h-5 text-orange-400" />}
+          />
+        </div>
+      </div>
+
+      {/* Linha Vídeos */}
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Vídeos</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <CustomBar
+            title="Vídeos por Categoria"
+            data={videoCategoryData}
+            icon={<Video className="w-5 h-5 text-blue-600" />}
+          />
+          <CustomBar
+            title="Vídeos por Subcategoria"
+            data={videoSubCategoryData}
+            icon={<ListOrdered className="w-5 h-5 text-blue-400" />}
+          />
+        </div>
+      </div>
+
+      {/* Linha Manuais */}
+      <div className="mt-12 mb-12">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Manuais</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <CustomBar
+            title="Manuais por Categoria"
+            data={manualCategoryData}
+            icon={<FileText className="w-5 h-5 text-purple-600" />}
+          />
+          <CustomBar
+            title="Manuais por Subcategoria"
+            data={manualSubCategoryData}
+            icon={<ListOrdered className="w-5 h-5 text-purple-400" />}
+          />
         </div>
       </div>
     </div>
