@@ -5,6 +5,7 @@ import { dark } from "@clerk/themes";
 import { Bell, BookOpen } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import Image from "next/image";
 
 
 const NonDashboardNavbar = () => {
@@ -16,10 +17,21 @@ const NonDashboardNavbar = () => {
     <nav className="nondashboard-navbar">
       <div className="nondashboard-navbar__container">
         <div className="nondashboard-navbar__search">
-          <Link href="/" className="nondashboard-navbar__brand" scroll={false}>
-            Hospital
-          </Link>
-          <div className="flex items-center gap-4">
+          
+<Link href="/" scroll={false}>
+  <span className="flex items-center gap-4">
+    <Image
+      src="/images/Logonegativo_13.png"
+      alt="Logo"
+      width={180}
+      height={25}
+    />
+<span style={{ color: "#F3F7F5", fontSize: "15px", fontWeight: "700", lineHeight: "1.2" }}>
+  UDL Formações
+</span>
+  </span>
+</Link>
+          {/* <div className="flex items-center gap-4">
             <div className="relative group">
               <Link
                 href="/"
@@ -34,7 +46,7 @@ const NonDashboardNavbar = () => {
                 size={18}
               />
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="nondashboard-navbar__actions">
           <button className="nondashboard-navbar__notification-button">

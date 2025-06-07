@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/card";
 import { FileText, Eye, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+
 
 interface Manual {
   id: number;
@@ -44,29 +46,31 @@ const ManualCardshow = ({ manual, onEdit, onDelete }: ManualCardProps) => {
   };
 
   return (
-    <Card
-      className="group flex flex-col h-full cursor-pointer hover:shadow-xl transition-all duration-200 border rounded-2xl overflow-hidden"
-      onClick={handleViewManual}
-    >
-      <CardHeader className="p-0">
-        <div className="w-full h-44 overflow-hidden bg-gray-200">
-          <img
-            src={getImageUrl()}
-            alt={manual.titulo}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      </CardHeader>
+
+    
+<Card
+  className="group flex flex-col h-full cursor-pointer border-2 border-[#25272e] rounded-2xl overflow-hidden bg-[#25272e] text-white shadow-lg shadow-[rgba(34,34,34,0.37)] transition-all duration-200 hover:bg-[#32353E]"
+  onClick={handleViewManual}
+>
+  <CardHeader className="p-0 border-none overflow-hidden">
+    <div className="w-full h-44 overflow-hidden bg-black">
+      <img
+        src={getImageUrl()}
+        alt={manual.titulo}
+        className="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
+      />
+    </div>
+  </CardHeader>
+
 
       <CardContent className="p-4 space-y-3 flex-grow">
-        <CardTitle className="text-xl font-bold text-gray-800 dark:text-gray-100">
+        <CardTitle className="text-xl font-bold" style={{ color: "#F3F7F5" }}>
           {manual.titulo}
         </CardTitle>
-
         {/* Status */}
-        <div className="flex items-center text-sm gap-2">
-          <Eye className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-          <span className="text-gray-700 dark:text-gray-300">Status:</span>
+        {/* <div className="flex items-center text-sm gap-2">
+          <Eye className="w-4 h-4" style={{ color: "#F3F7F5" }} />
+          <span style={{ color: "#F3F7F5" }}>Status:</span>
           <span
             className={`px-2 py-0.5 text-xs font-medium rounded-full ${
               manual.status === "publicado"
@@ -76,28 +80,28 @@ const ManualCardshow = ({ manual, onEdit, onDelete }: ManualCardProps) => {
           >
             {manual.status === "publicado" ? "Publicado" : "Rascunho"}
           </span>
-        </div>
-
-        {/* Inscritos */}
-        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 gap-2">
-          <Users className="w-4 h-4" />
-          <span>Inscritos: {manual.inscritos ?? 0}</span>
-        </div>
-<div className="text-sm text-gray-600 dark:text-gray-300">
+        </div> */}
+<div className="text-sm" style={{ color: "#F3F7F5" }}>
   {manual.descricao.length > 20
     ? `${manual.descricao.slice(0, 20)}...`
     : manual.descricao}
 </div>
+        {/* Inscritos */}
+        <div className="flex items-center text-sm gap-2" style={{ color: "#4FA6A8" }}>
+          <Users className="w-4 h-4" />
+          <span>Inscritos: {manual.inscritos ?? 0}</span>
+        </div>
+
 
         {/* Categoria e Subcategoria */}
-        <div className="flex flex-wrap gap-2 pt-2">
+        {/* <div className="flex flex-wrap gap-2 pt-2">
           <span className="bg-blue-100 dark:bg-blue-800/30 text-blue-800 dark:text-blue-300 px-3 py-1 text-xs rounded-full">
             Categoria: {manual.categoria_nome || "Sem categoria"}
           </span>
           <span className="bg-green-100 dark:bg-green-800/30 text-green-800 dark:text-green-300 px-3 py-1 text-xs rounded-full">
             Subcategoria: {manual.subcategoria_nome || "Sem subcategoria"}
           </span>
-        </div>
+        </div> */}
       </CardContent>
 
       

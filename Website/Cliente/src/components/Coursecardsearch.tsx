@@ -31,11 +31,12 @@ const CourseCardSearch: React.FC<ProcurarPeloCurso> = ({ curso, isSelected, onCl
 
   return (
     <div
-      onClick={onClick}
-      className={`course-card-search group ${
-        isSelected ? "course-card-search--selected" : "course-card-search--unselected"
-      }`}
-    >
+  onClick={onClick}
+  className={`course-card-search group transition-all duration-200 hover:bg-[#32353E] hover:shadow-xl cursor-pointer ${
+    isSelected ? "course-card-search--selected" : "course-card-search--unselected"
+  }`}
+>
+
       {/* 📌 Imagem do curso */}
       <div className="course-card-search__image-container">
         <Image

@@ -252,7 +252,12 @@ input[type="color"] {
 
 .landing__hero {
   @apply flex justify-between items-center mt-12 h-[500px] rounded-lg bg-customgreys-secondarybg;
+  box-shadow: 0 20px 40px #00000066; /* sombra azul-esverdeada translúcida */
 }
+
+
+
+
 
 .landing__hero-content {
   @apply basis-1/2 px-16 mx-auto;
@@ -260,19 +265,25 @@ input[type="color"] {
 
 .landing__title {
   @apply text-4xl font-bold mb-4;
+  color: #F3F7F5;
 }
 
+
 .landing__description {
-  @apply text-lg text-gray-400 mb-8;
+  @apply text-lg mb-8;
+  color: #F3F7F5;
 }
 
 .landing__cta {
   @apply w-fit;
+  color: #F3F7F5;
+  
 }
 
 .landing__cta-button {
-  @apply bg-primary-700 hover:bg-primary-600 px-4 py-2 rounded-md;
+  @apply px-4 py-2 rounded-md bg-[#025E69] hover:bg-[#4FA6A8];
 }
+
 
 .landing__hero-images {
   @apply basis-1/2 h-full relative overflow-hidden rounded-r-lg;
@@ -300,6 +311,7 @@ input[type="color"] {
 
 .landing__tags {
   @apply flex flex-wrap gap-4 mb-8;
+  color: #F3F7F5;
 }
 
 .landing__tag {
@@ -1027,8 +1039,18 @@ input[type="color"] {
 
 /* Course Card Search */
 .course-card-search {
-  @apply bg-customgreys-secondarybg overflow-hidden rounded-lg hover:bg-white-100/10 transition duration-200 flex flex-col cursor-pointer border-2 h-full;
+  @apply bg-customgreys-secondarybg overflow-hidden rounded-lg transition duration-200 flex flex-col cursor-pointer border-2 h-full;
+
+  /* Sombra normal */
+  box-shadow: 0 1px 11px rgba(0, 0, 0, 0.345);
 }
+
+.course-card-search:hover {
+  /* Sombra no hover */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background-color: rgba(255, 255, 255, 0.05); /* equivalente ao hover:bg-white/10 */
+}
+
 
 .course-card-search--selected {
   @apply border-primary-600;
@@ -1178,6 +1200,11 @@ input[type="color"] {
   @apply w-full flex items-center justify-between mb-2;
 }
 
+.cl-userButtonOuterIdentifier {
+  color: #F3F7F5 !important; /* ou qualquer cor que você deseje */
+}
+
+
 .wizard-stepper__step {
   @apply flex flex-col items-center;
 }
@@ -1224,8 +1251,9 @@ input[type="color"] {
 
 /* NonDashboard Navbar */
 .nondashboard-navbar {
-  @apply w-full flex justify-center bg-customgreys-primarybg;
+  @apply w-full flex justify-center bg-customgreys-secondarybg;
 }
+
 
 .nondashboard-navbar__container {
   @apply flex justify-between items-center w-3/4 py-8;
@@ -1240,24 +1268,41 @@ input[type="color"] {
 }
 
 .nondashboard-navbar__search-input {
-  @apply bg-customgreys-secondarybg pl-10 sm:pl-14 pr-6 sm:pr-20 py-3 sm:py-4 rounded-xl text-customgreys-dirtyGrey hover:text-white-50 hover:bg-customgreys-darkerGrey transition-all duration-300 text-sm sm:text-base;
+  @apply pl-10 sm:pl-14 pr-6 sm:pr-20 py-3 sm:py-4 rounded-xl transition-all duration-300 text-sm sm:text-base;
+  background-color: #F3F7F5;
+  color: #371f1f;
+}
+
+.nondashboard-navbar__search-input:hover {
+  background-color: #D9E6E5 !important;
+  color: #371f1f !important;
 }
 
 .nondashboard-navbar__search-icon {
   @apply absolute left-3 sm:left-5 top-1/2 transform -translate-y-1/2 text-customgreys-dirtyGrey transition-all duration-300;
+  color: #371f1f;
 }
+
+.nondashboard-navbar__search-input:hover + .nondashboard-navbar__search-icon {
+  color: #371f1f !important;
+}
+
 
 .nondashboard-navbar__actions {
   @apply flex items-center gap-2 sm:gap-4;
 }
 
 .nondashboard-navbar__notification-button {
-  @apply relative w-7 h-7 sm:w-8 sm:h-8 bg-gray-800 rounded-full flex items-center justify-center;
+  background-color: #F3F7F5; /* branco puro */
+  @apply relative w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center;
 }
 
+
 .nondashboard-navbar__notification-indicator {
-  @apply absolute top-0 right-0 bg-blue-500 h-1.5 sm:h-2 w-1.5 sm:w-2 rounded-full;
+  @apply absolute top-0 right-0 h-1.5 sm:h-2 w-1.5 sm:w-2 rounded-full;
+  background-color: #025E69;
 }
+
 
 .nondashboard-navbar__notification-icon {
   @apply text-gray-400 w-4 h-4 sm:w-5 sm:h-5;
@@ -1361,19 +1406,28 @@ input[type="color"] {
 
 /* Course Card Search Additional Classes */
 .course-card-search__content {
-  @apply p-4 flex flex-col justify-between flex-grow;
+  @apply p-4 flex flex-col justify-between flex-grow transition-colors duration-200;
+}
+
+.group:hover .course-card-search__content {
+  background-color: #32353E;
 }
 
 .course-card-search__title {
   @apply font-semibold line-clamp-1;
+  color: #F3F7F5; /* Cor personalizada */
 }
+
 
 .course-card-search__description {
   @apply text-sm mt-1 line-clamp-2;
+  color: #F3F7F5; /* Cor personalizada */
+  
 }
 
 .course-card-search__teacher {
   @apply text-customgreys-dirtyGrey text-sm;
+    color: #4FA6A8; /* Cor personalizada */
 }
 
 .course-card-search__footer {
@@ -1382,10 +1436,16 @@ input[type="color"] {
 
 .course-card-search__price {
   @apply text-primary-500 font-semibold;
+  color: #F3F7F5; /* Cor personalizada */
+}
+
+.course-card-search__hours {
+    color: #F3F7F5; /* Cor personalizada */
 }
 
 .course-card-search__enrollment {
   @apply text-customgreys-dirtyGrey text-sm;
+    color: #4FA6A8; /* Cor personalizada */
 }
 
 /* Additional Navbar Classes */
@@ -1461,8 +1521,13 @@ input[type="color"] {
 
 /* NonDashboard Layout */
 .nondashboard-layout {
-  @apply flex flex-col min-h-screen w-full;
+  @apply flex flex-col min-h-screen w-full text-black;
+  background-color: #f3f7f5;
+  /* You can keep the --background variable for reference */
+  --background: 160 13% 96%; /* HSL for #f3f7f5 approx */
 }
+
+
 
 .nondashboard-layout__main {
   @apply flex flex-grow w-full h-full justify-center items-center;
