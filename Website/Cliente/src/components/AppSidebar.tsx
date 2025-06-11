@@ -84,97 +84,92 @@ const AppSidebar = ({ className }: { className?: string }) => {
 
   return (
     <Sidebar
-    collapsible="icon"
-    style={{ height: "100vh" }}
-    className={cn("bg-customgreys-primarybg border-none shadow-lg", className)}
-  >
-  
+  collapsible="icon"
+  style={{ height: "100vh" }}
+  className={cn("bg-[#1F2B2E] border-none shadow-lg", className)}
+>
+  <SidebarHeader>
+    <SidebarMenu className="app-sidebar__menu">
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          size="lg"
+          onClick={() => toggleSidebar()}
+          className="group hover:bg-[#f3f7f504]"
+        >
+          <div className="app-sidebar__logo-container group">
+            <div className="app-sidebar__logo-wrapper">
+              <Image
+                src="/images/logo.png"
+                alt="logo"
+                width={25}
+                height={20}
+                className="app-sidebar__logo"
+              />
+              <p className="app-sidebar__title text-[#F3F7F5]">Formações</p>
+            </div>
+            <PanelLeft className="app-sidebar__collapse-icon " />
+          </div>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  </SidebarHeader>
 
-      <SidebarHeader>
-        <SidebarMenu className="app-sidebar__menu">
-          <SidebarMenuItem>
+  <SidebarContent>
+    <SidebarMenu className="app-sidebar__nav-menu">
+      {currentNavLinks.map((link) => {
+        const isActive = pathname.startsWith(link.href);
+        return (
+          <SidebarMenuItem
+            key={link.href}
+            className={cn("app-sidebar__nav-item", isActive && "bg-[#4fa7a8c5]")}
+          >
             <SidebarMenuButton
+              asChild
               size="lg"
-              onClick={() => toggleSidebar()}
-              className="group hover:bg-customgreys-secondarybg"
+              className={cn("app-sidebar__nav-button")}
             >
-              <div className="app-sidebar__logo-container group">
-                <div className="app-sidebar__logo-wrapper">
-                  <Image
-                    src="/images/logo.png"
-                    alt="logo"
-                    width={25}
-                    height={20}
-                    className="app-sidebar__logo"
-                  />
-                  <p className="app-sidebar__title">Hospital</p>
-                </div>
-                <PanelLeft className="app-sidebar__collapse-icon" />
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarMenu className="app-sidebar__nav-menu">
-          {currentNavLinks.map((link) => {
-            const isActive = pathname.startsWith(link.href);
-            return (
-              <SidebarMenuItem
-                key={link.href}
-                className={cn(
-                  "app-sidebar__nav-item",
-                  isActive && "bg-gray-800"
-                )}
+              <Link
+                href={link.href}
+                className="app-sidebar__nav-link"
+                scroll={false}
               >
-                <SidebarMenuButton
-                  asChild
-                  size="lg"
+                <link.icon
+                  className={isActive ? "text-white" : "text-[#F3F7F5]"}
+                />
+                <span
                   className={cn(
-                    "app-sidebar__nav-button",
-                    !isActive && "text-customgreys-dirtyGrey"
+                    "app-sidebar__nav-text",
+                    isActive ? "text-white" : "text-[#F3F7F5]"
                   )}
                 >
-                  <Link
-                    href={link.href}
-                    className="app-sidebar__nav-link"
-                    scroll={false}
-                  >
-                    <link.icon
-                      className={isActive ? "text-white-50" : "text-gray-500"}
-                    />
-                    <span
-                      className={cn(
-                        "app-sidebar__nav-text",
-                        isActive ? "text-white-50" : "text-gray-500"
-                      )}
-                    >
-                      {link.label}
-                    </span>
-                  </Link>
-                </SidebarMenuButton>
-                {isActive && <div className="app-sidebar__active-indicator" />}
-              </SidebarMenuItem>
-            );
-          })}
-        </SidebarMenu>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <button
-                onClick={() => signOut()}
-                className="app-sidebar__signout"
-              >
-                <LogOut className="mr-2 h-6 w-6" />
-                <span>Sign out</span>
-              </button>
+                  {link.label}
+                </span>
+              </Link>
             </SidebarMenuButton>
+            {isActive && <div className="app-sidebar__active-indicator" />}
           </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
+        );
+      })}
+    </SidebarMenu>
+  </SidebarContent>
+
+  <SidebarFooter>
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild>
+          <button
+            onClick={() => signOut()}
+            className="app-sidebar__signout text-[#4FA6A8] hover:text-white"
+          >
+            <LogOut className="mr-2 h-6 w-6" />
+            <span>Sign out</span>
+          </button>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  </SidebarFooter>
+</Sidebar>
+
   );
 };
 

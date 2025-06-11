@@ -81,7 +81,7 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
 
           {/* 📌 Status do Curso com Ícone */}
           <p className="flex items-center text-sm mb-2">
-            <span className="mr-2">Status:</span>
+              <span className="mr-2" style={{ color: "#F3F7F5" }}>Status:</span>
             <span
               className={cn(
                 "font-semibold px-2 py-1 rounded flex items-center gap-1",
@@ -101,10 +101,11 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
 
           {/* 📌 Exibição da quantidade de seções */}
           {typeof curso.enlistados === "number" ? (
-  <p >
-    <span className="font-bold text-white-100">{curso.enlistados}</span>
-    {curso.enlistados === 1 ? " Aluno inscrito" : " Alunos inscritos"}
-  </p>
+  <p style={{ color: "#F3F7F5" }}>
+  <span className="font-bold">{curso.enlistados}</span>
+  {curso.enlistados === 1 ? " Aluno inscrito" : " Alunos inscritos"}
+</p>
+
 ) : (
   <p className="text-sm text-gray-500 italic">Nenhum aluno inscrito</p>
 )}
@@ -113,27 +114,52 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
 
         </div>
 
-        {/* 📌 Botões de Ações (Editar/Deletar) */}
-        <div className="w-full xl:flex space-y-2 xl:space-y-0 gap-2 mt-3">
-          {isOwner ? (
-            <>
-              <div>
-                <Button className="course-card-teacher__edit-button" onClick={() => onEdit(curso)}>
-                  <Pencil className="w-4 h-4 mr-2" />
-                  Editar
-                </Button>
-              </div>
-              <div>
-                <Button className="course-card-teacher__delete-button" onClick={() => onDelete(curso)}>
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Apagar
-                </Button>
-              </div>
-            </>
-          ) : (
-            <p className="text-sm text-gray-500 italic">Apenas visualização</p>
-          )}
-        </div>
+        {/* 📌 Botão de Visualizar Curso */}
+<button
+  onClick={(e) => {
+    e.stopPropagation();
+    // Navegação para o curso (ajuste a rota se necessário)
+    // Exemplo: `/teacher/cursos/${curso.id}`
+    // Substitua com seu router.push se usar Next.js routing
+    window.location.href = `/teacher/cursos/${curso.id}`;
+  }}
+  className="text-sm hover:underline"
+  style={{ color: "#4FA6A8" }}
+>
+  Ver curso →
+</button>
+
+{/* 📌 Botões de Ações (Editar/Deletar) */}
+{isOwner ? (
+  <div className="flex gap-4 mt-2">
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onEdit(curso);
+      }}
+      className="text-sm hover:underline"
+      style={{ color: "#c9871f" }}
+    >
+      Editar
+    </button>
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onDelete(curso);
+      }}
+      className="text-sm hover:underline"
+      style={{ color: "#C93A1F" }}
+    >
+      Apagar
+    </button>
+  </div>
+) : (
+  <p className="text-sm italic mt-2" style={{ color: "#F3F7F5" }}>
+    Apenas visualização
+  </p>
+)}
+
+
       </CardContent>
     </Card>
   );

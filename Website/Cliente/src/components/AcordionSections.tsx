@@ -18,13 +18,13 @@ const AccordionSections: React.FC<AccordionSecoes> = ({ sections }) => {
       {sections.map((section: Secao) => (
         <AccordionItem key={section.secaoid} value={String(section.secaoid)}>
           <AccordionTrigger>
-            <h5>{section.secaotitulo}</h5>
+            <h5 className="text-[#D9E6E5] font-semibold">{section.secaotitulo}</h5>
           </AccordionTrigger>
           <AccordionContent>
             {section.capitulos && section.capitulos.length > 0 ? (
               <ul>
                 {section.capitulos.map((chapter: Capitulo) => (
-                  <li key={chapter.capituloid} className="flex items-center">
+                  <li key={chapter.capituloid} className="flex items-center text-[#F3F7F5]">
                     <FileText className="mr-2 w-4 h-4" />
                     <span className="text-sm">{chapter.capitulotitulo}</span>
                   </li>

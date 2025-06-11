@@ -36,41 +36,47 @@ const QuizCard = ({ quiz, onEdit, onDelete }: QuizCardProps) => {
 
   return (
     <Card
-      className="group flex flex-col h-full cursor-pointer hover:shadow-xl transition-all duration-200 border rounded-2xl"
-      onClick={handleView}
-    >
+  className="group flex flex-col h-full cursor-pointer border rounded-2xl transition-all duration-200 shadow-lg bg-[#25272e]"
+  onClick={handleView}
+>
+
       <CardContent className="p-4 space-y-3 flex-grow">
-        <CardTitle className="text-xl font-bold text-gray-800 dark:text-gray-100">
-          {quiz.titulo}
-        </CardTitle>
+        <CardTitle
+  className="text-xl font-bold"
+  style={{ color: '#F3F7F5' }} // exemplo: #1A202C é um cinza escuro similar ao gray-800
+>
+  {quiz.titulo.length > 30 ? `${quiz.titulo.slice(0, 30)}...` : quiz.titulo}
+</CardTitle>
 
-        {/* Status */}
-        <div className="flex items-center text-sm gap-2">
-          <Eye className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-          <span className="text-gray-700 dark:text-gray-300">Status:</span>
-          <span
-            className={`px-2 py-0.5 text-xs font-medium rounded-full ${
-              quiz.status === "publicado"
-                ? "bg-green-100 text-green-800 dark:bg-green-800/20 dark:text-green-300"
-                : "bg-red-100 text-red-800 dark:bg-red-800/20 dark:text-red-300"
-            }`}
-          >
-            {quiz.status === "publicado" ? "Publicado" : "Rascunho"}
-          </span>
-        </div>
+{/* Status */}
+<div className="flex items-center text-sm gap-2">
+  <Eye className="w-4 h-4" style={{ color: '#4FA6A8' }} /> {/* gray-500 */}
+  <span style={{ color: '#F3F7F5' }}>Status:</span> {/* gray-700 */}
+  <span
+    className={`px-2 py-0.5 text-xs font-medium rounded-full`}
+    style={{
+      backgroundColor:
+        quiz.status === "publicado" ? '#DCFCE7' : '#FEE2E2', // bg-green-100 or bg-red-100
+      color: quiz.status === "publicado" ? '#166534' : '#991B1B', // text-green-800 or text-red-800
+    }}
+  >
+    {quiz.status === "publicado" ? "Publicado" : "Rascunho"}
+  </span>
+</div>
 
-        {/* Perguntas */}
-        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 gap-2">
-          <ListChecks className="w-4 h-4" />
-          <span>Quantidade de Perguntas: {quiz.perguntasCount ?? 0}</span>
-        </div>
+{/* Perguntas */}
+<div className="flex items-center text-sm gap-2" style={{ color: '#F3F7F5' }}>
+  <ListChecks className="w-4 h-4" />
+  <span>Quantidade de Perguntas: {quiz.perguntasCount ?? 0}</span>
+</div>
 
-        {/* Descrição */}
-        <div className="text-sm text-gray-600 dark:text-gray-300">
-          {quiz.descricao.length > 20
-            ? `${quiz.descricao.slice(0, 20)}...`
-            : quiz.descricao}
-        </div>
+{/* Descrição */}
+<div style={{ color: '#F3F7F5' }} className="text-sm">
+  {quiz.descricao.length > 20
+    ? `${quiz.descricao.slice(0, 40)}...`
+    : quiz.descricao}
+</div>
+
 
         {/* Categoria e Subcategoria */}
         <div className="flex flex-wrap gap-2 pt-2">
@@ -84,37 +90,41 @@ const QuizCard = ({ quiz, onEdit, onDelete }: QuizCardProps) => {
       </CardContent>
 
       <CardFooter className="p-4 flex items-center justify-between">
-        <button
-          onClick={handleView}
-          className="text-sm text-blue-600 hover:underline flex items-center gap-1"
-        >
-          <FileText className="w-4 h-4" />
-          Ver Quiz
-        </button>
+  <button
+    onClick={handleView}
+    className="text-sm hover:underline flex items-center gap-1"
+    style={{ color: "#4FA6A8" }} // text-blue-600
+  >
+    <FileText className="w-4 h-4" style={{ color: "#4FA6A8" }} />
+    Ver Quiz
+  </button>
 
-        {onEdit && onDelete && (
-          <div className="flex gap-4 ml-auto">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                router.push(`/teacher/quizz/create?id=${quiz.id}`);
-              }}
-              className="text-sm text-yellow-600 hover:underline"
-            >
-              Editar
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(quiz);
-              }}
-              className="text-sm text-red-600 hover:underline"
-            >
-              Apagar
-            </button>
-          </div>
-        )}
-      </CardFooter>
+  {onEdit && onDelete && (
+    <div className="flex gap-4 ml-auto">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          router.push(`/teacher/quizz/create?id=${quiz.id}`);
+        }}
+        className="text-sm hover:underline"
+        style={{ color: "#c9871f" }} // text-yellow-600
+      >
+        Editar
+      </button>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(quiz);
+        }}
+        className="text-sm hover:underline"
+        style={{ color: "#C93A1F" }} // text-red-600
+      >
+        Apagar
+      </button>
+    </div>
+  )}
+</CardFooter>
+
     </Card>
   );
 };

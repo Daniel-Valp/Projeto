@@ -47,87 +47,106 @@ const VideoCard = ({ video, onEdit, onDelete }: VideoCardProps) => {
 
   return (
     <Card
-      className="group flex flex-col h-full cursor-pointer hover:shadow-xl transition-all duration-200 border rounded-2xl overflow-hidden"
+  className="group flex flex-col h-full cursor-pointer border-2 border-[#25272e] rounded-2xl overflow-hidden bg-[#25272e] text-white shadow-lg transition-all duration-200 hover:bg-[#32353E]"
+  style={{ backgroundColor: "#25272e" }}
+  onClick={handleViewVideo}
+>
+  <CardHeader className="p-0 border-none overflow-hidden">
+      <div className="w-full h-44 overflow-hidden bg-black">
+        <Image
+          src={getYoutubeThumbnail(video.url)}
+          alt={video.title}
+          width={400}
+          height={225}
+          className="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
+          unoptimized
+        />
+      </div>
+    </CardHeader>
+
+  <CardContent className="p-4 space-y-3 flex-grow">
+    <CardTitle className="text-xl font-bold" style={{ color: "#F3F7F5" }}>
+      {video.title.length > 30 ? `${video.title.slice(0, 30)}...` : video.title}
+    </CardTitle>
+
+    {/* Status */}
+    <div className="flex items-center text-sm gap-2">
+      <Eye className="w-4 h-4" style={{ color: "#4FA6A8" }} />
+      <span style={{ color: "#F3F7F5" }}>Status:</span>
+      <span
+        className="px-2 py-0.5 text-xs font-medium rounded-full"
+        style={{
+          backgroundColor: video.status === "publicado" ? "#DCFCE7" : "#FEE2E2",
+          color: video.status === "publicado" ? "#166534" : "#991B1B",
+        }}
+      >
+        {video.status === "publicado" ? "Publicado" : "Rascunho"}
+      </span>
+    </div>
+
+    {/* Inscritos */}
+    <div className="flex items-center text-sm gap-2" style={{ color: "#F3F7F5" }}>
+      <Users className="w-4 h-4" />
+      <span>Vizualizações: {video.inscritos}</span>
+    </div>
+
+    {/* Categoria e Subcategoria */}
+    <div className="flex flex-wrap gap-2 pt-2">
+      <span
+        className="px-3 py-1 text-xs rounded-full"
+        style={{
+          backgroundColor: "#DBEAFE", // bg-blue-100
+          color: "#1E3A8A", // text-blue-800
+        }}
+      >
+        Categoria: {video.categoria_nome || "Sem categoria"}
+      </span>
+      <span
+        className="px-3 py-1 text-xs rounded-full"
+        style={{
+          backgroundColor: "#DCFCE7", // bg-green-100
+          color: "#166534", // text-green-800
+        }}
+      >
+        Subcategoria: {video.subcategoria_nome || "Sem subcategoria"}
+      </span>
+    </div>
+  </CardContent>
+
+  <CardFooter className="p-4 flex items-center justify-between">
+    <button
       onClick={handleViewVideo}
+      className="text-sm hover:underline"
+      style={{ color: "#4FA6A8" }}
     >
-      <CardHeader className="p-0">
-        <div className="w-full h-44 overflow-hidden">
-          <Image
-            src={getYoutubeThumbnail(video.url)}
-            alt={video.title}
-            width={400}
-            height={225}
-            className="w-full h-full object-cover"
-            unoptimized
-          />
-        </div>
-      </CardHeader>
+      Ver vídeo →
+    </button>
 
-      <CardContent className="p-4 space-y-3 flex-grow">
-        <CardTitle className="text-xl font-bold text-gray-800 dark:text-gray-100">
-          {video.title}
-        </CardTitle>
+    <div className="flex gap-4">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit?.(video);
+        }}
+        className="text-sm hover:underline"
+        style={{ color: "#c9871f" }}
+      >
+        Editar
+      </button>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete?.(video);
+        }}
+        className="text-sm hover:underline"
+        style={{ color: "#C93A1F" }}
+      >
+        Apagar
+      </button>
+    </div>
+  </CardFooter>
+</Card>
 
-        <div className="flex items-center text-sm gap-2">
-          <Eye className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-          <span className="text-gray-700 dark:text-gray-300">Status:</span>
-          <span
-            className={`px-2 py-0.5 text-xs font-medium rounded-full
-            ${
-              video.status === "publicado"
-                ? "bg-green-100 text-green-800 dark:bg-green-800/20 dark:text-green-300"
-                : "bg-red-100 text-red-800 dark:bg-red-800/20 dark:text-red-300"
-            }`}
-          >
-            {video.status === "publicado" ? "Publicado" : "Rascunho"}
-          </span>
-        </div>
-
-        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 gap-2">
-          <Users className="w-4 h-4" />
-          <span>Inscritos: {video.inscritos}</span>
-        </div>
-
-        <div className="flex flex-wrap gap-2 pt-2">
-          <span className="bg-blue-100 dark:bg-blue-800/30 text-blue-800 dark:text-blue-300 px-3 py-1 text-xs rounded-full">
-            Categoria: {video.categoria_nome || "Sem categoria"}
-          </span>
-          <span className="bg-green-100 dark:bg-green-800/30 text-green-800 dark:text-green-300 px-3 py-1 text-xs rounded-full">
-            Subcategoria: {video.subcategoria_nome || "Sem subcategoria"}
-          </span>
-        </div>
-      </CardContent>
-
-      <CardFooter className="p-4 flex items-center justify-between">
-        <button
-          onClick={handleViewVideo}
-          className="text-sm text-blue-600 hover:underline"
-        >
-          Ver vídeo →
-        </button>
-
-        <div className="flex gap-4">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit?.(video);
-            }}
-            className="text-sm text-yellow-600 hover:underline"
-          >
-            Editar
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete?.(video);
-            }}
-            className="text-sm text-red-600 hover:underline"
-          >
-            Apagar
-          </button>
-        </div>
-      </CardFooter>
-    </Card>
   );
 };
 

@@ -132,9 +132,10 @@ export default function QuizzesPage() {
         title="Quizzes"
         subtitle="Veja todos os quizzes disponíveis"
         rightElement={
-          <Button onClick={handleCreateQuiz}>
-            Criar quiz
-          </Button>
+          <Button className="teacher-courses__header" onClick={handleCreateQuiz}>
+  Criar quiz
+</Button>
+
         }
       />
 
