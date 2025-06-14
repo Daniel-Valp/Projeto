@@ -127,12 +127,14 @@ const CourseEditor = () => {
   }
 
   return (
-    <div>
+      <div className="p-6">
       <div className="flex items-center gap-5 mb-5">
-        <button
-          className="flex items-center border border-customgreys-dirtygrey rounded-lg p-2 gap-2"
-          onClick={() => router.push("/teacher/cursos")}
-        >
+       <button
+  className="flex items-center border rounded-lg p-2 gap-2 border-[#025E69] text-[#025E69]"
+  onClick={() => router.push("/teacher/cursos")}
+>
+
+
           <ArrowLeft className="w-4 h-4" />
           <span>Voltar aos cursos</span>
         </button>
@@ -157,12 +159,13 @@ const CourseEditor = () => {
                 />
                 <Button
                   type="submit"
-                  className="bg-primary-50 hover:bg-stone-900"
+                  className="bg-[#025E69] hover:bg-[#014650] text-white"
                 >
                   {methods.watch("cursoestado")
                     ? "Publicar curso"
                     : "Guardar rascunho"}
                 </Button>
+                
               </div>
             }
           />
@@ -171,12 +174,15 @@ const CourseEditor = () => {
             <div className="basis-1/2">
               <div className="space-y-4">
                 <CustomFormField
-                  name="cursotitulo"
-                  label="Course Title"
-                  type="text"
-                  placeholder="Escreva o titulo aqui"
-                  className="border-none"
-                />
+  name="cursotitulo"
+  label="Título do curso"
+  type="text"
+  placeholder="Escreva o título aqui"
+  className="border-none"
+  labelClassName="text-[#025E69]"
+/>
+
+
 
                 <CustomFormField
                   name="cursodescricao"
@@ -184,6 +190,8 @@ const CourseEditor = () => {
                   type="textarea"
                   placeholder="Escreva a sua descrição aqui"
                   inputClassName="min-h-[200px]" // Aplica ao textarea diretamente
+                    labelClassName="text-[#025E69]"
+
 
                 />
 
@@ -196,6 +204,8 @@ const CourseEditor = () => {
                     value: cat.id,
                     label: cat.nome,
                   }))}
+                    labelClassName="text-[#025E69]"
+
                 />
 
                 <CustomFormField
@@ -207,6 +217,8 @@ const CourseEditor = () => {
                     value: String(sub.subcategoriaid),
                     label: sub.nome,
                   }))}
+                    labelClassName="text-[#025E69]"
+
                 />
 
                 <CustomFormField
@@ -214,6 +226,8 @@ const CourseEditor = () => {
                   label="Horas do Curso"
                   type="number"
                   placeholder="0"
+                    labelClassName="text-[#025E69]"
+
                 />
 
 <Controller
@@ -221,27 +235,45 @@ const CourseEditor = () => {
   control={methods.control}
   render={({ field }) => (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">Imagem do Curso</label>
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setImagePreview(imageUrl);
-            field.onChange(file); // passa o ficheiro ao react-hook-form
-          }
-        }}
-      />
+      <label className="block text-sm font-medium mb-1 text-[#025E69]">
+        Imagem do Curso
+      </label>
+
+      <div className="relative w-fit">
+        <input
+          id="upload-imagem"
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              const imageUrl = URL.createObjectURL(file);
+              setImagePreview(imageUrl);
+              field.onChange(file);
+            }
+          }}
+          className="hidden"
+        />
+        <label
+          htmlFor="upload-imagem"
+          className="cursor-pointer px-4 py-2 bg-[#025E69] text-white rounded hover:bg-[#014650] transition"
+        >
+          Selecionar Imagem
+        </label>
+      </div>
+
+      {imagePreview && (
+        <img
+          src={imagePreview}
+          alt="Preview da imagem"
+          className="mt-2 rounded-md w-full max-w-md"
+        />
+      )}
     </div>
   )}
 />
 
-{imagePreview && (
-  <img src={imagePreview} alt="Preview da imagem" className="mt-2 rounded-md w-full max-w-md" />
-)}
-                
+       
                 
 
               </div>
@@ -263,9 +295,10 @@ const CourseEditor = () => {
                   className="border-none text-primary-200 group"
                 >
                   <Plus className="mr-1 h-4 w-4 text-primary-100 group-hover:white-100" />
-                  <span className="text-primary-100 group-hover:white-100">
-                    Adicionar Secção
-                  </span>
+                  <span className="text-[#F3F7F5] group-hover:text-[#014650]">
+  Adicionar Secção
+</span>
+
                 </Button>
               </div>
 

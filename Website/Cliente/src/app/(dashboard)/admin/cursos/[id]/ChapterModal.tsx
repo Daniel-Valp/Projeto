@@ -115,10 +115,14 @@ const ChapterModal = () => {
         <Form {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <CustomFormField
-              name="capitulotitulo"
-              label="Título do Capítulo"
-              placeholder="Digite o título"
-            />
+  name="capitulotitulo"
+  label="Título do Capítulo"
+  placeholder="Digite o título"
+  inputClassName="!text-[#025E69]"
+/>
+
+
+
 
             <CustomFormField
               name="conteudo"
@@ -151,9 +155,22 @@ const ChapterModal = () => {
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancelar
               </Button>
-              <Button type="submit" className="bg-primary-50">
-                Salvar
-              </Button>
+             <Button asChild>
+  <button
+    type="submit"
+    className="bg-[#025E69] text-white px-4 py-2 rounded-md transition-colors"
+    style={{ backgroundColor: '#025E69' }}
+    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#014650')}
+    onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#025E69')}
+  >
+    Salvar
+  </button>
+</Button>
+
+
+
+
+
             </div>
           </form>
         </Form>

@@ -116,24 +116,21 @@ export default function DroppableComponent() {
           </DragDropContext>
 
           <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() =>
-              dispatch(
-                openChapterModal({
-                  sectionIndex,
-                  chapterIndex: null,
-                })
-              )
-            }
-            className="add-chapter-button group"
-          >
-            <Plus className="add-chapter-button__icon" />
-            <span className="add-chapter-button__text">
-              Adcionar capitulo
-            </span>
-          </Button>
+  type="button"
+  onClick={() =>
+    dispatch(
+      openChapterModal({
+        sectionIndex,
+        chapterIndex: null,
+      })
+    )
+  }
+  className="bg-[#025E69] text-white hover:bg-[#4FA6A8] hover:text-white px-3 py-2 text-xs rounded-md flex items-center gap-2 transition-colors"
+>
+  <Plus className="text-white" />
+  <span>Adicionar capítulo</span>
+</Button>
+
         </div>
       )}
     </Draggable>

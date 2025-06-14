@@ -114,14 +114,28 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
 
         </div>
 
-        {/* 📌 Botão de Visualizar Curso */}
+ <div className="flex items-center justify-between mt-2 w-full">
+  {/* Botão Ver Curso (sempre visível) */}
 <button
   onClick={(e) => {
     e.stopPropagation();
-    // Navegação para o curso (ajuste a rota se necessário)
-    // Exemplo: `/teacher/cursos/${curso.id}`
-    // Substitua com seu router.push se usar Next.js routing
-    window.location.href = `/teacher/cursos/${curso.id}`;
+
+    const cursoId = curso.cursoid || curso.id;
+
+    // Procura o primeiro capítulo válido
+    let capituloId;
+    for (const secao of curso.secoes || []) {
+      if (secao.capitulos?.length > 0) {
+        capituloId = secao.capitulos[0].capituloid;
+        break;
+      }
+    }
+
+    if (capituloId) {
+      window.location.href = `/teacher/courses/${cursoId}/chapters/${capituloId}`;
+    } else {
+      alert("Este curso ainda não possui capítulos disponíveis.");
+    }
   }}
   className="text-sm hover:underline"
   style={{ color: "#4FA6A8" }}
@@ -129,35 +143,38 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
   Ver curso →
 </button>
 
-{/* 📌 Botões de Ações (Editar/Deletar) */}
-{isOwner ? (
-  <div className="flex gap-4 mt-2">
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        onEdit(curso);
-      }}
-      className="text-sm hover:underline"
-      style={{ color: "#c9871f" }}
-    >
-      Editar
-    </button>
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        onDelete(curso);
-      }}
-      className="text-sm hover:underline"
-      style={{ color: "#C93A1F" }}
-    >
-      Apagar
-    </button>
-  </div>
-) : (
-  <p className="text-sm italic mt-2" style={{ color: "#F3F7F5" }}>
-    Apenas visualização
-  </p>
-)}
+
+
+
+  {/* Botões Editar/Apagar (só se for dono) */}
+  {isOwner && (
+    <div className="flex gap-4">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit(curso);
+        }}
+        className="text-sm hover:underline"
+        style={{ color: "#c9871f" }}
+      >
+        Editar
+      </button>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(curso);
+        }}
+        className="text-sm hover:underline"
+        style={{ color: "#C93A1F" }}
+      >
+        Apagar
+      </button>
+    </div>
+  )}
+</div>
+
+
+
 
 
       </CardContent>

@@ -591,8 +591,9 @@ input[type="color"] {
 }
 
 .dashboard__body {
-  @apply px-8 py-4;
+  @apply px-0 py-4; /* sem padding horizontal */
 }
+
 
 /* Course Page */
 .course {
@@ -608,8 +609,16 @@ input[type="color"] {
 }
 
 .course__path {
-  @apply text-customgreys-dirtyGrey text-sm mb-2;
+  @apply  text-sm mb-2;
+    color: #025E69;
 }
+
+/* globals.css */
+select option {
+  color: #025E69;
+  background-color: #ffffff;
+}
+
 
 .course__current-chapter {
   @apply text-gray-400;
@@ -1495,16 +1504,26 @@ input[type="color"] {
 
 /* Add Chapter Button */
 .add-chapter-button {
-  @apply border-none text-primary-700;
+  background-color: #025E69;
+  color: #ffffff;
+  border: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.add-chapter-button__icon {
-  @apply mr-1 h-4 w-4 text-primary-700;
+.add-chapter-button:hover {
+  background-color: #500101;
+  color: #ff0000;
 }
 
 .add-chapter-button__text {
-  @apply text-primary-700;
+  color: #ffffff;
 }
+
+.add-chapter-button:hover .add-chapter-button__text {
+  color: #ff0000;
+}
+
+
 
 /* AppSidebar */
 .app-sidebar__menu {

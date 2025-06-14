@@ -90,7 +90,8 @@
     
 
     return (
-      <div className='teacher-courses'>
+        <div className="teacher-courses p-6">
+
         <Header
           title='Cursos'
           subtitle='Veja todos os cursos existentes'

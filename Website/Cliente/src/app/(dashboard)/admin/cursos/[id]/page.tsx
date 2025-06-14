@@ -207,6 +207,8 @@ const CourseEditor = () => {
                     value: String(sub.subcategoriaid),
                     label: sub.nome,
                   }))}
+                    labelClassName="text-[#025E69]"
+
                 />
 
                 <CustomFormField
