@@ -13,6 +13,9 @@ import { CustomFormField } from "@/components/CustomFormField";
 import { Form } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 
+import { useUser } from "@clerk/nextjs";
+
+
 import {
   useGetCategoriasQuery,
   useGetSubcategoriasQuery,
@@ -32,6 +35,8 @@ export default function VideoFormPage() {
   const router = useRouter();
   const params = useParams();
   const videoId = params?.id;
+  const { user } = useUser();
+
 
   const [status, setStatus] = useState<"rascunho" | "publicado">("rascunho");
 
@@ -88,18 +93,22 @@ export default function VideoFormPage() {
         category_id: data.categoria,
         subcategory_id: Number(data.subcategoria),
         status,
+        professor_id: user?.id, // 👈 vindo do Clerk!
       };
 
-      const res = await fetch(
-        videoId
-          ? `http://localhost:5000/api/videos/${videoId}`
-          : "http://localhost:5000/api/videos",
-        {
-          method: videoId ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+      const isEditing = videoId && !isNaN(Number(videoId));
+
+const res = await fetch(
+  isEditing
+    ? `http://localhost:5000/api/videos/${videoId}`
+    : "http://localhost:5000/api/videos",
+  {
+    method: isEditing ? "PUT" : "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  }
+);
+
 
       if (!res.ok) throw new Error(videoId ? "Erro ao atualizar vídeo" : "Erro ao criar vídeo");
 
@@ -114,10 +123,11 @@ export default function VideoFormPage() {
   const handleToggleStatus = async () => {
   const idNumber = Number(videoId);
 
-  if (!videoId || isNaN(idNumber)) {
-    toast.error("ID de vídeo inválido. Não é possível alterar o status.");
-    return;
-  }
+if (!videoId || isNaN(idNumber)) {
+  toast.error("ID de vídeo inválido. Não é possível alterar o status.");
+  return;
+}
+
 
   const novoStatus = status === "rascunho" ? "publicado" : "rascunho";
   setStatus(novoStatus);
@@ -148,7 +158,8 @@ export default function VideoFormPage() {
   return (
     <div className="p-6 space-y-6">
       <Header
-        title={videoId ? "Editar Vídeo" : "Criar Vídeo"}
+        title={videoId && !isNaN(Number(videoId)) ? "Editar Vídeo" : "Criar Vídeo"}
+
         subtitle={videoId ? "Edite os dados do vídeo" : "Adicione um novo vídeo"}
         rightElement={
           <div className="flex items-center gap-4">
@@ -203,9 +214,13 @@ export default function VideoFormPage() {
             }))}
           />
 
-          <Button type="submit" className="w-full">
-            {videoId ? "Salvar Alterações" : "Criar Vídeo"}
-          </Button>
+          <Button
+  type="submit"
+  className="w-full bg-[#025E69] text-white hover:bg-[#014E58]"
+>
+  {videoId ? "Salvar Alterações" : "Criar Vídeo"}
+</Button>
+
         </form>
       </Form>
     </div>

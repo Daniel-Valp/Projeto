@@ -109,9 +109,15 @@ const SectionModal = () => {
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancelar
               </Button>
-              <Button type="submit" className="bg-primary-50">
-                Salvar
-              </Button>
+             <Button
+  type="submit"
+  className="bg-[#025E69] text-white hover:bg-[#4FA6A8]"
+>
+  Salvar seção
+</Button>
+
+
+
             </div>
           </form>
         </Form>

@@ -140,11 +140,13 @@ export const criarCurso = async (req: Request, res: Response): Promise<void> => 
   
       console.log("✅ Curso criado com sucesso:", novoCurso);
       res.status(201).json({
-        data: {
-          curso: novoCurso,
-          message: "Curso criado com sucesso"
-        }
-      });
+  data: {
+    curso: novoCurso.toJSON(), // já converte para objeto simples com todas as props
+    message: "Curso criado com sucesso"
+  }
+});
+
+
       
   
     } catch (error) {

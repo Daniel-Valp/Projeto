@@ -5,9 +5,17 @@ type Props = {
   name: string;
   label: string;
   placeholder?: string;
+  inputClassName?: string;
+  style?: React.CSSProperties;
 };
 
-export const CustomNumberField = ({ name, label, placeholder }: Props) => {
+export const CustomNumberField = ({
+  name,
+  label,
+  placeholder,
+  inputClassName,
+  style,
+}: Props) => {
   const {
     register,
     formState: { errors },
@@ -20,9 +28,10 @@ export const CustomNumberField = ({ name, label, placeholder }: Props) => {
         type="number"
         placeholder={placeholder}
         {...register(name, {
-          valueAsNumber: true, // 👈 CONVERSÃO AUTOMÁTICA
+          valueAsNumber: true,
         })}
-        className="w-full p-2 border rounded"
+        className={`w-full p-2 border rounded ${inputClassName || ""}`}
+        style={style}
       />
       {errors[name] && (
         <p className="text-red-500 text-sm">

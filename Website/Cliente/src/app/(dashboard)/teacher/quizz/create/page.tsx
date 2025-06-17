@@ -204,10 +204,20 @@ useEffect(() => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <span className="text-sm">{status}</span>
-              <Switch
-                checked={status === "publicado"}
-                onCheckedChange={(checked) => setStatus(checked ? "publicado" : "rascunho")}
-              />
+<div className="flex items-center gap-2">
+  <Switch
+    checked={status === "publicado"}
+    onCheckedChange={(checked) =>
+      setStatus(checked ? "publicado" : "rascunho")
+    }
+  />
+  <span className={`font-medium transition-colors ${status === "publicado" ? "text-[#025E69]" : "text-gray-500"}`}>
+    {status === "publicado" ? "Publicado" : "Rascunho"}
+  </span>
+</div>
+
+
+
             </div>
             <Button onClick={() => router.push("/teacher/quizz")}>
               Voltar
@@ -218,7 +228,12 @@ useEffect(() => {
 
       <Form {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-6">
-          <CustomFormField name="titulo" label="Título" placeholder="Ex: Quiz de HTML básico" />
+<CustomFormField
+  name="titulo"
+  label="Título"
+  placeholder="Ex: Quiz de HTML básico"
+  inputClassName="text-[#025E69]" // 👈 muda a cor do texto
+/>
           <CustomFormField name="descricao" label="Descrição" placeholder="Descrição do quiz" />
 
           <CustomFormField
@@ -242,7 +257,7 @@ useEffect(() => {
           />
 
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Perguntas</h3>
+<h3 className="text-lg font-semibold text-[#025E69]">Perguntas</h3>
 
             {fields.map((field, index) => (
               <div key={field.id} className="border rounded p-4 space-y-4 bg-muted/20">
@@ -261,11 +276,12 @@ useEffect(() => {
                   />
                 ))}
 
-                <CustomNumberField
-                  name={`perguntas.${index}.correta`}
-                  label="Alternativa Correta"
-                  placeholder="Número de 1 a 4"
-                />
+<CustomNumberField
+  name={`perguntas.${index}.correta`}
+  label="Alternativa Correta"
+  placeholder="Número de 1 a 4"
+  inputClassName="text-[#F3F7F5] bg-[#25262f]"
+/>
 
                 <div className="text-right">
                   <Button type="button" variant="destructive" onClick={() => remove(index)}>

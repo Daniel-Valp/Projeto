@@ -38,17 +38,35 @@ export async function createVideo(video: {
   category_id: number;
   subcategory_id?: number;
   status?: string;
+  professor_id: string; // 👈 correto
 }) {
-  const { title, url, category_id, subcategory_id, status } = video;
+  const {
+    title,
+    url,
+    category_id,
+    subcategory_id,
+    status,
+    professor_id, // 👈 faltava adicionar aqui também
+  } = video;
+
   const [rows]: any = await sequelize.query(
-    `INSERT INTO videos (title, url, category_id, subcategory_id, status)
-     VALUES (?, ?, ?, ?, ?) RETURNING *`,
+    `INSERT INTO videos (title, url, category_id, subcategory_id, status, professor_id)
+     VALUES (?, ?, ?, ?, ?, ?) RETURNING *`, // 👈 adicionaste professor_id na SQL
     {
-      replacements: [title, url, category_id, subcategory_id ?? null, status ?? "rascunho"],
+      replacements: [
+        title,
+        url,
+        category_id,
+        subcategory_id ?? null,
+        status ?? "rascunho",
+        professor_id, // 👈 aqui estava o erro — estava fora da destructuring
+      ],
     }
   );
+
   return rows[0];
 }
+
 
 export async function updateVideo(id: number, video: Partial<{ title: string; url: string; status: string; category_id: number; subcategory_id: number }>) {
   const fields = [];

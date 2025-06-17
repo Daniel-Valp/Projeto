@@ -81,7 +81,6 @@
         console.log("📥 Dados do curso a criar:", cursoData);
         const result = await criarCurso(cursoData).unwrap();
         toast.success("Curso criado com sucesso!");
-        router.push(`/teacher/cursos/${result.cursoid}`);
       } catch (error) {
         console.error("❌ Erro ao criar curso:", error);
         toast.error("Erro ao criar curso. Tente novamente.");

@@ -156,15 +156,13 @@ const ChapterModal = () => {
                 Cancelar
               </Button>
              <Button asChild>
-  <button
-    type="submit"
-    className="bg-[#025E69] text-white px-4 py-2 rounded-md transition-colors"
-    style={{ backgroundColor: '#025E69' }}
-    onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#014650')}
-    onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#025E69')}
-  >
-    Salvar
-  </button>
+<Button
+  type="submit"
+  className="bg-[#025E69] text-white hover:bg-[#4FA6A8]"
+>
+  Salvar Capítulo
+</Button>
+
 </Button>
 
 

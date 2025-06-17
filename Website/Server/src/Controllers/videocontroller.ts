@@ -18,9 +18,17 @@ export async function createVideo(req: Request, res: Response) {
 }
 
 export async function updateVideo(req: Request, res: Response) {
-  const updated = await videoModel.updateVideo(Number(req.params.id), req.body);
+  const id = Number(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ message: "ID inválido" });
+  }
+console.log("🧪 req.params.id =", req.params.id);
+
+  const updated = await videoModel.updateVideo(id, req.body);
   res.json(updated);
 }
+
 
 export async function deleteVideo(req: Request, res: Response) {
   await videoModel.deleteVideo(Number(req.params.id));
