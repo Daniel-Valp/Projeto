@@ -93,8 +93,9 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
         return (
           <Select value={field.value} onValueChange={field.onChange}>
             <SelectTrigger
-              className={`w-full border-none bg-customgreys-primarybg p-4 ${inputClassName}`}
-            >
+  className={`w-full border-none bg-[#25262f] text-white p-4 ${inputClassName}`}
+>
+
               <SelectValue>
                 {options?.find((option) => option.value === field.value)?.label ||
                   placeholder}
@@ -103,12 +104,13 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
             <SelectContent className="w-full bg-customgreys-primarybg border-customgreys-dirtyGrey shadow">
               {options?.map((option) => (
                 <SelectItem
-                  key={option.value}
-                  value={option.value}
-                  className="cursor-pointer hover:!bg-gray-100 hover:!text-customgreys-darkGrey"
-                >
-                  {option.label}
-                </SelectItem>
+  key={option.value}
+  value={option.value}
+  className="cursor-pointer text-[#FFFFFF] hover:bg-[#F0F0F0] hover:text-[#25262f]"
+>
+  {option.label}
+</SelectItem>
+
               ))}
             </SelectContent>
           </Select>

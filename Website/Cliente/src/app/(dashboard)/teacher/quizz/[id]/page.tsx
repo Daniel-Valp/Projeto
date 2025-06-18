@@ -129,14 +129,14 @@ export default function QuizPage() {
   const quizConcluido = resultado !== null;
 
   return (
-    <div className="p-6 bg-gray-900 min-h-screen space-y-6 text-white">
+    <div className="p-6 bg-[#F3F7F5] min-h-screen space-y-6 text-white">
       <Header
         title={quiz.titulo}
         subtitle="Responda ao Quiz"
         rightElement={
           <Button
   variant="outline"
-  className="text-white border-white hover:bg-white hover:text-gray-900"
+className="border border-[#25262f] text-[#25262f] hover:bg-[#4FA6A8] hover:text-white"
   disabled={!quizConcluido}
   onClick={() => {
     if (quizConcluido) router.push("/teacher/quizz");
@@ -148,7 +148,7 @@ export default function QuizPage() {
         }
       />
 
-      <p className="text-gray-300">{quiz.descricao}</p>
+      <p className="text-[#4FA6A8]">{quiz.descricao}</p>
 
       <div className="space-y-6">
         {quiz.perguntas?.map((p, index) => {
@@ -201,7 +201,7 @@ export default function QuizPage() {
                         disabled={quizConcluido}
                       />
                       <span className={estiloTexto}>
-                        {letra}) {texto}
+                        {letra} {texto}
                       </span>
                       {icone}
                     </label>
@@ -214,14 +214,18 @@ export default function QuizPage() {
       </div>
 
       {!quizConcluido && (
-  <Button onClick={verificarResultado} className="mt-6">
-    Ver Resultado
-  </Button>
+  <Button
+  onClick={verificarResultado}
+  className="mt-6 bg-[#025E69] hover:bg-[#4FA6A8] text-[#FFFFFF]"
+>
+  Ver Resultado
+</Button>
+
 )}
 
 
       {quizConcluido && (
-        <p className="text-lg font-bold mt-4">
+        <p className="text-lg font-bold mt-4 text-[#25262f]">
           ✅ Acertou {resultado} de {quiz.perguntas.length} perguntas.
         </p>
       )}

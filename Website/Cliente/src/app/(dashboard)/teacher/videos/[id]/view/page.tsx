@@ -50,7 +50,7 @@ export default function VideoDetailPage() {
   const embedUrl = getYoutubeEmbedUrl(video.url);
 
   return (
-    <div className="p-6 space-y-6 bg-gray-900 min-h-screen">
+    <div className="p-6 space-y-6 bg-[#F3F7F5] min-h-screen">
       <Header
         title={video.title}
         subtitle="Detalhes do vídeo"
@@ -58,13 +58,43 @@ export default function VideoDetailPage() {
           <Button
   onClick={() => router.push("/teacher/videos")}
   variant="outline"
-  className="text-white border-white hover:bg-white hover:text-gray-900"
+className="border border-[#25262f] text-[#25262f] hover:bg-[#4FA6A8] hover:text-white"
 >
   Voltar
 </Button>
 
         }
       />
+
+      <div className="space-y-3 text-sm ">
+        <div className="flex items-center gap-2 ">
+          <Eye className="w-4 h-4 text-[#4FA6A8]" />
+          <span className="text-[#4FA6A8]">Status:</span>
+          <Badge
+            className={
+              video.status === "publicado"
+                ? "bg-green-700 text-white"
+                : "bg-red-700 text-white"
+            }
+          >
+            {video.status}
+          </Badge>
+        </div>
+
+        <div className="flex items-center gap-2 text-[#4FA6A8]">
+          <Users className="w-4 h-4 text-[#4FA6A8]" />
+          <span>Vizualizações: {video.inscritos}</span>
+        </div>
+
+        <div className="flex flex-wrap gap-2 text-[#4FA6A8]">
+          <Badge variant="outline" className="bg-blue-100 dark:bg-blue-800/30 text-blue-800 dark:text-blue-300 px-3 py-1 text-xs rounded-full">
+            Categoria: {video.categoria_nome || "Sem categoria"}
+          </Badge>
+          <Badge variant="outline" className="bg-green-100 dark:bg-green-800/30 text-green-800 dark:text-green-300 px-3 py-1 text-xs rounded-full">
+            Subcategoria: {video.subcategoria_nome || "Sem subcategoria"}
+          </Badge>
+        </div>
+      </div>
 
       {embedUrl ? (
         <div className="w-full aspect-video rounded-lg overflow-hidden shadow-lg border border-gray-700">
@@ -79,35 +109,7 @@ export default function VideoDetailPage() {
         <p className="text-red-500">URL do vídeo inválida.</p>
       )}
 
-      <div className="space-y-3 text-sm text-white">
-        <div className="flex items-center gap-2">
-          <Eye className="w-4 h-4 text-white" />
-          <span>Status:</span>
-          <Badge
-            className={
-              video.status === "publicado"
-                ? "bg-green-700 text-white"
-                : "bg-red-700 text-white"
-            }
-          >
-            {video.status}
-          </Badge>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Users className="w-4 h-4 text-white" />
-          <span>Inscritos: {video.inscritos}</span>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="outline" className="border-white text-white">
-            Categoria: {video.categoria_nome || "Sem categoria"}
-          </Badge>
-          <Badge variant="outline" className="border-white text-white">
-            Subcategoria: {video.subcategoria_nome || "Sem subcategoria"}
-          </Badge>
-        </div>
-      </div>
+      
     </div>
   );
 }

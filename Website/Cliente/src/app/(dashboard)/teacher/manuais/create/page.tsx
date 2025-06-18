@@ -294,7 +294,7 @@
         <CustomFormField name="descricao" label="Descrição" placeholder="Breve descrição..." />
 
         <div className="space-y-2">
-        <label className="text-sm font-medium">Capa do Manual (Imagem)</label>
+        <label className="text-sm font-medium text-[#4FA6A8]">Capa do Manual (Imagem, opcional) </label>
         <input
             type="file"
             accept="image/*"
@@ -313,7 +313,7 @@
             checked={useFileUpload}
             onChange={() => setUseFileUpload(!useFileUpload)}
         />
-        <span>Enviar arquivo PDF do computador</span>
+<span className="text-[#025E69]">Enviar arquivo PDF do computador</span>
         </label>
 
         {useFileUpload ? (

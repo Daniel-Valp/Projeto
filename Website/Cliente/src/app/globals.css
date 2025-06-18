@@ -1384,8 +1384,15 @@ select option {
 }
 
 .notification-settings__submit {
-  @apply !mt-8 text-gray-100 bg-primary-700 hover:bg-primary-600;
+  @apply !mt-8;
+  color: #f3f4f6;
+  background-color: #025E69;
 }
+
+.notification-settings__submit:hover {
+  background-color: #037785;
+}
+
 
 /* Header */
 .header {

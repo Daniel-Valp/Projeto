@@ -70,14 +70,14 @@ export default function ManualDetailPage() {
   };
 
   return (
-    <div className="p-6 bg-gray-900 min-h-screen space-y-6">
+    <div className="p-6 bg-[#F3F7F5] min-h-screen space-y-6">
       <Header
         title={manual.titulo}
         subtitle="Visualizador do Manual"
         rightElement={
           <Button
             variant="outline"
-            className="text-white border-white hover:bg-white hover:text-gray-900"
+className="border border-[#25262f] text-[#25262f] hover:bg-[#4FA6A8] hover:text-white"
             onClick={() => router.back()}
           >
             Voltar
@@ -85,7 +85,7 @@ export default function ManualDetailPage() {
         }
       />
 
-      <div className="text-white space-y-4">
+      <div className="text-[#4FA6A8] space-y-4">
         <p>{manual.descricao}</p>
 
         <div className="flex flex-wrap gap-2 pt-2">
