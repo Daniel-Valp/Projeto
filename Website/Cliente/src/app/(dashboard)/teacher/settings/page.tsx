@@ -5,7 +5,7 @@ const TeacherSettings = () => {
   return (
     <div className='w-3/5 p-6'> {/* 👈 padding adicionado aqui */}
       <SharedNotificationSettings
-        title="Definições do Professor"
+        title="Definições de notificações"
         subtitle="Aqui pode modificar as definições da sua conta"
       />
     </div>

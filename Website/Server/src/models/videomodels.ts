@@ -1,3 +1,4 @@
+import { clerkClient } from "@clerk/express";
 import sequelize from "../db"; // ou onde definiste a instância do Sequelize
 
 export async function getAllVideos() {
@@ -28,8 +29,22 @@ export async function getVideoById(id: number) {
   `, {
     replacements: [id],
   });
-  return rows[0];
+
+  const video = rows[0];
+  if (!video) return null;
+
+  // 🧑 Buscar email do professor
+  try {
+    const user = await clerkClient.users.getUser(video.professor_id);
+    video.professor_email = user.emailAddresses[0]?.emailAddress;
+  } catch (error) {
+    console.error("Erro ao buscar email do professor:", error);
+    video.professor_email = null;
+  }
+
+  return video;
 }
+
 
 
 export async function createVideo(video: {

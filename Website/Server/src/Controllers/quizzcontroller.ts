@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import Quiz from "../models/quizzmodels";
 import { Sequelize } from "sequelize";
 import QuizPergunta from "../models/quizzperguntasmodels";
+import { clerkClient } from "@clerk/clerk-sdk-node";
+import { getEligibleUsers } from "../utils/getEligibleUsers";
+import { sendEmail } from "../utils/sendemail";
+import { getAuth } from "@clerk/express";
 
 export const createQuiz = async (req: Request, res: Response) => {
   try {
@@ -144,14 +148,87 @@ export const getQuizById = async (req: Request, res: Response) => {
 export const updateQuiz = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const [updated] = await Quiz.update(req.body, { where: { id } });
+    const updateData = { ...req.body };
 
-    if (updated) {
-      const quiz = await Quiz.findByPk(id);
-      res.json(quiz);
-    } else {
-      res.status(404).json({ message: "Quiz não encontrado" });
+    const quiz = await Quiz.findByPk(id);
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz não encontrado" });
     }
+
+const estadoAnterior = quiz.getDataValue("status") as string;
+const estadoNovo = updateData.status;
+
+
+    // Atualiza o quiz
+    await quiz.update(updateData);
+
+
+    // Verifica se mudou para "publicado"
+    if (
+      typeof estadoNovo === "string" &&
+      typeof estadoAnterior === "string" &&
+      estadoNovo.toLowerCase() === "publicado" &&
+      estadoAnterior.toLowerCase() !== "publicado"
+    ) {
+      console.log(`🚀 Quiz ${id} publicado, enviando notificações...`);
+
+      // Pega utilizadores que querem notificações de quiz
+      const users = await getEligibleUsers("quiz");
+
+      const professorEmail = quiz.getDataValue("professor_email") as string;
+let professornome = "Professor desconhecido";
+
+try {
+  const professor = await clerkClient.users.getUserList({
+    emailAddress: [professorEmail],
+  });
+
+  if (professor.length > 0) {
+    const user = professor[0];
+    professornome = user.firstName
+      ? `${user.firstName} ${user.lastName || ""}`.trim()
+      : user.username || "Professor";
+  }
+} catch (e) {
+  console.warn(`⚠️ Não foi possível obter nome do professor ${professorEmail}:`, e);
+}
+
+
+      const dataPublicacao = new Date().toLocaleDateString("pt-PT", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+
+      const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 700px; margin: auto; padding: 20px; background-color: #f9f9f9; border-radius: 8px; border: 1px solid #ddd;">
+          <h2 style="color: #2c3e50; text-align: center;">🧠 Novo Quiz Publicado</h2>
+          <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;" />
+
+          <p><strong>📌 Título:</strong> ${quiz.getDataValue("titulo")}</p>
+          <p><strong>👤 Criador:</strong> ${professorEmail}</p>
+          <p><strong>📅 Publicado em:</strong> ${dataPublicacao}</p>
+
+          <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;" />
+          <p style="text-align: center; color: #888;">Esta é uma notificação automática sobre novos quizzes disponíveis na plataforma.</p>
+          <p style="text-align: center; color: #888;">Para parar de receber emails, desative esta opção nas definições da sua conta.</p>
+        </div>
+      `;
+
+      await Promise.allSettled(
+        users.map(user =>
+          sendEmail(
+            user.emailAddresses[0].emailAddress,
+            "🧠 Novo quiz publicado!",
+            emailHtml
+          )
+        )
+      );
+
+      console.log("📧 Notificações de quiz enviadas com sucesso.");
+    }
+
+    res.json(quiz);
   } catch (error) {
     console.error("Erro ao atualizar quiz:", error);
     res.status(500).json({ message: "Erro ao atualizar quiz" });

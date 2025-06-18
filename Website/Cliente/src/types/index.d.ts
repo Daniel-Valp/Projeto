@@ -11,6 +11,9 @@ declare global {
     emailAlerts?: boolean;
     smsAlerts?: boolean;
     courseNotifications?: boolean;
+    quizNotifications?: boolean;
+    manualNotifications?: boolean;
+    videoNotifications?: boolean;
     notificationFrequency?: "immediate" | "daily" | "weekly";
   }
 

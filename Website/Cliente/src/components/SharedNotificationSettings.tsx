@@ -28,6 +28,9 @@ const SharedNotificationSettings = ({
     resolver: zodResolver(notificationSettingsSchema),
     defaultValues: {
       courseNotifications: currentSettings.courseNotifications || false,
+      quizNotifications: currentSettings.quizNotifications || false,
+      manualNotifications: currentSettings.manualNotifications || false,
+      videoNotifications: currentSettings.videoNotifications || false,
       emailAlerts: currentSettings.emailAlerts || false,
       smsAlerts: currentSettings.smsAlerts || false,
       notificationFrequency: currentSettings.notificationFrequency || "daily",
@@ -51,11 +54,15 @@ const SharedNotificationSettings = ({
     try {
       await updateUser(updatedUser);
     } catch (error) {
-      console.error("Falha ao atualizar as definições do utilizador, por: ", error);
+      console.error(
+        "Falha ao atualizar as definições do utilizador, por: ",
+        error
+      );
     }
   };
 
-  if (!user) return <div>Por favor faça login para poder modificar as definições.</div>;
+  if (!user)
+    return <div>Por favor faça login para poder modificar as definições.</div>;
 
   return (
     <div className="notification-settings">
@@ -67,39 +74,47 @@ const SharedNotificationSettings = ({
         >
           <div className="notification-settings__fields">
             <CustomFormField
+              name="emailAlerts"
+              label="Alerta por emails"
+              type="switch"
+              
+            />
+
+            <CustomFormField
               name="courseNotifications"
               label="Notificações para cursos"
               type="switch"
             />
-            {/* <CustomFormField
-              name="QuizzesNotifications"
+
+            <CustomFormField
+              name="quizNotifications"
               label="Notificações para Quizzes"
               type="switch"
             />
+
             <CustomFormField
-              name="ManuaisNotifications"
+              name="manualNotifications"
               label="Notificações para Manuais"
               type="switch"
-            /> */}
+            />
+
             <CustomFormField
-              name="emailAlerts"
-              label="Alerta por emails"
+              name="videoNotifications"
+              label="Notificações para Vídeos"
               type="switch"
             />
-            
 
             <CustomFormField
-  name="notificationFrequency"
-  label="Frequencia de avisos"
-  type="select"
-  className="text-white"
-  options={[
-    { value: "immediate", label: "Imediata" },
-    { value: "daily", label: "Diaria" },
-    { value: "weekly", label: "Semanal" },
-  ]}
-/>
-
+              name="notificationFrequency"
+              label="Frequencia de avisos"
+              type="select"
+              className="text-white"
+              options={[
+                { value: "immediate", label: "Imediata" },
+                { value: "daily", label: "Diaria" },
+                { value: "weekly", label: "Semanal" },
+              ]}
+            />
           </div>
 
           <Button type="submit" className="notification-settings__submit">

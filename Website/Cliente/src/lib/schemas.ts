@@ -38,6 +38,9 @@ export type GuestFormData = z.infer<typeof guestSchema>;
 // Notification Settings Schema
 export const notificationSettingsSchema = z.object({
   courseNotifications: z.boolean(),
+  quizNotifications: z.boolean(),
+  manualNotifications: z.boolean(),
+  videoNotifications: z.boolean(),
   emailAlerts: z.boolean(),
   smsAlerts: z.boolean(),
   notificationFrequency: z.enum(["immediate", "daily", "weekly"]),
