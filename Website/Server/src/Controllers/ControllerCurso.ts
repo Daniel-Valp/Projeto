@@ -10,95 +10,125 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 
 // 📌 Função para listar TODOS os cursos com suas seções e capítulos
 export const listarCursos = async (req: Request, res: Response): Promise<void> => {
-    const { categoria } = req.query;
+  const { categoria } = req.query;
 
-    try {
-        let whereClause = {};
+  try {
+    let whereClause = {};
 
-        if (categoria && categoria !== "all") {
-            whereClause = { categoria };
+    if (categoria && categoria !== "all") {
+      whereClause = { categoria };
+    }
+
+    const cursos = await Curso.findAll({
+      attributes: { include: ["enlistados"] },
+      where: whereClause,
+      include: [
+        {
+          model: Secao,
+          as: "secoes",
+          include: [{ model: Capitulo, as: "capitulos" }],
+        },
+        { model: Categoria, as: "categoria" },
+        { model: Subcategoria, as: "subcategoria" },
+      ],
+    });
+
+    // 🔁 Preenche nome do professor
+    const cursosComProfessores = await Promise.all(
+      cursos.map(async (curso) => {
+        const cursoData = curso.toJSON();
+
+        let professorNome = "Professor desconhecido";
+        try {
+          const professor = await clerkClient.users.getUser(cursoData.professorid);
+          professorNome = `${professor.firstName ?? ""} ${professor.lastName ?? ""}`.trim()
+            || professor.username
+            || professor.emailAddresses[0]?.emailAddress
+            || "Professor sem nome";
+        } catch (err) {
+          console.warn("⚠️ Professor não encontrado no Clerk:", cursoData.professorid);
         }
 
-        const cursos = await Curso.findAll({
-          attributes: { include: ["enlistados"] },
-          where: whereClause,
-          include: [
-            {
-              model: Secao,
-              as: "secoes",
-              include: [
-                {
-                  model: Capitulo,
-                  as: "capitulos",
-                },
-              ],
-            },
-            {
-              model: Categoria,
-              as: "categoria",
-            },
-            {
-              model: Subcategoria,
-              as: "subcategoria",
-            },
-          ],
-        });
-        
+        return {
+          ...cursoData,
+          professornome: professorNome,
+        };
+      })
+    );
 
-        res.json({ message: "Lista de cursos completa", data: cursos });
-    } catch (error) {
-        console.error("Erro ao buscar cursos:", error);
-        res.status(500).json({ message: "Erro ao buscar cursos", error });
-    }
+    res.json({ message: "Lista de cursos completa", data: cursosComProfessores });
+  } catch (error) {
+    console.error("Erro ao buscar cursos:", error);
+    res.status(500).json({ message: "Erro ao buscar cursos", error });
+  }
 };
 
 // 📌 Função para buscar UM curso pelo ID (completo)
 export const getCursoPorId = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
-  console.log("🔍 ID recebido:", id); // 👀 Verifica se o ID está correto
-
   if (!id) {
-      res.status(400).json({ message: "ID do curso não fornecido" });
-      return;
+    res.status(400).json({ message: "ID do curso não fornecido" });
+    return;
   }
 
   try {
-      const curso = await Curso.findOne({
-          where: { cursoid: id }, // Verifica se cursoid é a chave correta
+    const curso = await Curso.findOne({
+      where: { cursoid: id },
+      include: [
+        {
+          model: Secao,
+          as: "secoes",
           include: [
-              {
-                  model: Secao,
-                  as: "secoes",
-                  include: [
-                      {
-                          model: Capitulo,
-                          as: "capitulos",
-                      },
-                  ],
-              },
-              {
-                  model: Categoria,
-                  as: "categoria", // ⬅️ Garante que o alias bate com o definido no modelo
-              },
-              {
-                  model: Subcategoria,
-                  as: "subcategoria", // ⬅️ Mesmo aqui
-              },
+            {
+              model: Capitulo,
+              as: "capitulos",
+            },
           ],
-      });
+        },
+        {
+          model: Categoria,
+          as: "categoria",
+        },
+        {
+          model: Subcategoria,
+          as: "subcategoria",
+        },
+      ],
+    });
 
-      if (!curso) {
-          res.status(404).json({ message: "Curso não encontrado" });
-          return;
-      }
+    if (!curso) {
+      res.status(404).json({ message: "Curso não encontrado" });
+      return;
+    }
 
-      res.json({ message: "Curso encontrado", data: curso });
+    // 🧠 Busca o nome do professor via Clerk
+const cursoData = curso.toJSON();
+
+let professorNome = "Professor desconhecido";
+try {
+  const professor = await clerkClient.users.getUser(cursoData.professorid);
+  professorNome = `${professor.firstName ?? ""} ${professor.lastName ?? ""}`.trim()
+    || professor.username
+    || professor.emailAddresses[0]?.emailAddress
+    || "Professor sem nome";
+} catch (err) {
+  console.warn("⚠️ Professor não encontrado no Clerk:", cursoData.professorid);
+}
+
+const cursoComNome = {
+  ...cursoData,
+  professornome: professorNome,
+};
+
+res.json({ message: "Curso encontrado", data: cursoComNome });
+
   } catch (error) {
-      console.error("❌ Erro ao buscar curso:", error);
-      res.status(500).json({ message: "Erro ao buscar curso", error });
+    console.error("❌ Erro ao buscar curso:", error);
+    res.status(500).json({ message: "Erro ao buscar curso", error });
   }
 };
+
 
 export const criarCurso = async (req: Request, res: Response): Promise<void> => {
   try {

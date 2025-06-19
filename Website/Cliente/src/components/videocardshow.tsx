@@ -70,7 +70,7 @@ const VideoCardshow = ({ video, onEdit, onDelete }: VideoCardProps) => {
 
     <div className="flex items-center text-sm gap-2" style={{ color: "#4FA6A8" }}>
       <Users className="w-4 h-4" />
-      <span>Inscritos: {video.inscritos}</span>
+      <span>Visualizações: {video.inscritos}</span>
     </div>
   </CardContent>
 </Card>

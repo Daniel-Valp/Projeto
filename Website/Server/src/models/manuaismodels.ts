@@ -21,7 +21,7 @@ class Manual extends Model<ManualAttributes, ManualCreationAttributes>
   public subcategoria_id!: number;
   public criado_em?: Date;
   public status!: string;
-
+  public professor_email!: string; // ✅ Adicione isto  
 }
 
 Manual.init(
@@ -61,6 +61,10 @@ Manual.init(
       allowNull: false,
       defaultValue: "rascunho",
     },
+    professor_email: {
+  type: DataTypes.STRING,
+  allowNull: false,
+},
   },
   {
     sequelize,

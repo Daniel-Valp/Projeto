@@ -8,5 +8,6 @@ export interface ManualAttributes {
   categoria_id: string;
   subcategoria_id: number;
   criado_em?: Date;
-  status: string; // 👈 ADICIONE ISSO
+  status: string;
+  professor_email: string; // ✅ ADD AQUI
 }

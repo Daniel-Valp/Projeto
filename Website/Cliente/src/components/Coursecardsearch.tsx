@@ -29,6 +29,9 @@ const CourseCardSearch: React.FC<ProcurarPeloCurso> = ({ curso, isSelected, onCl
       ? `${Math.round(curso.horas)} ${Math.round(curso.horas) === 1 ? "hora" : "horas"}`
       : `${parseFloat(curso.horas.toString()).toFixed(2)} horas`;
 
+      console.log("🧪 Dados do curso no componente:", curso);
+console.log("🔍 Curso renderizado:", curso.cursoid, curso.professornome);
+
   return (
     <div
   onClick={onClick}

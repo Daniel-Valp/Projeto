@@ -12,15 +12,17 @@
     import { Form } from "@/components/ui/form";
     import { Switch } from "@/components/ui/switch";
     import { CustomFormField } from "@/components/CustomFormField";
+import { useUser } from "@clerk/nextjs";
 
     type ManualFormData = {
-    titulo: string;
-    descricao: string;
-    imagem_capa_url?: string;
-    arquivo_pdf_url?: string;
-    categoria: string;
-    subcategoria: string;
-    };
+  titulo: string;
+  descricao: string;
+  imagem_capa_url?: string;
+  arquivo_pdf_url?: string;
+  categoria: string;
+  subcategoria: string;
+};
+
 
     type Categoria = {
     id: number;
@@ -43,6 +45,9 @@
     const [status, setStatus] = useState<"rascunho" | "publicado">("rascunho");
 
     const [imagemCapaFile, setImagemCapaFile] = useState<File | null>(null);
+
+const { user } = useUser();
+const professorEmail = user?.emailAddresses[0]?.emailAddress || "";
 
     const manualSchema = useMemo(() => {
     return z
@@ -180,6 +185,8 @@
         formData.append("categoria_id", data.categoria);
         formData.append("subcategoria_id", data.subcategoria);
         formData.append("status", status);
+        formData.append("professor_email", professorEmail); // 👈 injectado aqui
+
 
         if (imagemCapaFile) {
             formData.append("imagem_capa_url", imagemCapaFile);
@@ -220,6 +227,7 @@
             categoria_id: data.categoria,
             subcategoria_id: data.subcategoria,
             status,
+            professor_email: professorEmail, // 👈 injectado aqui
         };
 
         const res = await fetch(url, {
