@@ -33,10 +33,23 @@ interface ManualCardProps {
 const ManualCardshow = ({ manual, onEdit, onDelete }: ManualCardProps) => {
   const router = useRouter();
 
-  const handleViewManual = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleViewManual = async (e: React.MouseEvent) => {
+  e.stopPropagation();
+
+  try {
+    await fetch(`http://localhost:5000/api/manuais/${manual.id}/enlistar`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error("Erro ao incrementar inscritos:", error);
+  } finally {
     router.push(`/teacher/manuais/${manual.id}`);
-  };
+  }
+};
+
 
   const getImageUrl = () => {
     if (!manual.imagem_capa_url) return "/default-cover.jpg";

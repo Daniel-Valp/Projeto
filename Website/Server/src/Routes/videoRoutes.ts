@@ -9,5 +9,6 @@ router.post("/", videoController.createVideo);
 router.put("/:id", videoController.updateVideo);
 router.delete("/:id", videoController.deleteVideo);
 router.patch("/videos/:id/status", videoController.updateVideoStatus);
+router.post("/:videoId/enlistar", videoController.enlistarVideo);
 
 export default router;

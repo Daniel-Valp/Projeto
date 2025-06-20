@@ -1,28 +1,18 @@
 import {
   Model,
   DataTypes,
-  Optional,
-  Sequelize,
+  Optional
 } from "sequelize";
 import sequelize from "../db";
 import { ManualAttributes } from "../utils/manual";
 
 // Campos opcionais ao criar
-type ManualCreationAttributes = Optional<ManualAttributes, "id" | "imagem_capa_url" | "arquivo_pdf_url" | "criado_em">;
+type ManualCreationAttributes = Optional<
+  ManualAttributes,
+  "id" | "imagem_capa_url" | "arquivo_pdf_url" | "criado_em" | "inscritos"
+>;
 
-class Manual extends Model<ManualAttributes, ManualCreationAttributes>
-  implements ManualAttributes {
-  public id!: number;
-  public titulo!: string;
-  public descricao!: string;
-  public imagem_capa_url?: string;
-  public arquivo_pdf_url?: string;
-  public categoria_id!: string;
-  public subcategoria_id!: number;
-  public criado_em?: Date;
-  public status!: string;
-  public professor_email!: string; // ✅ Adicione isto  
-}
+class Manual extends Model<ManualAttributes, ManualCreationAttributes> {}
 
 Manual.init(
   {
@@ -62,9 +52,14 @@ Manual.init(
       defaultValue: "rascunho",
     },
     professor_email: {
-  type: DataTypes.STRING,
-  allowNull: false,
-},
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    inscritos: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
   },
   {
     sequelize,

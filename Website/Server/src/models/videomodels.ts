@@ -83,7 +83,8 @@ export async function createVideo(video: {
 }
 
 
-export async function updateVideo(id: number, video: Partial<{ title: string; url: string; status: string; category_id: number; subcategory_id: number }>) {
+export async function updateVideo(id: number, video: Partial<{ title: string; url: string; status: string; category_id: number; subcategory_id: number;   inscritos: number;  // adiciona aqui
+ }>) {
   const fields = [];
   const values: any[] = [];
 

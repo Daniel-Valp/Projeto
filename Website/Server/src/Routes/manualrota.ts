@@ -9,6 +9,7 @@ import {
   getManualById,
   updateManual,
   deleteManual,
+  enlistarManual,
 } from "../Controllers/manuaiscontroller";
 
 const router = express.Router();
@@ -55,5 +56,8 @@ router.put(
 
 // ✅ Remover manual
 router.delete("/manuais/:id", deleteManual);
+
+router.post("/manuais/:manualId/enlistar", enlistarManual);
+
 
 export default router;

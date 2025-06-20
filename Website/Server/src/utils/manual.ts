@@ -10,4 +10,5 @@ export interface ManualAttributes {
   criado_em?: Date;
   status: string;
   professor_email: string; // ✅ ADD AQUI
+  inscritos?: number;  // <- tem que existir!
 }

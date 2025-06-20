@@ -114,6 +114,38 @@ export const getManuais = async (req: Request, res: Response) => {
 };
 
 
+
+export const enlistarManual = async (req: Request, res: Response) => {
+  const { manualId } = req.params;
+
+  try {
+    const manual = await Manual.findByPk(manualId);
+
+    if (!manual) {
+      return res.status(404).json({ message: "Manual não encontrado." });
+    }
+
+    // Pega o valor atual de inscritos e garante que seja number
+    const inscritosAtuaisRaw = manual.getDataValue("inscritos");
+    const inscritosAtuais =
+      typeof inscritosAtuaisRaw === "number"
+        ? inscritosAtuaisRaw
+        : parseInt(inscritosAtuaisRaw as any) || 0;
+
+    manual.set("inscritos", inscritosAtuais + 1);
+
+    await manual.save();
+
+    return res.status(200).json({ message: "Inscrito no manual com sucesso", manual });
+  } catch (error) {
+    console.error("Erro ao inscrever no manual:", error);
+    return res.status(500).json({ message: "Erro ao inscrever no manual", error });
+  }
+};
+
+
+
+
 export const updateManual = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
@@ -136,7 +168,7 @@ export const updateManual = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Manual não encontrado" });
     }
 
-    const statusAntes = manualAnterior.status?.toLowerCase();
+const statusAntes = manualAnterior.get("status")?.toString().toLowerCase();
     const statusDepois = req.body.status?.toLowerCase();
 
     const manualData = {
@@ -157,19 +189,22 @@ export const updateManual = async (req: Request, res: Response) => {
     if (!manualAtualizado) return res.status(404).json({ message: "Manual não encontrado" });
 
     const titulo = manualAtualizado.get("titulo");
-let professorEmail = manualAtualizado.get("professor_email");
+let professorEmail = manualAtualizado.get("professor_email") as string;
 
 
 
 
     let professorNome = "Desconhecido";
-    try {
-      const professor = await clerkClient.users.getUser(professorEmail);
-      professorEmail = professor.emailAddresses[0]?.emailAddress || professorEmail;
-      professorNome = `${professor.firstName || ""} ${professor.lastName || ""}`.trim() || "Desconhecido";
-    } catch (err) {
-      console.warn("⚠️ Erro ao buscar professor no Clerk:", professorEmail);
-    }
+try {
+  const professor = await clerkClient.users.getUser(professorEmail);
+
+  professorEmail = professor.emailAddresses[0]?.emailAddress || professorEmail;
+  professorNome = `${professor.firstName || ""} ${professor.lastName || ""}`.trim() || "Desconhecido";
+} catch (err) {
+  console.warn("⚠️ Erro ao buscar professor no Clerk:", professorEmail);
+}
+
+
 
     console.log("📘 Dados do manualAtualizado:", manualAtualizado?.toJSON?.() || manualAtualizado);
     console.log("📌 Título:", manualAtualizado.get("titulo"));
@@ -219,46 +254,48 @@ console.log("👤 Email do professor:", manualAtualizado.get("professor_email"))
 import fs from 'fs';
 import path from 'path';
 
+const uploadsDir = path.resolve(__dirname, '..', '..', 'uploads');
+
+
+
+const tryDeleteFile = (url?: string | null) => {
+  if (!url) return;
+
+  const fileName = path.basename(url);
+  const filePath = path.join(uploadsDir, fileName);
+  console.log("🧹 Tentando deletar:", filePath);
+
+  try {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      console.log("✅ Arquivo deletado:", filePath);
+    } else {
+      console.log("⚠️ Arquivo não encontrado:", filePath);
+    }
+  } catch (err) {
+    console.error("❌ Erro ao deletar arquivo:", filePath, err);
+  }
+};
 
 export const deleteManual = async (req: Request, res: Response) => {
   try {
     const manualId = req.params.id;
-
     const manual = await Manual.findByPk(manualId);
-    if (!manual)
+
+    if (!manual) {
       return res.status(404).json({ message: "Manual não encontrado" });
-
-    const uploadsDir = path.resolve(__dirname, "..", "uploads");
-
-    // PDF
-    if (manual.arquivo_pdf_url) {
-      const pdfFilename = path.basename(manual.arquivo_pdf_url);
-      const pdfPath = path.join(uploadsDir, pdfFilename);
-      console.log("🔍 PDF path:", pdfPath);
-      if (fs.existsSync(pdfPath)) {
-        fs.unlinkSync(pdfPath);
-        console.log("✅ PDF deletado.");
-      }
     }
 
-    // Imagem
-    if (manual.imagem_capa_url) {
-      const imgFilename = path.basename(manual.imagem_capa_url);
-      const imgPath = path.join(uploadsDir, imgFilename);
-      console.log("🔍 Imagem path:", imgPath);
-      if (fs.existsSync(imgPath)) {
-        fs.unlinkSync(imgPath);
-        console.log("✅ Imagem deletada.");
-      }
-    }
+    // Deleta os arquivos associados
+    tryDeleteFile(manual.get("arquivo_pdf_url") as string | undefined);
+    tryDeleteFile(manual.get("imagem_capa_url") as string | undefined);
 
+    // Deleta o registro no banco
     await manual.destroy();
 
-    res
-      .status(200)
-      .json({ message: "Manual e arquivos deletados com sucesso." });
+    res.status(200).json({ message: "Manual e arquivos deletados com sucesso." });
   } catch (error) {
-    console.error("Erro ao deletar manual:", error);
+    console.error("❌ Erro ao deletar manual:", error);
     res.status(500).json({ message: "Erro interno ao deletar manual." });
   }
 };

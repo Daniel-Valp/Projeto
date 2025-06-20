@@ -101,4 +101,25 @@ export async function updateVideoStatus(req: Request, res: Response) {
 }
 
 
+export async function enlistarVideo(req: Request, res: Response) {
+  const { videoId } = req.params;
+
+  try {
+    const video = await videoModel.getVideoById(Number(videoId));
+    if (!video) {
+      return res.status(404).json({ message: "Vídeo não encontrado." });
+    }
+
+    const inscritosAtuais = Number(video.inscritos) || 0;
+    const novosInscritos = inscritosAtuais + 1;
+
+    const videoAtualizado = await videoModel.updateVideo(Number(videoId), { inscritos: novosInscritos });
+
+    return res.status(200).json({ message: "Inscrito no vídeo com sucesso", video: videoAtualizado });
+  } catch (error) {
+    console.error("Erro ao inscrever no vídeo:", error);
+    return res.status(500).json({ message: "Erro ao inscrever no vídeo", error });
+  }
+}
+
 
