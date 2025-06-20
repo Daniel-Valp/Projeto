@@ -132,7 +132,7 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
     }
 
     if (capituloId) {
-      window.location.href = `/teacher/courses/${cursoId}/chapters/${capituloId}`;
+      window.location.href = `/user/courses/${cursoId}/chapters/${capituloId}`;
     } else {
       alert("Este curso ainda não possui capítulos disponíveis.");
     }
