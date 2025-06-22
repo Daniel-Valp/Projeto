@@ -136,16 +136,17 @@ const ManualCard = ({ manual, onEdit, onDelete }: ManualCardProps) => {
 
   <CardFooter className="p-4 flex items-center justify-between">
     <button
-      onClick={(e) => {
-        e.stopPropagation();
-        router.push(`/teacher/manuais/${manual.id}`);
-      }}
-      className="text-sm hover:underline flex items-center gap-1"
-      style={{ color: "#4FA6A8" }}
-    >
-      <FileText className="w-4 h-4" style={{ color: "#4FA6A8" }} />
-      Ver Manual
-    </button>
+  onClick={(e) => {
+    e.stopPropagation();
+    router.push(`/user/manuais/${manual.id}`);
+  }}
+  className="text-sm hover:underline flex items-center gap-1"
+  style={{ color: "#4FA6A8" }}
+>
+  <FileText className="w-4 h-4" style={{ color: "#4FA6A8" }} />
+  Ver Manual
+</button>
+
 
     {onEdit && onDelete && (
       <div className="flex gap-4 ml-auto">

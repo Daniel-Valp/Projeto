@@ -1,84 +1,86 @@
 "use client";
 
-import Header from "@/components/Header";
-import Loading from "@/components/Loading";
-import Toolbar from "@/components/Toolbar";
-import CourseCard from "@/components/CourseCard";
-import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
-import React, { useMemo, useState } from "react";
-// import { useGetUserEnrolledCoursesQuery } from "@/state/api"; // ❌ Comentado: progresso
-// import { Curso } from "@/types/Cursotipos"; // ✅ Ainda usado abaixo, então mantido
+import Header from '@/components/Header';
+import Loading from '@/components/Loading';
+import TeacherCourseCard from '@/components/TeacherCourseCard';
+import Toolbar from '@/components/Toolbar';
+import { useGetCursosQuery } from '@/state/api';
+import { Curso } from '@/types/Cursotipos';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import React, { useMemo, useState } from 'react';
 
-const CursosUsuario = () => {
-  const { user, isLoaded } = useUser();
+
+
+const TodosCursos = () => {
   const router = useRouter();
+  const { user } = useUser();
+  const { data: Cursos, isLoading, isError } = useGetCursosQuery({ category: "all" });
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("all");
+  
 
-  // ❌ Comentado: uso do progresso do curso
-  // const {
-  //   data: cursosInscritos = [],
-  //   isLoading,
-  //   isError,
-  // } = useGetUserEnrolledCoursesQuery(user?.id ?? "", {
-  //   skip: !user || !isLoaded,
-  // });
+  const filterCourses = useMemo(() => {
+  if (!Cursos?.length) return [];
 
-  // ⛔ Removido o uso de cursos filtrados, pois não há cursos disponíveis agora
-  // const cursosFiltrados = useMemo(() => {
-  //   return (cursosInscritos as Curso[]).filter((curso) => {
-  //     const matchSearch = curso.titulo
-  //       .toLowerCase()
-  //       .includes(searchTerm.toLowerCase());
+  const role = user?.publicMetadata?.role;
+  const isAluno = role !== "professor" && role !== "admin";
 
-  //     const matchCategory =
-  //       selectedCategory === "all" ||
-  //       curso.categoria?.id.toLowerCase() === selectedCategory.toLowerCase();
+  return Cursos.filter((curso) => {
+    const matchesSearch = searchTerm
+      ? curso.titulo.toLowerCase().includes(searchTerm.toLowerCase())
+      : true;
 
-  //     const matchSubcategory =
-  //       selectedCategory === "all" ||
-  //       curso.subcategoria?.subcategoriaid.toLowerCase() === selectedCategory.toLowerCase();
+    const matchesCategory =
+      selectedCategory === "all" ||
+      curso.categoria.id.toLowerCase() === selectedCategory.toLowerCase();
 
-  //     return matchSearch && (matchCategory || matchSubcategory);
-  //   });
-  // }, [cursosInscritos, searchTerm, selectedCategory]);
+    const matchesSubcategory =
+      selectedSubcategory === "all" ||
+      String(curso.subcategoria?.subcategoriaid) === selectedSubcategory;
 
-  const handleGoToCourse = (curso: any) => {
-    const primeiraSecao = curso.secoes?.[0];
-    const primeiroCapitulo = primeiraSecao?.capitulos?.[0];
+    const isPublicado = !isAluno || curso.estado === "Publicado";
 
-    if (primeiroCapitulo) {
-      router.push(
-        `/user/courses/${curso.cursoid}/chapters/${primeiroCapitulo.capituloid}`,
-        { scroll: false }
-      );
-    } else {
-      router.push(`/user/courses/${curso.cursoid}`, { scroll: false });
-    }
+    return matchesSearch && matchesCategory && matchesSubcategory && isPublicado;
+  });
+}, [Cursos, searchTerm, selectedCategory, selectedSubcategory, user]);
+
+
+  const handleGoToCourse = (curso: Curso) => {
+    router.push(`/detalhes?id=${curso.cursoid}`);
   };
 
-  if (!isLoaded) return <Loading />;
-  if (!user) return <div>Por favor, autentique-se para ver os seus cursos.</div>;
+  if (isLoading) return <Loading />;
+  if (isError) return <div>Erro ao carregar os cursos</div>;
 
   return (
-    <div className="user-courses">
-      <Header title="Meus Cursos" subtitle="Veja os cursos em que está inscrito" />
-      <Toolbar 
-  onSearch={setSearchTerm} 
-  onCategoryChange={setSelectedCategory} 
-  onSubcategoryChange={setSelectedCategory} 
-/>
+    <div className="all-courses p-6">
+      <Header
+        title="Todos os Cursos"
+        subtitle="Explore todos os cursos disponíveis na plataforma"
+      />
 
-      <div className="user-courses__grid">
-        {/* Nenhum curso listado porque os dados foram desabilitados */}
-        <div className="text-center text-muted col-span-full">
-          Funcionalidade temporariamente indisponível.
-        </div>
+      <Toolbar
+        onSearch={setSearchTerm}
+        onCategoryChange={setSelectedCategory}
+        onSubcategoryChange={setSelectedSubcategory}
+      />
+
+      <div className="teacher-courses__grid">
+        {filterCourses.map((curso) => (
+          <TeacherCourseCard
+            key={curso.cursoid}
+            curso={curso}
+            isOwner={false} // Oculta os botões de ação (editar/apagar)
+            onEdit={() => {}}
+            onDelete={() => {}}
+          />
+        ))}
       </div>
     </div>
   );
 };
 
-export default CursosUsuario;
+export default TodosCursos;

@@ -51,7 +51,7 @@ const VideoCard = ({ video, onEdit, onDelete }: VideoCardProps) => {
     } catch (error) {
       console.error("Erro ao incrementar inscritos:", error);
     } finally {
-      router.push(`/teacher/videos/${video.id}/view`);
+      router.push(`/user/videos/${video.id}`);
     }
   };
 
@@ -132,28 +132,31 @@ const VideoCard = ({ video, onEdit, onDelete }: VideoCardProps) => {
           Ver vídeo →
         </button>
 
-        <div className="flex gap-4">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit?.(video);
-            }}
-            className="text-sm hover:underline"
-            style={{ color: "#c9871f" }}
-          >
-            Editar
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete?.(video);
-            }}
-            className="text-sm hover:underline"
-            style={{ color: "#C93A1F" }}
-          >
-            Apagar
-          </button>
-        </div>
+        {onEdit && onDelete && (
+  <div className="flex gap-4">
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onEdit(video);
+      }}
+      className="text-sm hover:underline"
+      style={{ color: "#c9871f" }}
+    >
+      Editar
+    </button>
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        onDelete(video);
+      }}
+      className="text-sm hover:underline"
+      style={{ color: "#C93A1F" }}
+    >
+      Apagar
+    </button>
+  </div>
+)}
+
       </CardFooter>
     </Card>
   );

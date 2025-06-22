@@ -17,7 +17,7 @@ import { Secao, Capitulo } from "@/types/Secçõestipo";
 import { useGetCursosQuery } from "@/state/api";
 
 const CourseChapterPage = () => {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const { courseId, chapterId } = useParams();
   const playerRef = useRef<ReactPlayer>(null);
 
@@ -50,6 +50,30 @@ const CourseChapterPage = () => {
     }
   };
 
+  const VoltarAosCursos = () => {
+    if (!isLoaded || !user) return null;
+
+    const role = String(user.publicMetadata?.userType || "").toLowerCase();
+    const isProfessorOuAdmin = role === "professor" || role === "admin";
+
+    const handleRedirect = () => {
+      if (isProfessorOuAdmin) {
+        window.location.href = "http://localhost:3000/teacher/cursos";
+      } else {
+        window.location.href = "http://localhost:3000/user/courses";
+      }
+    };
+
+    return (
+      <button
+        onClick={handleRedirect}
+        className="ml-4 inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#4FA6A8] text-[#FFFFFF] hover:bg-[#3c8f91] transition-colors"
+      >
+        ← Voltar aos cursos
+      </button>
+    );
+  };
+
   if (isLoading || !curso || !capituloAtual) {
     return <Loading />;
   }
@@ -66,13 +90,7 @@ const CourseChapterPage = () => {
               <span className="font-semibold text-[#025E69]">{capituloAtual?.capitulotitulo}</span>
             </div>
 
-            <button
-  onClick={() => window.location.href = "http://localhost:3000/teacher/cursos"}
-  className="ml-4 inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#4FA6A8] text-white hover:bg-[#3c8f91] transition-colors"
->
-  ← Voltar aos cursos
-</button>
-
+            <VoltarAosCursos />
           </div>
         </div>
 

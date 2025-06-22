@@ -232,7 +232,7 @@ useEffect(() => {
   name="titulo"
   label="Título"
   placeholder="Ex: Quiz de HTML básico"
-  inputClassName="text-[#025E69]" // 👈 muda a cor do texto
+  inputClassName="text-[#F3F7F5]" // 👈 muda a cor do texto
 />
           <CustomFormField name="descricao" label="Descrição" placeholder="Descrição do quiz" />
 
