@@ -42,7 +42,7 @@ const AppSidebar = ({ className }: { className?: string }) => {
       { icon: Camera, label: "Videos", href: "/user/videos" },
       { icon: BookOpen, label: "Manuais", href: "/user/manuais" },
       { icon: User, label: "Perfil", href: "/user/profile" },
-      { icon: Settings, label: "Definições", href: "/user/settings" },
+      { icon: Settings, label: "Notificações", href: "/user/settings" },
     ],
     teacher: [
       { icon: BookOpen, label: "Cursos", href: "/teacher/cursos" },
@@ -50,7 +50,7 @@ const AppSidebar = ({ className }: { className?: string }) => {
       { icon: Camera, label: "Videos", href: "/teacher/videos" },
       { icon: BookOpen, label: "Manuais", href: "/teacher/manuais" },
       { icon: User, label: "Perfil", href: "/teacher/profile" },
-      { icon: Settings, label: "Definições", href: "/teacher/settings" },
+      { icon: Settings, label: "Notificações", href: "/teacher/settings" },
     ],
     admin: [
       { icon: BookOpen, label: "Cursos", href: "/teacher/cursos" },
@@ -58,7 +58,7 @@ const AppSidebar = ({ className }: { className?: string }) => {
       { icon: Camera, label: "Videos", href: "/teacher/videos" },
       { icon: BookOpen, label: "Manuais", href: "/teacher/manuais" },
       { icon: User, label: "Perfil", href: "/teacher/profile" },
-      { icon: Settings, label: "Definições", href: "/teacher/settings" },
+      { icon: Settings, label: "Notificações", href: "/teacher/settings" },
       { icon: ChartArea, label: "Gráficos", href: "/admin/graph" },
       { icon: UserCog, label: "Utilizadores", href: "/admin/users" },
 

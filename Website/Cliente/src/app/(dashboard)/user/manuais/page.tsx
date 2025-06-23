@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import ManualCard from "@/components/manualcard";
 import Toolbar from "@/components/Toolbar";
 import Header from "@/components/Header";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs"; // 👈 Import do Clerk
 
 // Interfaces
 interface Category {
@@ -24,6 +24,7 @@ interface Manual {
   descricao: string;
   imagem_capa_url: string;
   arquivo_pdf_url: string;
+  status?: "publicado" | "rascunho"; // 👈 Adiciona status
   categoria_id?: string;
   subcategoria_id?: number;
   categoria_nome?: string;
@@ -32,59 +33,64 @@ interface Manual {
 
 export default function ManuaisPage() {
   const [manuais, setManuais] = useState<Manual[]>([]);
+  const [categorias, setCategorias] = useState<Category[]>([]);
+  const [subcategorias, setSubcategorias] = useState<Subcategory[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedSubcategory, setSelectedSubcategory] = useState("all");
 
+  const { user } = useUser(); // 👈 Acesso ao usuário
   const router = useRouter();
 
   useEffect(() => {
-  const fetchManuais = async () => {
-    try {
-      const [manuaisRes, categoriasRes, subcategoriasRes] = await Promise.all([
-        fetch("http://localhost:5000/api/manuais"),
-        fetch("http://localhost:5000/cursos/categorias"),
-        fetch("http://localhost:5000/cursos/subcategorias"),
-      ]);
+    const fetchManuais = async () => {
+      try {
+        const [manuaisRes, categoriasRes, subcategoriasRes] = await Promise.all([
+          fetch("http://localhost:5000/api/manuais"),
+          fetch("http://localhost:5000/cursos/categorias"),
+          fetch("http://localhost:5000/cursos/subcategorias"),
+        ]);
 
-      if (!manuaisRes.ok || !categoriasRes.ok || !subcategoriasRes.ok) {
-        throw new Error("Erro ao buscar dados da API");
+        if (!manuaisRes.ok || !categoriasRes.ok || !subcategoriasRes.ok) {
+          throw new Error("Erro ao buscar dados da API");
+        }
+
+        const manuaisData = await manuaisRes.json();
+        const categoriasData = await categoriasRes.json();
+        const subcategoriasData = await subcategoriasRes.json();
+
+        const categorias: Category[] = categoriasData.data;
+        const subcategorias: Subcategory[] = subcategoriasData.data;
+
+        const manuaisComNomes = manuaisData.map((manual: Manual) => {
+          const categoria = categorias.find((cat) => cat.id === manual.categoria_id);
+          const subcategoria = subcategorias.find(
+            (sub) => sub.subcategoriaid === manual.subcategoria_id
+          );
+
+          return {
+            ...manual,
+            categoria_nome: categoria?.nome,
+            subcategoria_nome: subcategoria?.nome,
+          };
+        });
+
+        setCategorias(categorias);
+        setSubcategorias(subcategorias);
+        setManuais(manuaisComNomes);
+      } catch (error) {
+        console.error("Erro ao buscar manuais:", error);
       }
+    };
 
-      const manuaisData = await manuaisRes.json();
-      const categoriasData = await categoriasRes.json();
-      const subcategoriasData = await subcategoriasRes.json();
-
-      const categorias: Category[] = categoriasData.data;
-      const subcategorias: Subcategory[] = subcategoriasData.data;
-
-      const manuaisComNomes = manuaisData.map((manual: Manual) => {
-        const categoria = categorias.find((cat) => cat.id === manual.categoria_id);
-        const subcategoria = subcategorias.find(
-          (sub) => sub.subcategoriaid === manual.subcategoria_id
-        );
-
-        return {
-          ...manual,
-          categoria_nome: categoria?.nome,
-          subcategoria_nome: subcategoria?.nome,
-        };
-      });
-
-      setManuais(manuaisComNomes);
-    } catch (error) {
-      console.error("Erro ao buscar manuais:", error);
-    }
-  };
-
-  fetchManuais();
-}, []);
-
+    fetchManuais();
+  }, []);
 
   const filteredManuais = manuais.filter((manual) => {
-    const matchesSearch = manual.titulo
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+    const role = user?.publicMetadata?.role;
+    const isAluno = role !== "admin" && role !== "professor";
+
+    const matchesSearch = manual.titulo.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesCategory =
       selectedCategory === "all" || manual.categoria_id === selectedCategory;
@@ -99,9 +105,10 @@ export default function ManuaisPage() {
       (manualSubcategoryNumber !== undefined &&
         manualSubcategoryNumber === selectedSubcategoryNumber);
 
-    return matchesSearch && matchesCategory && matchesSubcategory;
-  });
+    const isPublicado = !isAluno || manual.status === "publicado"; // 👈 Filtro de publicação
 
+    return matchesSearch && matchesCategory && matchesSubcategory && isPublicado;
+  });
 
   return (
     <div className="p-6 space-y-6">
@@ -121,10 +128,7 @@ export default function ManuaisPage() {
           <p>Nenhum manual disponível.</p>
         ) : (
           filteredManuais.map((manual) => (
-            <ManualCard
-              key={manual.id}
-              manual={manual}
-            />
+            <ManualCard key={manual.id} manual={manual} />
           ))
         )}
       </div>

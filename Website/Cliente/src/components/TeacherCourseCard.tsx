@@ -12,6 +12,8 @@ import { Button } from "./ui/button";
 import { Pencil, Trash2, CheckCircle, Clock, BookOpen } from "lucide-react";
 import { Curso } from "@/types/Cursotipos";
 import { useGetCategoriasQuery, useGetSubcategoriasQuery } from "@/state/api";
+import { useRouter } from "next/navigation";
+
 
 interface TeacherCourseCardProps {
   curso: Curso;
@@ -24,6 +26,8 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
   // Buscando categorias
   const { data: categorias = [], isLoading } = useGetCategoriasQuery();
   const { data: subcategorias = [], isLoading: isLoadingSub } = useGetSubcategoriasQuery();
+  const router = useRouter();
+
 
   // Encontrando a categoria correspondente
   const categoriaNome = useMemo(() => {
@@ -122,7 +126,6 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
 
     const cursoId = curso.cursoid || curso.id;
 
-    // Procura o primeiro capítulo válido
     let capituloId;
     for (const secao of curso.secoes || []) {
       if (secao.capitulos?.length > 0) {
@@ -132,7 +135,7 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
     }
 
     if (capituloId) {
-      window.location.href = `/user/courses/${cursoId}/chapters/${capituloId}`;
+      router.push(`/user/courses/${cursoId}/chapters/${capituloId}`);
     } else {
       alert("Este curso ainda não possui capítulos disponíveis.");
     }
@@ -142,6 +145,9 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
 >
   Ver curso →
 </button>
+
+
+
 
 
 

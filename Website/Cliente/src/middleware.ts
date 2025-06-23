@@ -30,9 +30,7 @@ export default clerkMiddleware(async (auth, req) => {
   }
 
   // ⚠️ Bloqueia teacher de acessar student
-  if (isStudentRoute(req) && userRole !== "student" && userRole !== "admin") {
-    return NextResponse.redirect(new URL("/teacher/cursos", req.url));
-  }
+  
 
   return NextResponse.next();
 });

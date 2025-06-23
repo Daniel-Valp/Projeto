@@ -143,7 +143,7 @@ const completedChapters = secao.capitulos.filter((cap) =>
 </div>
 
                 <p className="chapters-sidebar__progress-text text-xs text-muted-foreground mt-1">
-                  {completedChapters}/{totalChapters} Completo
+                  {completedChapters}/{totalChapters} Completos
                 </p>
 
                 <ul className="chapters-sidebar__chapters">

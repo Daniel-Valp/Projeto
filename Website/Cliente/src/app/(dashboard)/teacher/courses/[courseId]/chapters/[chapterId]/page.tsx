@@ -6,16 +6,18 @@ import { useUser } from "@clerk/nextjs";
 import ReactPlayer from "react-player";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 import Loading from "@/components/Loading";
+import ChaptersSidebar from "@/components/AppSidebar";
+
 import { Curso } from "@/types/Cursotipos";
 import { Secao, Capitulo } from "@/types/Secçõestipo";
 import { useGetCursosQuery } from "@/state/api";
 
 const CourseChapterPage = () => {
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const { courseId, chapterId } = useParams();
   const playerRef = useRef<ReactPlayer>(null);
 
@@ -44,8 +46,32 @@ const CourseChapterPage = () => {
 
   const handleProgress = ({ played }: { played: number }) => {
     if (played >= 0.8) {
-      // marcar como assistido
+      // Capítulo assistido
     }
+  };
+
+  const VoltarAosCursos = () => {
+    if (!isLoaded || !user) return null;
+
+    const role = String(user.publicMetadata?.userType || "").toLowerCase();
+    const isProfessorOuAdmin = role === "professor" || role === "admin";
+
+    const handleRedirect = () => {
+      if (isProfessorOuAdmin) {
+        window.location.href = "http://localhost:3000/teacher/cursos";
+      } else {
+        window.location.href = "http://localhost:3000/user/courses";
+      }
+    };
+
+    return (
+      <button
+        onClick={handleRedirect}
+        className="ml-4 inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#4FA6A8] text-[#FFFFFF] hover:bg-[#3c8f91] transition-colors"
+      >
+        ← Voltar aos cursos
+      </button>
+    );
   };
 
   if (isLoading || !curso || !capituloAtual) {
@@ -53,108 +79,89 @@ const CourseChapterPage = () => {
   }
 
   return (
-    <>
-      <div className="course__breadcrumb mb-4">
-        <div className="course__path text-sm mb-2 text-[#025E69]">
-          {curso.titulo} / {secaoAtual?.secaotitulo} /{" "}
-          <span className="font-semibold text-[#690202]">{capituloAtual?.capitulotitulo}</span>
+    <div className="course flex min-h-screen gap-x-6">
+      {curso && capituloAtual && <ChaptersSidebar />}
+
+      <main className="flex-1 p-4 pl-2">
+        <div className="course__breadcrumb mb-4">
+          <div className="course__path text-sm flex items-center justify-between w-full">
+            <div>
+              <span className="text-[#2d8e99]">{curso.titulo}</span> / {secaoAtual?.secaotitulo} /{" "}
+              <span className="font-semibold text-[#025E69]">{capituloAtual?.capitulotitulo}</span>
+            </div>
+
+            <VoltarAosCursos />
+          </div>
         </div>
-        <h2 className="text-2xl font-bold mt-1 text-[#025E69]">{capituloAtual?.capitulotitulo}</h2>
+
+        <h2 className="text-2xl font-bold mt-1 text-[#25272e]">{capituloAtual?.capitulotitulo}</h2>
+
         <div className="flex items-center gap-2 mt-2">
-          <Avatar className="h-8 w-8">
+          <Avatar className="h-8 w-8 text-[#25272e]">
             <AvatarImage alt={curso.professornome} />
-            <AvatarFallback className="bg-[#025E69] text-white">
+            <AvatarFallback>
               {curso.professornome?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          <span className="text-sm text-[#025E69]">{curso.professornome}</span>
+          <span className="text-sm text-muted-foreground text-[#25272e]">{curso.professornome}</span>
         </div>
-      </div>
 
-      {capituloAtual.video ? (
-        <Card className="mb-6">
-          <CardContent className="aspect-video">
-            <ReactPlayer
-              ref={playerRef}
-              url={typeof capituloAtual.video === "string" ? capituloAtual.video : undefined}
-              controls
-              width="100%"
-              height="100%"
-              onProgress={handleProgress}
-              config={{
-                file: {
-                  attributes: {
-                    controlsList: "nodownload",
+        {capituloAtual.video ? (
+          <Card className="mb-6 mt-4">
+            <CardContent className="aspect-video">
+              <ReactPlayer
+                ref={playerRef}
+                url={typeof capituloAtual.video === "string" ? capituloAtual.video : undefined}
+                controls
+                width="100%"
+                height="100%"
+                onProgress={handleProgress}
+                config={{
+                  file: {
+                    attributes: {
+                      controlsList: "nodownload",
+                    },
                   },
-                },
-              }}
-            />
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-[#025E69]">Sem vídeo disponível</CardTitle>
-          </CardHeader>
-        </Card>
-      )}
+                }}
+              />
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="mb-8 p-4 mt-4 rounded-md text-[#2e2525] hover:bg-[#4FA6A8] transition-colors cursor-pointer border">
+            Sem vídeo disponível
+          </div>
+        )}
 
-      <Tabs defaultValue="Notes" className="w-full">
-        <TabsList className="border-b border-[#025E69]">
-          <TabsTrigger
-            value="Notes"
-            className="text-[#025E69] data-[state=active]:border-b-2 data-[state=active]:border-[#025E69]"
-          >
-            Notas
-          </TabsTrigger>
-          <TabsTrigger
-            value="Resources"
-            className="text-[#025E69] data-[state=active]:border-b-2 data-[state=active]:border-[#025E69]"
-          >
-            Recursos
-          </TabsTrigger>
-          <TabsTrigger
-            value="Quiz"
-            className="text-[#025E69] data-[state=active]:border-b-2 data-[state=active]:border-[#025E69]"
-          >
-            Quiz
-          </TabsTrigger>
-        </TabsList>
+        <Tabs defaultValue="Notes" className="w-full">
+          <TabsList>
+            <TabsTrigger value="Notes" className="text-[#25272e]">Notas</TabsTrigger>
+            <TabsTrigger value="Resources" className="text-[#25272e]">Recursos</TabsTrigger>
+            <TabsTrigger value="Quiz" className="text-[#25272e]">Quiz</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="Notes">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-[#025E69]">Notas do Capítulo</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <TabsContent value="Notes">
+            <div className="mb-4 p-4 rounded-md text-[#25272e] hover:bg-[#4FA6A8] transition-colors border">
+              <h3 className="text-lg font-semibold mb-2">Notas do Capítulo</h3>
               {capituloAtual.conteudo || "Sem conteúdo disponível."}
-            </CardContent>
-          </Card>
-        </TabsContent>
+            </div>
+          </TabsContent>
 
-        <TabsContent value="Resources">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-[#025E69]">Recursos</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <TabsContent value="Resources">
+            <div className="mb-4 p-4 rounded-md text-[#25272e] hover:bg-[#4FA6A8] transition-colors border">
+              <h3 className="text-lg font-semibold mb-2">Recursos</h3>
               Nenhum recurso disponível.
-            </CardContent>
-          </Card>
-        </TabsContent>
+            </div>
+          </TabsContent>
 
-        <TabsContent value="Quiz">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-[#025E69]">Quiz</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <TabsContent value="Quiz">
+            <div className="mb-4 p-4 rounded-md text-[#25272e] hover:bg-[#4FA6A8] transition-colors border">
+              <h3 className="text-lg font-semibold mb-2">Quiz</h3>
               Quiz em breve!
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </main>
+    </div>
   );
 };
 

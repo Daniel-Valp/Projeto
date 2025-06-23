@@ -268,12 +268,22 @@ const Landing = () => {
       <div className="landing__featured">
         <div className="flex items-center justify-between landing__featured-title-wrapper">
           <h2 className="landing__featured-title">Últimos cursos</h2>
-          <a
-            href="http://localhost:3000/teacher/cursos"
-              className="text-sm font-medium text-[#025E69] hover:text-[#4FA6A8] hover:underline transition"
-          >
-            Ver todos os cursos →
-          </a>
+          <button
+  onClick={() => {
+    const userType = user?.publicMetadata?.userType;
+    if (userType === "teacher" || userType === "admin") {
+      router.push("/teacher/cursos");
+    } else if (userType === "student") {
+      router.push("/user/courses");
+    } else {
+      router.push("/user/courses");
+    }
+  }}
+  className="text-sm font-medium text-[#025E69] hover:text-[#4FA6A8] hover:underline transition"
+>
+  Ver todos os cursos →
+</button>
+
         </div>
 
         <p className="landing__featured-description">
@@ -319,12 +329,27 @@ const Landing = () => {
       <div className="landing__featured">
         <div className="flex items-center justify-between landing__featured-title-wrapper">
           <h2 className="landing__featured-title">Últimos manuais</h2>
-          <a
-  href="http://localhost:3000/teacher/manuais"
+          <button
+  onClick={() => {
+    const userType = user?.publicMetadata?.userType;
+    console.log("➡️ CLICADO - userType:", userType);
+
+    if (userType === "teacher" || userType === "admin") {
+      console.log("📘 Indo para teacher/manuais");
+      router.push("/teacher/manuais");
+    } else if (userType === "student") {
+      console.log("🎓 Indo para user/manuais");
+      router.push("/user/manuais");
+    } else {
+      console.log("🔄 Fallback para user/manuais");
+      router.push("/user/manuais");
+    }
+  }}
   className="text-sm font-medium text-[#025E69] hover:text-[#4FA6A8] hover:underline transition"
 >
   Ver todos os manuais →
-</a>
+</button>
+
         </div>
 
         <p className="landing__featured-description">
@@ -369,12 +394,21 @@ const Landing = () => {
       <div className="landing__featured">
         <div className="flex items-center justify-between landing__featured-title-wrapper">
           <h2 className="landing__featured-title">Últimos vídeos</h2>
-          <a
-            href="http://localhost:3000/teacher/videos"
-              className="text-sm font-medium text-[#025E69] hover:text-[#4FA6A8] hover:underline transition"
-          >
-            Ver todos os vídeos →
-          </a>
+          <button
+  onClick={() => {
+    const userType = user?.publicMetadata?.userType;
+
+    if (userType === "teacher" || userType === "admin") {
+      router.push("/teacher/videos");
+    } else {
+      router.push("/user/videos");
+    }
+  }}
+  className="text-sm font-medium text-[#025E69] hover:text-[#4FA6A8] hover:underline transition"
+>
+  Ver todos os vídeos →
+</button>
+
         </div>
 
         <p className="landing__featured-description">
@@ -415,12 +449,21 @@ const Landing = () => {
       <div className="landing__featured">
         <div className="flex items-center justify-between landing__featured-title-wrapper">
           <h2 className="landing__featured-title">Últimos quizzes</h2>
-          <a
-            href="http://localhost:3000/teacher/quizz"
-              className="text-sm font-medium text-[#025E69] hover:text-[#4FA6A8] hover:underline transition"
-          >
-            Ver todos os quizzes →
-          </a>
+          <button
+  onClick={() => {
+    const userType = user?.publicMetadata?.userType;
+
+    if (userType === "teacher" || userType === "admin") {
+      router.push("/teacher/quizz");
+    } else {
+      router.push("/user/quizz");
+    }
+  }}
+  className="text-sm font-medium text-[#025E69] hover:text-[#4FA6A8] hover:underline transition"
+>
+  Ver todos os quizzes →
+</button>
+
         </div>
 
         <p className="landing__featured-description">
