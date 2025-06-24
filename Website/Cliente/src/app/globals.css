@@ -170,6 +170,8 @@ input[type="color"] {
   @apply basis-2/5 min-w-[350px] h-fit border-2 border-primary-600 bg-customgreys-secondarybg overflow-hidden rounded-lg;
 }
 
+
+
 /* Selected Course Component */
 .selected-course {
   @apply overflow-hidden py-9 px-9;

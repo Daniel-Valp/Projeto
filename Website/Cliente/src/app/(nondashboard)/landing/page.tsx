@@ -194,6 +194,7 @@ const Landing = () => {
       transition={{ duration: 0.5 }}
       className="landing"
     >
+      
       {/* Setas de navegação */}
       <div className="landing__hero-container" style={{ position: "relative" }}>
         <div
@@ -208,6 +209,21 @@ const Landing = () => {
             zIndex: 10,
           }}
         >
+       
+
+{/* <Image
+  src="/images/logo.png"
+  alt="Logo Background"
+  width={500}
+  height={500}
+  className="fixed -z-10 opacity-20 pointer-events-none"
+  style={{
+    top: "20%",
+    left: "107%",
+    transform: "translateX(-50%)",
+  }}
+/> */}
+
           <button className="landing__arrow-button left" onClick={handlePrev}>
             <ArrowLeft size={32} color="#F3F7F5" />
           </button>
@@ -504,8 +520,11 @@ const Landing = () => {
               </motion.div>
             ))}
       </div>
+      
     </motion.div>
+    
   );
+  
 };
 
 export default Landing;
