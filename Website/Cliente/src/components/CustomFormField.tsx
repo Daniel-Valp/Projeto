@@ -90,31 +90,31 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
           />
         );
       case "select":
-        return (
-          <Select value={field.value} onValueChange={field.onChange}>
-            <SelectTrigger
-  className={`w-full border-none bg-[#25262f] text-white p-4 ${inputClassName}`}
->
+  const selectedValue =
+    options?.some(opt => opt.value === (field.value ?? "")) ? (field.value ?? "") : "";
+  return (
+    <Select value={selectedValue} onValueChange={field.onChange}>
+      <SelectTrigger
+        className={`w-full border-none bg-[#25262f] text-white p-4 ${inputClassName}`}
+      >
+        <SelectValue>
+          {options?.find(option => option.value === selectedValue)?.label || placeholder}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent className="w-full bg-customgreys-primarybg border-customgreys-dirtyGrey shadow">
+        {options?.map(option => (
+          <SelectItem
+            key={option.value}
+            value={option.value}
+            className="cursor-pointer text-[#FFFFFF] hover:bg-[#F0F0F0] hover:text-[#25262f]"
+          >
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
 
-              <SelectValue>
-                {options?.find((option) => option.value === field.value)?.label ||
-                  placeholder}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="w-full bg-customgreys-primarybg border-customgreys-dirtyGrey shadow">
-              {options?.map((option) => (
-                <SelectItem
-  key={option.value}
-  value={option.value}
-  className="cursor-pointer text-[#FFFFFF] hover:bg-[#F0F0F0] hover:text-[#25262f]"
->
-  {option.label}
-</SelectItem>
-
-              ))}
-            </SelectContent>
-          </Select>
-        );
       case "switch":
         return (
           <div className="flex items-center space-x-2">

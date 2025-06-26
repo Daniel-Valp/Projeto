@@ -165,7 +165,7 @@ if (!videoId || isNaN(idNumber)) {
           <div className="flex items-center gap-4">
             {videoId && (
               <div className="flex items-center gap-2">
-                <span className="text-sm">
+                <span className="text-sm text-black">
                   {status === "publicado" ? "Publicado" : "Rascunho"}
                 </span>
                 <Switch checked={status === "publicado"} onCheckedChange={handleToggleStatus} />

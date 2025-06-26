@@ -444,23 +444,24 @@ const Landing = () => {
       </div>
 
       <div className="landing__courses">
-        {videos &&
-          videos
-            .filter((video) => video.status === "publicado")
-            .slice(0, 4)
-            .map((video) => (
-              <motion.div
-                key={video.id}
-                initial={{ y: 50, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                viewport={{ amount: 0.4 }}
-                className="cursor-pointer"
-              >
-                <VideoCardshow video={video} />
-              </motion.div>
-            ))}
-      </div>
+  {videos &&
+    videos
+      .filter((video) => video.status === "publicado")
+      .slice(0, 4)
+      .map((video, index) => (
+        <motion.div
+          key={video.id}
+          initial={{ y: 50, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: index * 0.2 }} // ← anima um de cada vez
+          viewport={{ amount: 0.4 }}
+          className="cursor-pointer"
+        >
+          <VideoCardshow video={video} />
+        </motion.div>
+      ))}
+</div>
+
 
       <div className="landing__featured">
         <div className="flex items-center justify-between landing__featured-title-wrapper">
@@ -503,23 +504,24 @@ const Landing = () => {
       </div>
 
       <div className="landing__courses">
-        {quizzes &&
-          quizzes
-            .filter((quiz) => quiz.status === "publicado")
-            .slice(0, 4)
-            .map((quiz) => (
-              <motion.div
-                key={quiz.id}
-                initial={{ y: 50, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                viewport={{ amount: 0.4 }}
-                className="cursor-pointer"
-              >
-                <QuizCardshow quiz={quiz} />
-              </motion.div>
-            ))}
-      </div>
+  {quizzes &&
+    quizzes
+      .filter((quiz) => quiz.status === "publicado")
+      .slice(0, 4)
+      .map((quiz, index) => (
+        <motion.div
+          key={quiz.id}
+          initial={{ y: 50, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, delay: index * 0.2 }}
+          viewport={{ amount: 0.4 }}
+          className="cursor-pointer"
+        >
+          <QuizCardshow quiz={quiz} />
+        </motion.div>
+      ))}
+</div>
+
       
     </motion.div>
     

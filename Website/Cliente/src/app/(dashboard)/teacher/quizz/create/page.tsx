@@ -54,6 +54,9 @@ export default function CreateQuizPage() {
   const [subcategorias, setSubcategorias] = useState<any[]>([]);
   const [status, setStatus] = useState<"rascunho" | "publicado">("rascunho");
 
+  const [loading, setLoading] = useState(true);
+
+
   const methods = useForm<QuizFormData>({
     resolver: zodResolver(quizSchema),
     defaultValues: {
@@ -101,6 +104,10 @@ export default function CreateQuizPage() {
 useEffect(() => {
   const fetchQuiz = async () => {
     if (!id) return;
+    if (loading) {
+  return <p className="text-center text-muted">Carregando quiz...</p>;
+}
+
 
     try {
       const res = await fetch(`http://localhost:5000/api/quizzes/${id}`);
@@ -117,16 +124,15 @@ useEffect(() => {
       });
 
       // reset básico, perguntas vazias
-      methods.reset({
-        titulo: data.titulo,
-        descricao: data.descricao,
-        categoria: String(data.categoria_id),
-        subcategoria: String(data.subcategoria_id),
-        perguntas: [], // <- importante!
-      });
+     methods.reset({
+  titulo: data.titulo,
+  descricao: data.descricao,
+  categoria: String(data.categoria_id),
+  subcategoria: String(data.subcategoria_id),
+  perguntas, // já com as perguntas carregadas
+});
 
-      // substitui com perguntas reais
-      replace(perguntas);
+
 
       setStatus(data.status || "rascunho");
     } catch (error) {
@@ -211,10 +217,17 @@ useEffect(() => {
       setStatus(checked ? "publicado" : "rascunho")
     }
   />
-  <span className={`font-medium transition-colors ${status === "publicado" ? "text-[#025E69]" : "text-gray-500"}`}>
+  <span className="text-black font-medium">
     {status === "publicado" ? "Publicado" : "Rascunho"}
   </span>
 </div>
+
+
+
+
+
+
+
 
 
 
@@ -284,9 +297,16 @@ useEffect(() => {
 />
 
                 <div className="text-right">
-                  <Button type="button" variant="destructive" onClick={() => remove(index)}>
-                    Remover Pergunta
-                  </Button>
+                  <Button type="button" variant="destructive" onClick={() => {
+  try {
+    remove(index);
+  } catch (e) {
+    console.error("Erro ao remover pergunta:", e);
+  }
+}}>
+  Remover Pergunta
+</Button>
+
                 </div>
               </div>
             ))}

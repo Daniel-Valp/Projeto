@@ -105,8 +105,8 @@ const Subcategoria = sequelize.define(
   "Subcategoria",
   {
     subcategoriaid: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
     },
     nome: {
@@ -119,6 +119,7 @@ const Subcategoria = sequelize.define(
     tableName: "subcategoria",
   }
 );
+
 
 // 📌 Modelo da Seção
 const Secao = sequelize.define(

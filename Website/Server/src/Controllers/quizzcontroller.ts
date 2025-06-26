@@ -247,3 +247,89 @@ export const deleteQuiz = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Erro ao deletar quiz" });
   }
 };
+
+import QuizResposta from "../models/quizzrespostasmodels";
+
+export const getQuizStatistics = async (req: Request, res: Response) => {
+  try {
+    const quizId = req.params.id;
+
+    // Verifica se o quiz existe
+    const quiz = await Quiz.findByPk(quizId);
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz não encontrado." });
+    }
+
+    // Obter perguntas do quiz
+    const perguntas = await QuizPergunta.findAll({
+      where: { quiz_id: quizId },
+      raw: true,
+    });
+
+    const respostas = await QuizResposta.findAll({
+      where: { quiz_id: quizId },
+      raw: true,
+    });
+
+    if (!respostas.length) {
+      return res.status(200).json({
+        totalTentativas: 0,
+        mediaPontuacao: 0,
+        perguntasMaisErradas: [],
+      });
+    }
+
+    const totalTentativas = respostas.length;
+    const totalPontuacao = respostas.reduce((acc, r) => acc + (r.pontuacao || 0), 0);
+    const mediaPontuacao = totalPontuacao / totalTentativas;
+
+    // Inicializa contadores de erro por pergunta
+    const errosPorPergunta: Record<string, { total: number; erradas: number; texto: string }> = {};
+
+    for (const pergunta of perguntas) {
+      errosPorPergunta[pergunta.id] = {
+        total: 0,
+        erradas: 0,
+        texto: pergunta.pergunta,
+      };
+    }
+
+    for (const resposta of respostas) {
+      const respostasAluno: Record<string, string> = resposta.respostas || {};
+
+
+      for (const pergunta of perguntas) {
+        const pid = pergunta.id.toString();
+        const correta = pergunta.resposta_correta.toLowerCase();
+        const respostaAluno = (respostasAluno?.[pid] || "").toLowerCase();
+
+        errosPorPergunta[pid].total += 1;
+
+        if (respostaAluno !== correta) {
+          errosPorPergunta[pid].erradas += 1;
+        }
+      }
+    }
+
+    const perguntasMaisErradas = Object.entries(errosPorPergunta)
+      .map(([id, dados]) => {
+        const taxaErro = Math.round((dados.erradas / dados.total) * 100);
+        return {
+          pergunta_id: id,
+          pergunta: dados.texto,
+          taxaErro,
+        };
+      })
+      .sort((a, b) => b.taxaErro - a.taxaErro)
+      .slice(0, 5); // Top 5 perguntas com maior erro
+
+    res.json({
+      totalTentativas,
+      mediaPontuacao: Number(mediaPontuacao.toFixed(2)),
+      perguntasMaisErradas,
+    });
+  } catch (error) {
+    console.error("Erro ao buscar estatísticas do quiz:", error);
+    res.status(500).json({ message: "Erro ao buscar estatísticas." });
+  }
+};

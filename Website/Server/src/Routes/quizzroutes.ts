@@ -15,5 +15,9 @@ router.get("/:id", getQuizById);
 router.put("/:id", updateQuiz);
 router.delete("/:id", deleteQuiz);
 
+import { getQuizStatistics } from "../Controllers/quizzcontroller";
+
+router.get("/:id/estatisticas", getQuizStatistics);
+
 
 export default router;

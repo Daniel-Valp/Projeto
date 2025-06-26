@@ -90,16 +90,32 @@ const QuizCard = ({ quiz, onEdit, onDelete }: QuizCardProps) => {
         </div>
       </CardContent>
 
-      <CardFooter className="p-4 flex items-center justify-between">
-  <button
-    onClick={handleView}
-    className="text-sm hover:underline flex items-center gap-1"
-    style={{ color: "#4FA6A8" }} // text-blue-600
-  >
-    <FileText className="w-4 h-4" style={{ color: "#4FA6A8" }} />
-    Ver Quiz
-  </button>
+<CardFooter className="p-4 flex items-center justify-between">
+  <div className="flex gap-4">
+    {/* Ver Quiz */}
+    <button
+      onClick={handleView}
+      className="text-sm hover:underline flex items-center gap-1"
+      style={{ color: "#4FA6A8" }}
+    >
+      <FileText className="w-4 h-4" style={{ color: "#4FA6A8" }} />
+      Ver Quiz
+    </button>
 
+    {/* Ver Estatísticas */}
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        router.push(`/teacher/quizz/${quiz.id}/estatisticas`);
+      }}
+      className="text-sm hover:underline flex items-center gap-1"
+      style={{ color: "#8ab4f8" }}
+    >
+      📊 Ver Estatísticas
+    </button>
+  </div>
+
+  {/* Botões de Editar e Apagar */}
   {onEdit && onDelete && (
     <div className="flex gap-4 ml-auto">
       <button
@@ -108,7 +124,7 @@ const QuizCard = ({ quiz, onEdit, onDelete }: QuizCardProps) => {
           router.push(`/teacher/quizz/create?id=${quiz.id}`);
         }}
         className="text-sm hover:underline"
-        style={{ color: "#c9871f" }} // text-yellow-600
+        style={{ color: "#c9871f" }}
       >
         Editar
       </button>
@@ -118,13 +134,14 @@ const QuizCard = ({ quiz, onEdit, onDelete }: QuizCardProps) => {
           onDelete(quiz);
         }}
         className="text-sm hover:underline"
-        style={{ color: "#C93A1F" }} // text-red-600
+        style={{ color: "#C93A1F" }}
       >
         Apagar
       </button>
     </div>
   )}
 </CardFooter>
+
 
     </Card>
   );

@@ -77,31 +77,35 @@ const SharedNotificationSettings = ({
               name="emailAlerts"
               label="Alerta por emails"
               type="switch"
-              
+              labelClassName="text-black" 
             />
 
             <CustomFormField
               name="courseNotifications"
               label="Notificações para cursos"
               type="switch"
+              labelClassName="text-black" 
             />
 
             <CustomFormField
               name="quizNotifications"
               label="Notificações para Quizzes"
               type="switch"
+              labelClassName="text-black" 
             />
 
             <CustomFormField
               name="manualNotifications"
               label="Notificações para Manuais"
               type="switch"
+              labelClassName="text-black" 
             />
 
             <CustomFormField
               name="videoNotifications"
               label="Notificações para Vídeos"
               type="switch"
+              labelClassName="text-black" 
             />
 
             

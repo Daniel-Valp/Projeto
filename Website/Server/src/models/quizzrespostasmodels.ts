@@ -9,7 +9,7 @@ interface QuizRespostaAttributes {
   id: string;
   quiz_id: string;
   aluno_email: string;
-  respostas: object; // JSON object: { "1": "b", "2": "a" }
+  respostas: Record<string, string>;
   pontuacao: number;
   criado_em?: Date;
 }
@@ -21,7 +21,7 @@ class QuizResposta extends Model<QuizRespostaAttributes, QuizRespostaCreation>
   public id!: string;
   public quiz_id!: string;
   public aluno_email!: string;
-  public respostas!: object;
+  public respostas!: Record<string, string>; // <-- aqui também
   public pontuacao!: number;
   public criado_em?: Date;
 }

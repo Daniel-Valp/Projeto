@@ -4,6 +4,7 @@ import CursoRoutes from "./Routes/CursoRoutes";
 import userClerkRoutes from "./Routes/userClerkRoutes";
 import userCourseProgressRoutes from "./Routes/usercourseprogress";
 import graphRoutes from "./Routes/graphroutes"; // ✅ CERTO
+import categoriaRoutes from "./Routes/categorias";
 
 import { clerkMiddleware, createClerkClient, requireAuth } from "@clerk/express";
 import utilizadoresrota from "./Routes/utilizadoresrota";
@@ -32,7 +33,7 @@ app.use("/users/clerk", requireAuth(), userClerkRoutes);
 app.use("/api/progresso", userCourseProgressRoutes);
 app.use("/api", graphRoutes);
 app.use("/api/users", utilizadoresrota);
-
+app.use("/api", categoriaRoutes); // Agora tens /api/categorias e /api/subcategorias
 
 import updateUserRouter from "./Routes/utilizadoresupdaterota";
 app.use("/api/usersupdate", updateUserRouter); // ✅

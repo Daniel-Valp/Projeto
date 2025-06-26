@@ -22,6 +22,7 @@ import {
   User,
   ChartArea,
   UserCog,
+  FolderOpen,
 } from "lucide-react";
 import Loading from "./Loading";
 import Image from "next/image";
@@ -61,7 +62,7 @@ const AppSidebar = ({ className }: { className?: string }) => {
       { icon: Settings, label: "Notificações", href: "/teacher/settings" },
       { icon: ChartArea, label: "Gráficos", href: "/admin/graph" },
       { icon: UserCog, label: "Utilizadores", href: "/admin/users" },
-
+      { icon: FolderOpen, label: "Categorias", href: "/admin/categorias" },
     ],
     
   };
