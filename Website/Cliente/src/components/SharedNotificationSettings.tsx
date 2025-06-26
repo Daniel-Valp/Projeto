@@ -104,17 +104,7 @@ const SharedNotificationSettings = ({
               type="switch"
             />
 
-            <CustomFormField
-              name="notificationFrequency"
-              label="Frequencia de avisos"
-              type="select"
-              className="text-white"
-              options={[
-                { value: "immediate", label: "Imediata" },
-                { value: "daily", label: "Diaria" },
-                { value: "weekly", label: "Semanal" },
-              ]}
-            />
+            
           </div>
 
           <Button type="submit" className="notification-settings__submit">

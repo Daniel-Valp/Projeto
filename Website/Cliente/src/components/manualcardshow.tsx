@@ -52,11 +52,22 @@ const ManualCardshow = ({ manual, onEdit, onDelete }: ManualCardProps) => {
 
 
   const getImageUrl = () => {
-    if (!manual.imagem_capa_url) return "/default-cover.jpg";
-    return manual.imagem_capa_url.startsWith("http")
-      ? manual.imagem_capa_url
-      : `http://localhost:5000${manual.imagem_capa_url}`;
-  };
+  if (!manual.imagem_capa_url || manual.imagem_capa_url === "") {
+    return "/default-cover.jpg";  // caminho relativo para a pasta public
+  }
+
+  if (
+    manual.imagem_capa_url.startsWith("/images/") ||
+    manual.imagem_capa_url.startsWith("/default-cover.jpg")
+  ) {
+    return manual.imagem_capa_url; // Imagem local na pasta public
+  }
+
+  return manual.imagem_capa_url.startsWith("http")
+    ? manual.imagem_capa_url
+    : `http://localhost:5000${manual.imagem_capa_url}`;
+};
+
 
   return (
 
@@ -65,15 +76,21 @@ const ManualCardshow = ({ manual, onEdit, onDelete }: ManualCardProps) => {
   className="group flex flex-col h-full cursor-pointer border-2 border-[#25272e] rounded-2xl overflow-hidden bg-[#25272e] text-white shadow-lg shadow-[rgba(34,34,34,0.37)] transition-all duration-200 hover:bg-[#32353E]"
   onClick={handleViewManual}
 >
-  <CardHeader className="p-0 border-none overflow-hidden">
-    <div className="w-full h-44 overflow-hidden bg-black">
-      <img
-        src={getImageUrl()}
-        alt={manual.titulo}
-        className="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
-      />
-    </div>
-  </CardHeader>
+<CardHeader className="p-0 border-none overflow-hidden">
+  <div className="w-full h-44 relative bg-black">
+    <Image
+      src={getImageUrl()}
+      alt={manual.titulo}
+      fill
+      className="object-cover transition-transform duration-200 hover:scale-105"
+      sizes="(max-width: 768px) 100vw, 33vw"
+      priority
+      unoptimized={getImageUrl() === "/default-cover.jpg"} // desliga otimização para imagens locais se quiser
+    />
+  </div>
+</CardHeader>
+
+
 
 
       <CardContent className="p-4 space-y-3 flex-grow">

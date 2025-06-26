@@ -64,28 +64,35 @@
     };
 
     const handleCreateCourse = async () => {
-      if (!user) return;
-    
-      // 🔥 EXEMPLO com valores fixos (troque isso pela real categoria/subcategoria selecionada)
-      const categoria_id = 1; // ou pegue de um estado / contexto
-      const subcategoriaid = 2;
-    
-      const cursoData = {
-        professorid: user.id,
-        professornome: user.fullName || "Professor desconhecido",
-        categoria_id,
-        subcategoriaid,
-      };
-    
-      try {
-        console.log("📥 Dados do curso a criar:", cursoData);
-        const result = await criarCurso(cursoData).unwrap();
-        toast.success("Curso criado com sucesso!");
-      } catch (error) {
-        console.error("❌ Erro ao criar curso:", error);
-        toast.error("Erro ao criar curso. Tente novamente.");
-      }
-    };
+  if (!user) return;
+
+  const categoria_id = 1;
+  const subcategoriaid = 2;
+
+  const cursoData = {
+    professorid: user.id,
+    professornome: user.fullName || "Professor desconhecido",
+    categoria_id,
+    subcategoriaid,
+  };
+
+  try {
+  console.log("📥 Dados do curso a criar:", cursoData);
+  const result = await criarCurso(cursoData).unwrap();
+
+  if (!result?.cursoid) {
+    throw new Error("Curso criado mas 'cursoid' não foi retornado");
+  }
+
+  toast.success("Curso criado com sucesso!");
+  router.push(`/teacher/cursos/${result.cursoid}`);
+} catch (error) {
+  console.error("❌ Erro ao criar curso:", error);
+  toast.error("Erro ao criar curso. Tente novamente.");
+}
+
+};
+
     
 
     return (

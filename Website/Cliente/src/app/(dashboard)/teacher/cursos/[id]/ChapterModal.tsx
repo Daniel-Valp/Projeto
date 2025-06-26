@@ -40,7 +40,7 @@ const ChapterModal = () => {
     defaultValues: {
         capitulotitulo: '',
         conteudo: '',
-        video: undefined, // melhor do que string vazia
+        video: '', // melhor do que string vazia
       }
       
   });
@@ -56,7 +56,7 @@ const ChapterModal = () => {
       methods.reset({
         capitulotitulo: '',
         conteudo: '',
-        video: undefined,
+        video: '',
       });
     }
   }, [chapter, methods]);

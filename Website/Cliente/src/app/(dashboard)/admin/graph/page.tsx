@@ -64,7 +64,6 @@ export default function AdminContentGraph() {
       setTypeData(json.conteudosPorTipo || []);
 
       // Conteúdos por categoria (geral)
-      setContentCategoryData(json.conteudosPorCategoria || []);
 
 
       setTotalContent(json.totalConteudos || 0);
@@ -191,11 +190,7 @@ export default function AdminContentGraph() {
       </div>
 
       {/* Conteúdos por categoria */}
-      <CustomBar
-        title="Conteúdos por Categoria"
-        data={contentCategoryData}
-        icon={<BarChart3 className="w-5 h-5 text-indigo-500" />}
-      />
+      
 
       {/* Linha Cursos */}
       <div className="mt-12">

@@ -49,17 +49,27 @@ const ManualCard = ({ manual, onEdit, onDelete }: ManualCardProps) => {
   } catch (error) {
     console.error("Erro ao incrementar inscritos:", error);
   } finally {
-    router.push(`/teacher/manuais/${manual.id}`);
+    router.push(`/teacher/manuais?id=${manual.id}`);
+
   }
 };
 
 
   const getImageUrl = () => {
-    if (!manual.imagem_capa_url) return "/default-cover.jpg";
-    return manual.imagem_capa_url.startsWith("http")
-      ? manual.imagem_capa_url
-      : `http://localhost:5000${manual.imagem_capa_url}`;
-  };
+  if (!manual.imagem_capa_url) return "/default-cover.jpg";
+
+  if (
+    manual.imagem_capa_url === "/images/sem-imagem.png" ||
+    manual.imagem_capa_url.startsWith("/images/")
+  ) {
+    return manual.imagem_capa_url; // usa do frontend/public
+  }
+
+  return manual.imagem_capa_url.startsWith("http")
+    ? manual.imagem_capa_url
+    : `http://localhost:5000${manual.imagem_capa_url}`;
+};
+
 
   return (
     <Card

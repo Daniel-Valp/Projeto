@@ -6,8 +6,8 @@ import Toolbar from "@/components/Toolbar";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
-// Interfaces
 interface Category {
   id: string;
   nome: string;
@@ -28,9 +28,13 @@ interface Manual {
   subcategoria_id?: number;
   categoria_nome?: string;
   subcategoria_nome?: string;
+  professor_email?: string; // Importante para controle de acesso
 }
 
 export default function ManuaisPage() {
+  const { user } = useUser();
+  const emailLogado = user?.emailAddresses?.[0]?.emailAddress;
+
   const [manuais, setManuais] = useState<Manual[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -39,47 +43,46 @@ export default function ManuaisPage() {
   const router = useRouter();
 
   useEffect(() => {
-  const fetchManuais = async () => {
-    try {
-      const [manuaisRes, categoriasRes, subcategoriasRes] = await Promise.all([
-        fetch("http://localhost:5000/api/manuais"),
-        fetch("http://localhost:5000/cursos/categorias"),
-        fetch("http://localhost:5000/cursos/subcategorias"),
-      ]);
+    const fetchManuais = async () => {
+      try {
+        const [manuaisRes, categoriasRes, subcategoriasRes] = await Promise.all([
+          fetch("http://localhost:5000/api/manuais"),
+          fetch("http://localhost:5000/cursos/categorias"),
+          fetch("http://localhost:5000/cursos/subcategorias"),
+        ]);
 
-      if (!manuaisRes.ok || !categoriasRes.ok || !subcategoriasRes.ok) {
-        throw new Error("Erro ao buscar dados da API");
+        if (!manuaisRes.ok || !categoriasRes.ok || !subcategoriasRes.ok) {
+          throw new Error("Erro ao buscar dados da API");
+        }
+
+        const manuaisData = await manuaisRes.json();
+        const categoriasData = await categoriasRes.json();
+        const subcategoriasData = await subcategoriasRes.json();
+
+        const categorias: Category[] = categoriasData.data;
+        const subcategorias: Subcategory[] = subcategoriasData.data;
+
+        const manuaisComNomes = manuaisData.map((manual: Manual) => {
+          const categoria = categorias.find((cat) => cat.id === manual.categoria_id);
+          const subcategoria = subcategorias.find(
+            (sub) => sub.subcategoriaid === manual.subcategoria_id
+          );
+
+          return {
+            ...manual,
+            categoria_nome: categoria?.nome,
+            subcategoria_nome: subcategoria?.nome,
+          };
+        });
+
+        setManuais(manuaisComNomes);
+      } catch (error) {
+        console.error("Erro ao buscar manuais:", error);
       }
+    };
 
-      const manuaisData = await manuaisRes.json();
-      const categoriasData = await categoriasRes.json();
-      const subcategoriasData = await subcategoriasRes.json();
-
-      const categorias: Category[] = categoriasData.data;
-      const subcategorias: Subcategory[] = subcategoriasData.data;
-
-      const manuaisComNomes = manuaisData.map((manual: Manual) => {
-        const categoria = categorias.find((cat) => cat.id === manual.categoria_id);
-        const subcategoria = subcategorias.find(
-          (sub) => sub.subcategoriaid === manual.subcategoria_id
-        );
-
-        return {
-          ...manual,
-          categoria_nome: categoria?.nome,
-          subcategoria_nome: subcategoria?.nome,
-        };
-      });
-
-      setManuais(manuaisComNomes);
-    } catch (error) {
-      console.error("Erro ao buscar manuais:", error);
-    }
-  };
-
-  fetchManuais();
-}, []);
-
+    fetchManuais();
+  }, []);
 
   const filteredManuais = manuais.filter((manual) => {
     const matchesSearch = manual.titulo
@@ -153,14 +156,18 @@ export default function ManuaisPage() {
         {filteredManuais.length === 0 ? (
           <p>Nenhum manual disponível.</p>
         ) : (
-          filteredManuais.map((manual) => (
-            <ManualCard
-              key={manual.id}
-              manual={manual}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          ))
+          filteredManuais.map((manual) => {
+            const isOwner = manual.professor_email === emailLogado;
+
+            return (
+              <ManualCard
+                key={manual.id}
+                manual={manual}
+                onEdit={isOwner ? () => handleEdit(manual) : undefined}
+                onDelete={isOwner ? () => handleDelete(manual) : undefined}
+              />
+            );
+          })
         )}
       </div>
     </div>

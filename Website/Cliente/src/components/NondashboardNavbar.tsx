@@ -27,7 +27,7 @@ const NonDashboardNavbar = () => {
       height={25}
     />
 <span style={{ color: "#F3F7F5", fontSize: "15px", fontWeight: "700", lineHeight: "1.2" }}>
-  UDL Formações
+  Formações
 </span>
   </span>
 </Link>
@@ -49,10 +49,7 @@ const NonDashboardNavbar = () => {
           </div> */}
         </div>
         <div className="nondashboard-navbar__actions">
-          <button className="nondashboard-navbar__notification-button">
-            <span className="nondashboard-navbar__notification-indicator"></span>
-            <Bell className="nondashboard-navbar__notification-icon" />
-          </button>
+          
 
           <SignedIn>
             <UserButton

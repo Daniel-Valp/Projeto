@@ -64,29 +64,33 @@
     };
 
     const handleCreateCourse = async () => {
-      if (!user) return;
-    
-      // 🔥 EXEMPLO com valores fixos (troque isso pela real categoria/subcategoria selecionada)
-      const categoria_id = 1; // ou pegue de um estado / contexto
-      const subcategoriaid = 2;
-    
-      const cursoData = {
-        professorid: user.id,
-        professornome: user.fullName || "Professor desconhecido",
-        categoria_id,
-        subcategoriaid,
-      };
-    
-      try {
-        console.log("📥 Dados do curso a criar:", cursoData);
-        const result = await criarCurso(cursoData).unwrap();
-        toast.success("Curso criado com sucesso!");
-        router.push(`/teacher/cursos/${result.cursoid}`);
-      } catch (error) {
-        console.error("❌ Erro ao criar curso:", error);
-        toast.error("Erro ao criar curso. Tente novamente.");
-      }
-    };
+  if (!user) return;
+
+  const cursoData = {
+    professorid: user.id,
+    professornome: user.fullName || "Professor desconhecido",
+    categoria_id: 1,          // Substitua por uma categoria default se necessário
+    subcategoriaid: 1,          // Substitua por uma subcategoria default se necessário
+    titulo: "Novo Curso",       // Campos mínimos exigidos pela sua API
+    descricao: "Descrição padrão do curso"
+  };
+
+  try {
+    const result = await criarCurso(cursoData).unwrap();
+
+    if (!result?.cursoid) {
+      throw new Error("Resposta da API não contém 'cursoid'");
+    }
+
+    toast.success("Curso criado com sucesso!");
+    router.push(`/teacher/cursos/${result.cursoid}`);
+  } catch (error) {
+    console.error("Erro ao criar curso:", error);
+    toast.error("Erro ao criar curso. Tente novamente.");
+  }
+};
+
+
     
 
     return (

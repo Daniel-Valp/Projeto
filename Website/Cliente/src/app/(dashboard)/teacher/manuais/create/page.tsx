@@ -74,14 +74,6 @@ const professorEmail = user?.emailAddresses[0]?.emailAddress || "";
     // Capa obrigatória (via upload ou URL)
     const hasUploadedImage = imagemCapaFile !== null;
     const hasValidUrl = data.imagem_capa_url && /^https?:\/\/.+\.(jpg|jpeg|png|webp)$/i.test(data.imagem_capa_url);
-
-    if (!hasUploadedImage && !hasValidUrl) {
-        ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Informe uma imagem de capa válida (upload ou URL)",
-        path: ["imagem_capa_url"],
-        });
-    }
     });
     }, [useFileUpload, imagemCapaFile]);
 
@@ -147,6 +139,11 @@ const professorEmail = user?.emailAddresses[0]?.emailAddress || "";
     }, [manualId, methods]);
 
     const onSubmit = async (data: ManualFormData) => {
+        // Se nenhuma imagem foi enviada, definir imagem padrão
+if (!imagemCapaFile && (!data.imagem_capa_url || data.imagem_capa_url.trim() === "")) {
+  data.imagem_capa_url = "/images/sem-imagem.png";
+}
+
     console.log("🔘 Botão submit clicado");
     console.log("🧾 Estado atual do formulário: ", data);
 
@@ -166,49 +163,50 @@ const professorEmail = user?.emailAddresses[0]?.emailAddress || "";
         : "http://localhost:5000/api/manuais";
 
         if (useFileUpload) {
-        console.log("📂 Enviando arquivo via upload");
+  console.log("📂 Enviando arquivo via upload");
 
-        const fileInput = document.querySelector('input[type="file"][name="arquivo_pdf"]') as HTMLInputElement;
+  const fileInput = document.querySelector('input[type="file"][name="arquivo_pdf"]') as HTMLInputElement;
 
-        console.log("📁 fileInput encontrado:", fileInput);
+  console.log("📁 fileInput encontrado:", fileInput);
 
-        if (!fileInput?.files?.length) {
-            toast.error("Selecione um arquivo PDF para upload");
-            console.log("⚠️ Nenhum arquivo PDF selecionado");
-            return;
-        }
+  if (!fileInput?.files?.length) {
+    toast.error("Selecione um arquivo PDF para upload");
+    console.log("⚠️ Nenhum arquivo PDF selecionado");
+    return;
+  }
 
-        const formData = new FormData();
-        formData.append("arquivo_pdf", fileInput.files[0]);
-        formData.append("titulo", data.titulo);
-        formData.append("descricao", data.descricao);
-        formData.append("categoria_id", data.categoria);
-        formData.append("subcategoria_id", data.subcategoria);
-        formData.append("status", status);
-        formData.append("professor_email", professorEmail); // 👈 injectado aqui
+  const formData = new FormData();
+  formData.append("arquivo_pdf", fileInput.files[0]);
+  formData.append("titulo", data.titulo);
+  formData.append("descricao", data.descricao);
+  formData.append("categoria_id", data.categoria);
+  formData.append("subcategoria_id", data.subcategoria);
+  formData.append("status", status);
+  formData.append("professor_email", professorEmail);
 
+  // Aqui entra o ELSE que define imagem padrão
+  if (imagemCapaFile) {
+    formData.append("imagem_capa_url", imagemCapaFile);
+    console.log("🖼️ Imagem de capa adicionada ao FormData");
+  } else {
+    formData.append("imagem_capa_url", "/images/sem-imagem.png");
+    console.log("📷 Imagem padrão usada no FormData");
+  }
 
-        if (imagemCapaFile) {
-            formData.append("imagem_capa_url", imagemCapaFile);
-            console.log("🖼️ Imagem de capa adicionada ao FormData");
-            {imagemCapaFile && (
-    <p className="text-sm text-muted-foreground">📷 {imagemCapaFile.name}</p>
-    )}
+  const res = await fetch(url, {
+    method: manualId ? "PUT" : "POST",
+    body: formData,
+  });
 
-        }
+  console.log("📤 Resposta do servidor (upload):", res);
 
-        const res = await fetch(url, {
-            method: manualId ? "PUT" : "POST",
-            body: formData,
-        });
+  if (!res.ok) throw new Error("Erro ao enviar dados");
 
-        console.log("📤 Resposta do servidor (upload):", res);
+  toast.success(manualId ? "Manual atualizado!" : "Manual criado com sucesso");
+  router.push("/teacher/manuais");
+}
 
-        if (!res.ok) throw new Error("Erro ao enviar dados");
-
-        toast.success(manualId ? "Manual atualizado!" : "Manual criado com sucesso");
-        router.push("/teacher/manuais");
-        } else {
+         else {
         console.log("🌐 Enviando dados via JSON", {
             titulo: data.titulo,
             descricao: data.descricao,
@@ -269,6 +267,14 @@ const professorEmail = user?.emailAddresses[0]?.emailAddress || "";
         toast.error("Erro ao mudar status");
         }
     };
+
+      if (
+    categorias.length === 0 || 
+    subcategorias.length === 0 || 
+    (manualId && !methods.getValues("titulo"))
+  ) {
+    return <p>Carregando...</p>;
+  }
 
     return (
         <div className="p-6 space-y-6">

@@ -184,12 +184,9 @@ try {
 
     
 
-    res.status(201).json({
-      data: {
-        curso: novoCurso.toJSON(),
-        message: "Curso criado com sucesso",
-      },
-    });
+    res.status(201).json({ data: novoCurso.toJSON() });
+
+
 
   } catch (error) {
     console.error("❌ Erro ao criar curso:", error);

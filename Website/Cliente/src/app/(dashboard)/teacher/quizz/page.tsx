@@ -6,18 +6,20 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Toolbar from "@/components/Toolbar";
 import QuizCard from "@/components/quizzcard";
+import { useUser } from "@clerk/nextjs";
 
 // Interfaces
 interface Quiz {
-  id: number;
+  id: string;
   titulo: string;
   descricao: string;
   status?: "publicado" | "rascunho";
-  perguntasCount?: number;
+  perguntasCount?: number | string;
   categoria_id?: string;
   subcategoria_id?: number;
   categoria?: string;
   subcategoria?: string;
+  professor_email?: string; // importante
 }
 
 interface Category {
@@ -31,6 +33,9 @@ interface Subcategory {
 }
 
 export default function QuizzesPage() {
+  const { user } = useUser();
+  const emailLogado = user?.emailAddresses?.[0]?.emailAddress;
+
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [categorias, setCategorias] = useState<Category[]>([]);
   const [subcategorias, setSubcategorias] = useState<Subcategory[]>([]);
@@ -103,6 +108,10 @@ export default function QuizzesPage() {
     return matchesSearch && matchesCategory && matchesSubcategory;
   });
 
+  const handleEdit = (quiz: Quiz) => {
+    router.push(`/teacher/quizz/create?id=${quiz.id}`);
+  };
+
   const handleDelete = async (quiz: Quiz) => {
     const confirmDelete = window.confirm(`Deseja mesmo apagar o quiz "${quiz.titulo}"?`);
     if (!confirmDelete) return;
@@ -133,31 +142,33 @@ export default function QuizzesPage() {
         subtitle="Veja todos os quizzes disponíveis"
         rightElement={
           <Button className="teacher-courses__header" onClick={handleCreateQuiz}>
-  Criar quiz
-</Button>
-
+            Criar quiz
+          </Button>
         }
       />
 
       <Toolbar
-  onSearch={setSearchTerm}
-  onCategoryChange={setSelectedCategory}
-  onSubcategoryChange={setSelectedSubcategory}
-/>
-
+        onSearch={setSearchTerm}
+        onCategoryChange={setSelectedCategory}
+        onSubcategoryChange={setSelectedSubcategory}
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredQuizzes.length === 0 ? (
           <p>Nenhum quiz disponível.</p>
         ) : (
-          filteredQuizzes.map((quiz) => (
-            <QuizCard
-              key={quiz.id}
-              quiz={quiz}
-              onEdit={() => router.push(`/teacher/quizz/create?id=${quiz.id}`)}
-              onDelete={handleDelete}
-            />
-          ))
+          filteredQuizzes.map((quiz) => {
+            const isOwner = quiz.professor_email === emailLogado;
+
+            return (
+              <QuizCard
+                key={quiz.id}
+                quiz={quiz}
+                onEdit={isOwner ? () => handleEdit(quiz) : undefined}
+                onDelete={isOwner ? () => handleDelete(quiz) : undefined}
+              />
+            );
+          })
         )}
       </div>
     </div>

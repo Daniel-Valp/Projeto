@@ -11,14 +11,15 @@ import { FileText, Eye, ListChecks } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface Quiz {
-  id: number;
+  id: string;  // muda de number para string, porque seu ID é UUID (string)
   titulo: string;
   descricao: string;
   status?: "publicado" | "rascunho";
-  perguntasCount?: number;
+  perguntasCount?: number | string; // pode até ser string, pois a API envia como "3"
   categoria?: string;
   subcategoria?: string;
 }
+
 
 interface QuizCardProps {
   quiz: Quiz;
