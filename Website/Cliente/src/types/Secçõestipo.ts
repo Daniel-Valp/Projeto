@@ -5,6 +5,7 @@ export interface Capitulo {
   capitulotitulo: string;
   conteudo: string;
   video?: string | File | null; // ✅ agora aceita vídeos novos (File) e existentes (string)
+  imagem?: string | null; // 👈 adiciona esta linha
   freepreview: boolean;
 }
 

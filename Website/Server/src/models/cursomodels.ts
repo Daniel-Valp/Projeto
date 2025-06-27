@@ -187,6 +187,10 @@ const Capitulo = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    imagem: {
+  type: DataTypes.TEXT, // ou STRING(5000) dependendo do tamanho esperado
+  allowNull: true,
+},
     freepreview: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,

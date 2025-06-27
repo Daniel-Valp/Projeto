@@ -132,11 +132,19 @@ const CourseChapterPage = () => {
           </div>
         )}
 
+        {capituloAtual.imagem && (
+  <div className="mb-6 mt-2">
+    <img
+      src={capituloAtual.imagem}
+      alt={`Imagem do capítulo ${capituloAtual.capitulotitulo}`}
+      className="max-w-full rounded-md shadow-md"
+    />
+  </div>
+)}
+
         <Tabs defaultValue="Notes" className="w-full">
           <TabsList>
             <TabsTrigger value="Notes" className="text-[#25272e]">Notas</TabsTrigger>
-            <TabsTrigger value="Resources" className="text-[#25272e]">Recursos</TabsTrigger>
-            <TabsTrigger value="Quiz" className="text-[#25272e]">Quiz</TabsTrigger>
           </TabsList>
 
           <TabsContent value="Notes">
@@ -146,19 +154,7 @@ const CourseChapterPage = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="Resources">
-            <div className="mb-4 p-4 rounded-md text-[#25272e] hover:bg-[#4FA6A8] transition-colors border">
-              <h3 className="text-lg font-semibold mb-2">Recursos</h3>
-              Nenhum recurso disponível.
-            </div>
-          </TabsContent>
-
-          <TabsContent value="Quiz">
-            <div className="mb-4 p-4 rounded-md text-[#25272e] hover:bg-[#4FA6A8] transition-colors border">
-              <h3 className="text-lg font-semibold mb-2">Quiz</h3>
-              Quiz em breve!
-            </div>
-          </TabsContent>
+          
         </Tabs>
       </main>
     </div>

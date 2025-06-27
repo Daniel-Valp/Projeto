@@ -132,11 +132,25 @@ const CourseChapterPage = () => {
           </div>
         )}
 
+        {capituloAtual.imagem ? (
+  <div className="mb-6 mt-4 flex justify-center">
+    <img
+  src={capituloAtual.imagem}
+  alt={`Imagem do capítulo ${capituloAtual.capitulotitulo}`}
+  className="w-full max-h-[800px] rounded-md shadow-md object-contain"
+/>
+  </div>
+) : (
+  <div className="mb-8 p-4 mt-4 rounded-md text-[#2e2525] border hover:bg-[#4FA6A8]">
+    Sem imagem disponível
+  </div>
+)}
+
+
         <Tabs defaultValue="Notes" className="w-full">
           <TabsList>
             <TabsTrigger value="Notes" className="text-[#25272e]">Notas</TabsTrigger>
-            <TabsTrigger value="Resources" className="text-[#25272e]">Recursos</TabsTrigger>
-            <TabsTrigger value="Quiz" className="text-[#25272e]">Quiz</TabsTrigger>
+
           </TabsList>
 
           <TabsContent value="Notes">

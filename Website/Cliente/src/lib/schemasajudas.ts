@@ -9,6 +9,7 @@ export const chapterSchema = z.object({
     z.literal(""),
     z.undefined()
   ]), // 👈 aceita link, vazio ou indefinido
+  imagem: z.string().optional(),
 });
 
 
@@ -18,8 +19,10 @@ export const chapterSchema = z.object({
 export type ChapterFormData = {
   capitulotitulo: string;
   conteudo: string;
-  video?: string; // apenas string agora
+  video?: string;
+  imagem?: string; // 👈 adicionar esta linha
 };
+
 
 
 
@@ -28,7 +31,7 @@ export const cursoFormSchema = z.object({
   cursotitulo: z
     .string()
     .min(1, "O título é obrigatório")
-    .max(20, "O título deve ter no máximo 20 caracteres"),
+    .max(40, "O título deve ter no máximo 20 caracteres"),
   cursodescricao: z.string().min(1, "A descrição é obrigatória"),
   cursocategoria: z.string().min(1, "A categoria é obrigatória"),
   cursosubcategoria: z.string().min(1, "A subcategoria é obrigatória"),

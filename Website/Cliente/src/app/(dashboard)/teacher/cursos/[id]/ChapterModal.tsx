@@ -41,6 +41,7 @@ const ChapterModal = () => {
         capitulotitulo: '',
         conteudo: '',
         video: '', // melhor do que string vazia
+        imagem: '', // 👈 aqui também
       }
       
   });
@@ -51,12 +52,15 @@ const ChapterModal = () => {
         capitulotitulo: chapter.capitulotitulo,
         conteudo: chapter.conteudo,
         video: typeof chapter.video === 'string' ? chapter.video : undefined,
+        imagem: chapter.imagem || '', // 👈 aqui
       });
     } else {
       methods.reset({
         capitulotitulo: '',
         conteudo: '',
         video: '',
+          imagem: '', // 👈 aqui também
+
       });
     }
   }, [chapter, methods]);
@@ -78,6 +82,7 @@ const ChapterModal = () => {
       conteudo: data.conteudo,
       type: data.video ? 'Video' : 'Text',
       video: data.video || null,
+      imagem: data.imagem || null, // aqui!
       freepreview: false, // ou true se quiseres por default
     };
 
@@ -145,6 +150,43 @@ const ChapterModal = () => {
                   </FormItem>
                 )}
               />
+              <FormField
+  control={methods.control}
+  name="imagem"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel className="text-sm">Imagem do Capítulo</FormLabel>
+      <FormControl>
+  <div>
+    <Input
+      type="file"
+      accept="image/*"
+      onChange={async (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            field.onChange(reader.result); // base64 string
+          };
+          reader.readAsDataURL(file);
+        }
+      }}
+    />
+    {field.value && (
+      <img
+        src={field.value}
+        alt="Pré-visualização"
+        className="mt-2 max-h-40 rounded"
+      />
+    )}
+  </div>
+</FormControl>
+
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
 
 
             <div className="chapter-modal__actions mt-4 flex justify-end gap-2">

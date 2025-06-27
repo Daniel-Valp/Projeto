@@ -350,14 +350,16 @@ await Promise.allSettled(
         if (Array.isArray(secao.capitulos)) {
           for (const capitulo of secao.capitulos) {
             const novoCapitulo = await Capitulo.create({
-              capituloid: capitulo.capituloid || uuidv4(),
-              secaoid: novaSecao.getDataValue("secaoid"),
-              type: capitulo.type || "Video",
-              capitulotitulo: capitulo.capitulotitulo,
-              conteudo: capitulo.conteudo || "",
-              video: capitulo.video || "",
-              freepreview: capitulo.freepreview || false,
-            });
+            capituloid: capitulo.capituloid || uuidv4(),
+            secaoid: novaSecao.getDataValue("secaoid"),
+            type: capitulo.type || "Video",
+            capitulotitulo: capitulo.capitulotitulo,
+            conteudo: capitulo.conteudo || "",
+            video: capitulo.video || "",
+            imagem: capitulo.imagem || "", // ⬅️ NOVO!
+            freepreview: capitulo.freepreview || false,
+          });
+
 
             console.log("📚 Capítulo criado:", novoCapitulo.toJSON());
           }
