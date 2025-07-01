@@ -13,7 +13,7 @@ import {
   useGetSubcategoriasQuery,
 } from '@/state/api';
 import { useAppDispatch, useAppSelector } from '@/state/redux';
-import { openSectionModal, setSections } from '@/state';
+import { closeSectionModal, openSectionModal, setSections } from '@/state';
 import { cursoFormSchema, CursoFormData } from '@/lib/schemasajudas';
 import { criarCursoFormData, fazerUploadVideos } from '@/lib/ajudas';
 import { Form } from '@/components/ui/form';
@@ -54,39 +54,44 @@ const CourseEditor = () => {
     },
   });
 
-  useEffect(() => {
-    console.log("🟨 useEffect ativado");
-  
-    if (!curso || categorias.length === 0 || subcategorias.length === 0) {
-      console.log("⛔ Dados ainda não prontos");
-      return;
-    }
-  
-    console.log("🧩 curso.categoria:", curso.categoria);
-    console.log("🧩 curso.subcategoria:", curso.subcategoria);
-  
-    // ⬅️ Adiciona este log aqui
-    console.log("🧪 curso.secoes recebido:", curso.secoes);
-  
-    const valores = {
-      cursotitulo: curso.titulo || "",
-      cursodescricao: curso.descricao || "",
-      cursocategoria: String(curso.categoria?.id || ""),
-      cursosubcategoria: String(curso.subcategoria?.subcategoriaid || ""),
-      cursohoras: String(curso.horas || "0"),
-      cursoestado: curso.estado === "Publicado",
-    };
-  
-    console.log("✅ Valores para reset:", valores);
-  
-    methods.reset(valores);
-    dispatch(setSections(curso.secoes || [])); // <- este é o alvo
+ useEffect(() => {
+  console.log("🟨 useEffect ativado");
 
+  if (!curso || categorias.length === 0 || subcategorias.length === 0) {
+    console.log("⛔ Dados ainda não prontos");
+    return;
+  }
 
-    if (curso.imagem) {
-      setImagePreview(curso.imagem);
-    }
-  }, [curso, categorias, subcategorias]);
+  console.log("🧩 curso.categoria:", curso.categoria);
+  console.log("🧩 curso.subcategoria:", curso.subcategoria);
+
+  console.log("🧪 curso.secoes recebido:", curso.secoes);
+
+  const valores = {
+    cursotitulo: curso.titulo || "",
+    cursodescricao: curso.descricao || "",
+    cursocategoria: String(curso.categoria?.id || ""),
+    cursosubcategoria: String(curso.subcategoria?.subcategoriaid || ""),
+    cursohoras: String(curso.horas || "0"),
+    cursoestado: curso.estado === "Publicado",
+  };
+
+  console.log("✅ Valores para reset:", valores);
+
+  methods.reset(valores);
+
+  // Garante que o estado fica vazio se não houver secções
+  if (curso.secoes && curso.secoes.length > 0) {
+    dispatch(setSections(curso.secoes));
+  } else {
+    dispatch(setSections([]));
+  }
+
+  if (curso.imagem && curso.imagem !== imagePreview) {
+    setImagePreview(curso.imagem);
+  }
+}, [curso, categorias, subcategorias]);
+
   
   
   
@@ -289,9 +294,13 @@ const CourseEditor = () => {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    dispatch(openSectionModal({ sectionIndex: null }))
-                  }
+                  onClick={() => {
+  dispatch(closeSectionModal());
+  setTimeout(() => {
+    dispatch(openSectionModal({ sectionIndex: null }));
+  }, 0);
+}}
+
                   className="border-none text-primary-200 group"
                 >
                   <Plus className="mr-1 h-4 w-4 text-primary-100 group-hover:white-100" />

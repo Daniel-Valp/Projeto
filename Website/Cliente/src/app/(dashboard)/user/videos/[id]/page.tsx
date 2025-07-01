@@ -55,13 +55,13 @@ export default function VideoDetailPage() {
         title={video.title}
         subtitle="Detalhes do vídeo"
         rightElement={
-          <Button
-  onClick={() => router.push("/user/videos")}
-  variant="outline"
+         <Button
+            variant="outline"
 className="border border-[#25262f] text-[#25262f] hover:bg-[#4FA6A8] hover:text-white"
->
-  Voltar
-</Button>
+            onClick={() => router.back()}
+          >
+            Voltar
+          </Button>
 
         }
       />

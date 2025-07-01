@@ -10,6 +10,8 @@ import {
   PieChart,
   Pie,
   Cell,
+  LineChart,
+  Line,
 } from "recharts";
 import { JSX, useEffect, useState } from "react";
 import {
@@ -50,6 +52,9 @@ export default function AdminContentGraph() {
 
   const [totalContent, setTotalContent] = useState(0);
 
+  // Estado global para alternar gráficos (barra/pizza ou linha)
+  const [chartType, setChartType] = useState<"bar" | "line">("bar");
+
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch("http://localhost:5000/api/graph");
@@ -60,40 +65,16 @@ export default function AdminContentGraph() {
 
       const json = await res.json();
 
-      // Pizza tipo
       setTypeData(json.conteudosPorTipo || []);
-
-      // Conteúdos por categoria (geral)
-
-
       setTotalContent(json.totalConteudos || 0);
-
-      // Cursos categoria e subcategoria
       setCourseCategoryData(json.cursosPorCategoria || []);
-
       setCourseSubCategoryData(json.cursosPorSubcategoria || []);
-
-
-      // Para quizzes, videos e manuais, supondo que o backend retorne assim:
-      // ex: json.quizzesPorCategoria, json.quizzesPorSubcategoria etc.
-
       setQuizCategoryData(json.quizzesPorCategoria || []);
-
-
       setQuizSubCategoryData(json.quizzesPorSubcategoria || []);
-
-
       setVideoCategoryData(json.videosPorCategoria || []);
-
-
       setVideoSubCategoryData(json.videosPorSubcategoria || []);
-
-
       setManualCategoryData(json.manuaisPorCategoria || []);
-
-
       setManualSubCategoryData(json.manuaisPorSubcategoria || []);
-
     };
 
     fetchData();
@@ -118,6 +99,7 @@ export default function AdminContentGraph() {
     </ul>
   );
 
+  // Componente que renderiza barra ou linha conforme o estado global chartType
   const CustomBar = ({
     title,
     data,
@@ -135,17 +117,31 @@ export default function AdminContentGraph() {
         <p className="text-gray-500 dark:text-gray-400">Sem dados disponíveis</p>
       ) : (
         <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={data}>
-            <XAxis dataKey="type" tick={{ fill: "#9CA3AF", fontSize: 11 }} />
-            <YAxis allowDecimals={false} tick={{ fill: "#9CA3AF", fontSize: 11 }} />
-            <Tooltip />
-            <Bar dataKey="count" radius={[8, 8, 0, 0]}>
-  {data.map((_, index) => (
-    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-  ))}
-</Bar>
-
-          </BarChart>
+          {chartType === "bar" ? (
+            <BarChart data={data}>
+              <XAxis dataKey="type" tick={{ fill: "#9CA3AF", fontSize: 11 }} />
+              <YAxis allowDecimals={false} tick={{ fill: "#9CA3AF", fontSize: 11 }} />
+              <Tooltip />
+              <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+                {data.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Bar>
+            </BarChart>
+          ) : (
+            <LineChart data={data}>
+              <XAxis dataKey="type" tick={{ fill: "#9CA3AF", fontSize: 11 }} />
+              <YAxis allowDecimals={false} tick={{ fill: "#9CA3AF", fontSize: 11 }} />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="count"
+                stroke="#6366F1"
+                strokeWidth={3}
+                dot={{ r: 4 }}
+              />
+            </LineChart>
+          )}
         </ResponsiveContainer>
       )}
     </div>
@@ -158,41 +154,74 @@ export default function AdminContentGraph() {
         Estatísticas de Conteúdos
       </h1>
 
-      <p className="text-lg text-gray-700 dark:text-gray-300 mb-10">
+      <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
         Total de conteúdos:{" "}
         <strong className="text-indigo-600 dark:text-indigo-400">{totalContent}</strong>
       </p>
 
-      {/* Distribuição por tipo - pizza */}
+      {/* Botão global para alternar todos os gráficos */}
+      <div className="flex justify-end mb-6">
+        <button
+          onClick={() => setChartType(chartType === "bar" ? "line" : "bar")}
+className="px-4 py-2 text-white text-sm rounded-lg shadow transition"
+  style={{ backgroundColor: '#4FA6A8' }}
+  onMouseEnter={e => e.currentTarget.style.backgroundColor = '#025E69'}
+  onMouseLeave={e => e.currentTarget.style.backgroundColor = '#4FA6A8'}        >
+          Alternar para {chartType === "bar" ? "linha" : "barra/pizza"}
+        </button>
+      </div>
+
+      {/* Distribuição por tipo */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mb-12 transition hover:shadow-xl max-w-md mx-auto">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
           <PieIcon className="w-5 h-5 text-indigo-500" /> Distribuição por Tipo
         </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={typeData}
-              dataKey="count"
-              nameKey="type"
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              label={renderCustomizedLabel}
-            >
-              {typeData.map((entry, index) => (
-                <Cell key={`cell-type-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
+
+        {typeData.length === 0 ? (
+          <p className="text-gray-500 dark:text-gray-400">Sem dados disponíveis</p>
+        ) : (
+          <ResponsiveContainer width="100%" height={300}>
+            {chartType === "bar" ? (
+              <PieChart>
+                <Pie
+                  data={typeData}
+                  dataKey="count"
+                  nameKey="type"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  label={renderCustomizedLabel}
+                >
+                  {typeData.map((entry, index) => (
+                    <Cell
+                      key={`cell-type-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            ) : (
+              <LineChart data={typeData}>
+                <XAxis dataKey="type" tick={{ fill: "#9CA3AF", fontSize: 11 }} />
+                <YAxis allowDecimals={false} tick={{ fill: "#9CA3AF", fontSize: 11 }} />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="count"
+                  stroke="#6366F1"
+                  strokeWidth={3}
+                  dot={{ r: 4 }}
+                />
+              </LineChart>
+            )}
+          </ResponsiveContainer>
+        )}
+
         <LegendList entries={typeData} />
       </div>
 
-      {/* Conteúdos por categoria */}
-      
-
-      {/* Linha Cursos */}
+      {/* Cursos */}
       <div className="mt-12">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Cursos</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -209,7 +238,7 @@ export default function AdminContentGraph() {
         </div>
       </div>
 
-      {/* Linha Quizzes */}
+      {/* Quizzes */}
       <div className="mt-12">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Quizzes</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -226,7 +255,7 @@ export default function AdminContentGraph() {
         </div>
       </div>
 
-      {/* Linha Vídeos */}
+      {/* Vídeos */}
       <div className="mt-12">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Vídeos</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -243,7 +272,7 @@ export default function AdminContentGraph() {
         </div>
       </div>
 
-      {/* Linha Manuais */}
+      {/* Manuais */}
       <div className="mt-12 mb-12">
         <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Manuais</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

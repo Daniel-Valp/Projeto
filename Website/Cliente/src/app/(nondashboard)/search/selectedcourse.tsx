@@ -38,6 +38,8 @@ const SelectedCourse = ({ Curso }: CursoSelecionado) => {
             fontWeight: 600,
             fontSize: "1.875rem",
             color: "#F3F7F5",
+            lineHeight: "2.2rem", // <--- adiciona isto
+
           }}
         >
           {Curso.titulo}

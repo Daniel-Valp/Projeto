@@ -112,8 +112,11 @@ const completedChapters = secao.capitulos.filter((cap) =>
                 )}
               </div>
               <h3 className="chapters-sidebar__section-title">
-                {secao.secaotitulo}
-              </h3>
+  {secao.secaotitulo.match(/.{1,20}/g)?.map((linha, i) => (
+    <span key={i} className="block">{linha}</span>
+  ))}
+</h3>
+
             </div>
 
             <hr className="chapters-sidebar__divider" />

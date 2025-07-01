@@ -97,7 +97,7 @@ const VideoCard = ({ video, onEdit, onDelete }: VideoCardProps) => {
         {/* Inscritos */}
         <div className="flex items-center text-sm gap-2" style={{ color: "#F3F7F5" }}>
           <Users className="w-4 h-4" />
-          <span>Vizualizações: {video.inscritos}</span>
+          <span>Visualizações: {video.inscritos}</span>
         </div>
 
         {/* Categoria e Subcategoria */}

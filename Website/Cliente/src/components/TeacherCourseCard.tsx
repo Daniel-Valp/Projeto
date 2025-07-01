@@ -107,7 +107,7 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
           {typeof curso.enlistados === "number" ? (
   <p style={{ color: "#F3F7F5" }}>
   <span className="font-bold">{curso.enlistados}</span>
-  {curso.enlistados === 1 ? " Aluno inscrito" : " Alunos inscritos"}
+  {curso.enlistados === 1 ? " Visualização" : " Visualizações"}
 </p>
 
 ) : (

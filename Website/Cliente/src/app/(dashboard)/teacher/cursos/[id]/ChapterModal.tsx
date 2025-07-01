@@ -150,42 +150,47 @@ const ChapterModal = () => {
                   </FormItem>
                 )}
               />
-              <FormField
+           <FormField
   control={methods.control}
   name="imagem"
   render={({ field }) => (
     <FormItem>
       <FormLabel className="text-sm">Imagem do Capítulo</FormLabel>
       <FormControl>
-  <div>
-    <Input
-      type="file"
-      accept="image/*"
-      onChange={async (e) => {
-        const file = e.target.files?.[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            field.onChange(reader.result); // base64 string
-          };
-          reader.readAsDataURL(file);
-        }
-      }}
-    />
-    {field.value && (
-      <img
-        src={field.value}
-        alt="Pré-visualização"
-        className="mt-2 max-h-40 rounded"
-      />
-    )}
-  </div>
-</FormControl>
+        <div>
+          <Input
+            type="file"
+            accept=".jpg,.jpeg,.png"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const validExtensions = ["image/jpeg", "image/jpg", "image/png"];
+                if (!validExtensions.includes(file.type)) {
+                  alert("Por favor, selecione uma imagem .jpg, .jpeg ou .png.");
+                  return;
+                }
 
-      <FormMessage />
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  field.onChange(reader.result); // base64 string
+                };
+                reader.readAsDataURL(file);
+              }
+            }}
+          />
+          {field.value && (
+            <img
+              src={field.value}
+              alt="Pré-visualização"
+              className="mt-2 max-h-40 rounded"
+            />
+          )}
+        </div>
+      </FormControl>
     </FormItem>
   )}
 />
+
 
 
 

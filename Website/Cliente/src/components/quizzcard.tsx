@@ -9,17 +9,17 @@ import {
 } from "@/components/ui/card";
 import { FileText, Eye, ListChecks } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 interface Quiz {
-  id: string;  // muda de number para string, porque seu ID é UUID (string)
+  id: string;  // UUID
   titulo: string;
   descricao: string;
   status?: "publicado" | "rascunho";
-  perguntasCount?: number | string; // pode até ser string, pois a API envia como "3"
+  perguntasCount?: number | string;
   categoria?: string;
   subcategoria?: string;
 }
-
 
 interface QuizCardProps {
   quiz: Quiz;
@@ -29,55 +29,67 @@ interface QuizCardProps {
 
 const QuizCard = ({ quiz, onEdit, onDelete }: QuizCardProps) => {
   const router = useRouter();
+  const { user, isLoaded } = useUser();
 
   const handleView = (e: React.MouseEvent) => {
     e.stopPropagation();
-    router.push(`/teacher/quizz/${quiz.id}`);
+    const confirm = window.confirm(
+      "Atenção! Tem a certeza que quer visualizar este quiz? Uma vez iniciado é necessario acaba-lo."
+    );
+    if (!confirm) return;
+
+    if (!isLoaded || !user) {
+      router.push("/login");
+      return;
+    }
+
+const role = (user.publicMetadata?.userType ?? "").toString().toLowerCase();
+
+    if (role === "teacher" || role === "admin") {
+      router.push(`/teacher/quizz/${quiz.id}`);
+    } else if (role === "student" || role === "aluno") {
+      router.push(`/user/quizz/${quiz.id}`);
+    } else {
+      router.push("/user/cursos");
+    }
   };
 
   return (
     <Card
-  className="group flex flex-col h-full cursor-pointer border rounded-2xl transition-all duration-200 shadow-lg bg-[#25272e]"
-  onClick={handleView}
->
-
+      className="group flex flex-col h-full cursor-pointer border rounded-2xl transition-all duration-200 shadow-lg bg-[#25272e]"
+      onClick={handleView}
+    >
       <CardContent className="p-4 space-y-3 flex-grow">
-        <CardTitle
-  className="text-xl font-bold"
-  style={{ color: '#F3F7F5' }} // exemplo: #1A202C é um cinza escuro similar ao gray-800
->
-  {quiz.titulo.length > 30 ? `${quiz.titulo.slice(0, 30)}...` : quiz.titulo}
-</CardTitle>
+        <CardTitle className="text-xl font-bold" style={{ color: '#F3F7F5' }}>
+          {quiz.titulo.length > 30 ? `${quiz.titulo.slice(0, 30)}...` : quiz.titulo}
+        </CardTitle>
 
-{/* Status */}
-<div className="flex items-center text-sm gap-2">
-  <Eye className="w-4 h-4" style={{ color: '#4FA6A8' }} /> {/* gray-500 */}
-  <span style={{ color: '#F3F7F5' }}>Status:</span> {/* gray-700 */}
-  <span
-    className={`px-2 py-0.5 text-xs font-medium rounded-full`}
-    style={{
-      backgroundColor:
-        quiz.status === "publicado" ? '#DCFCE7' : '#FEE2E2', // bg-green-100 or bg-red-100
-      color: quiz.status === "publicado" ? '#166534' : '#991B1B', // text-green-800 or text-red-800
-    }}
-  >
-    {quiz.status === "publicado" ? "Publicado" : "Rascunho"}
-  </span>
-</div>
+        {/* Status */}
+        <div className="flex items-center text-sm gap-2">
+          <Eye className="w-4 h-4" style={{ color: '#4FA6A8' }} />
+          <span style={{ color: '#F3F7F5' }}>Status:</span>
+          <span
+            className="px-2 py-0.5 text-xs font-medium rounded-full"
+            style={{
+              backgroundColor:
+                quiz.status === "publicado" ? '#DCFCE7' : '#FEE2E2',
+              color: quiz.status === "publicado" ? '#166534' : '#991B1B',
+            }}
+          >
+            {quiz.status === "publicado" ? "Publicado" : "Rascunho"}
+          </span>
+        </div>
 
-{/* Perguntas */}
-<div className="flex items-center text-sm gap-2" style={{ color: '#F3F7F5' }}>
-  <ListChecks className="w-4 h-4" />
-  <span>Quantidade de Perguntas: {quiz.perguntasCount ?? 0}</span>
-</div>
+        {/* Perguntas */}
+        <div className="flex items-center text-sm gap-2" style={{ color: '#F3F7F5' }}>
+          <ListChecks className="w-4 h-4" />
+          <span>Quantidade de Perguntas: {quiz.perguntasCount ?? 0}</span>
+        </div>
 
-{/* Descrição */}
-<div style={{ color: '#F3F7F5' }} className="text-sm">
-  {quiz.descricao.length > 20
-    ? `${quiz.descricao.slice(0, 40)}...`
-    : quiz.descricao}
-</div>
-
+        {/* Descrição */}
+        <div style={{ color: '#F3F7F5' }} className="text-sm">
+          {quiz.descricao.length > 20 ? `${quiz.descricao.slice(0, 40)}...` : quiz.descricao}
+        </div>
 
         {/* Categoria e Subcategoria */}
         <div className="flex flex-wrap gap-2 pt-2">
@@ -90,59 +102,57 @@ const QuizCard = ({ quiz, onEdit, onDelete }: QuizCardProps) => {
         </div>
       </CardContent>
 
-<CardFooter className="p-4 flex items-center justify-between">
-  <div className="flex gap-4">
-    {/* Ver Quiz */}
-    <button
-      onClick={handleView}
-      className="text-sm hover:underline flex items-center gap-1"
-      style={{ color: "#4FA6A8" }}
-    >
-      <FileText className="w-4 h-4" style={{ color: "#4FA6A8" }} />
-      Ver Quiz
-    </button>
+      <CardFooter className="p-4 flex items-center justify-between">
+        <div className="flex gap-4">
+          {/* Ver Quiz */}
+          <button
+            onClick={handleView}
+            className="text-sm hover:underline flex items-center gap-1"
+            style={{ color: "#4FA6A8" }}
+          >
+            <FileText className="w-4 h-4" style={{ color: "#4FA6A8" }} />
+            Ver Quiz
+          </button>
 
-    {/* Ver Estatísticas */}
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        router.push(`/teacher/quizz/${quiz.id}/estatisticas`);
-      }}
-      className="text-sm hover:underline flex items-center gap-1"
-      style={{ color: "#8ab4f8" }}
-    >
-      📊 Ver Estatísticas
-    </button>
-  </div>
+          {/* Ver Estatísticas */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/teacher/quizz/${quiz.id}/estatisticas`);
+            }}
+            className="text-sm hover:underline flex items-center gap-1"
+            style={{ color: "#8ab4f8" }}
+          >
+            📊 Ver Estatísticas
+          </button>
+        </div>
 
-  {/* Botões de Editar e Apagar */}
-  {onEdit && onDelete && (
-    <div className="flex gap-4 ml-auto">
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          router.push(`/teacher/quizz/create?id=${quiz.id}`);
-        }}
-        className="text-sm hover:underline"
-        style={{ color: "#c9871f" }}
-      >
-        Editar
-      </button>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete(quiz);
-        }}
-        className="text-sm hover:underline"
-        style={{ color: "#C93A1F" }}
-      >
-        Apagar
-      </button>
-    </div>
-  )}
-</CardFooter>
-
-
+        {/* Botões de Editar e Apagar */}
+        {onEdit && onDelete && (
+          <div className="flex gap-4 ml-auto">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/teacher/quizz/create?id=${quiz.id}`);
+              }}
+              className="text-sm hover:underline"
+              style={{ color: "#c9871f" }}
+            >
+              Editar
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(quiz);
+              }}
+              className="text-sm hover:underline"
+              style={{ color: "#C93A1F" }}
+            >
+              Apagar
+            </button>
+          </div>
+        )}
+      </CardFooter>
     </Card>
   );
 };

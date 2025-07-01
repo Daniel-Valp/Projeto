@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import { useUser } from "@clerk/nextjs";
 
-
 interface Pergunta {
   id: string;
   pergunta: string;
@@ -28,7 +27,6 @@ export default function QuizPage() {
   const { id } = useParams();
   const router = useRouter();
   const { user } = useUser();
-
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [respostas, setRespostas] = useState<Record<string, string>>({});
@@ -79,100 +77,103 @@ export default function QuizPage() {
     }));
   };
 
-
   const BotaoVoltar = ({ quizConcluido }: { quizConcluido: boolean }) => {
-  const { user, isLoaded } = useUser();
-  const router = useRouter();
+    const { user, isLoaded } = useUser();
+    const router = useRouter();
 
-  const handleVoltar = () => {
-    if (!quizConcluido) return;
+    const handleVoltar = () => {
+      if (!quizConcluido) return;
 
-    const role = String(user?.publicMetadata?.userType || "").toLowerCase();
-    const isProfessorOuAdmin = role === "professor" || role === "admin";
+      const role = String(user?.publicMetadata?.userType || "").toLowerCase();
+      const isProfessorOuAdmin = role === "professor" || role === "admin";
 
-    if (isProfessorOuAdmin) {
-      router.push("/teacher/quizz");
-    } else {
-      router.push("/user/quizz"); // ou outro path para aluno
-    }
+      if (isProfessorOuAdmin) {
+        router.push("/teacher/quizz");
+      } else {
+        router.push("/user/quizz"); // ou outro path para aluno
+      }
+    };
+
+    if (!isLoaded || !user) return null;
+
+    return (
+      <Button
+        variant="outline"
+        className="border border-[#25262f] text-[#25262f] hover:bg-[#4FA6A8] hover:text-white"
+        disabled={!quizConcluido}
+        onClick={handleVoltar}
+      >
+        Voltar
+      </Button>
+    );
   };
 
-  if (!isLoaded || !user) return null;
-
-  return (
-    <Button
-      variant="outline"
-      className="border border-[#25262f] text-[#25262f] hover:bg-[#4FA6A8] hover:text-white"
-      disabled={!quizConcluido}
-      onClick={handleVoltar}
-    >
-      Voltar
-    </Button>
-  );
-};
-
   const verificarResultado = async () => {
-      console.log("📌 verificarResultado chamada"); // <--- AQUI
+    if (!quiz) return;
 
-  if (!quiz) return;
-
-  let corretas = 0;
-
-  quiz.perguntas.forEach((p) => {
-    if (respostas[p.id] === p.resposta_correta) {
-      corretas++;
+    // Verifica se todas as perguntas têm resposta
+    const todasRespondidas = quiz.perguntas.every((p) => respostas[p.id]);
+    if (!todasRespondidas) {
+      alert("Por favor, responda a todas as perguntas antes de ver o resultado.");
+      return;
     }
-  });
 
-  setResultado(corretas);
+    let corretas = 0;
 
-  // Enviar resultado para o backend
-  try {
-  const response = await fetch(`http://localhost:5000/api/quizzes/${quiz.id}/respostas`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      aluno_email: user?.emailAddresses?.[0]?.emailAddress || "aluno@anonimo.com",
-      respostas,
-      resultado: {
-        acertos: corretas,
-        total: quiz.perguntas.length,
-      },
-    }),
-  });
+    quiz.perguntas.forEach((p) => {
+      if (respostas[p.id] === p.resposta_correta) {
+        corretas++;
+      }
+    });
 
-  if (!response.ok) {
-    throw new Error(`Erro ao enviar resultado. Status: ${response.status}`);
-  }
+    setResultado(corretas);
 
-  console.log("📨 Resultado enviado com sucesso");
-} catch (error) {
-  console.error("❌ Erro ao enviar resultado:", error);
-}
+    // Enviar resultado para o backend
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/quizzes/${quiz.id}/respostas`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            aluno_email:
+              user?.emailAddresses?.[0]?.emailAddress || "aluno@anonimo.com",
+            respostas,
+            resultado: {
+              acertos: corretas,
+              total: quiz.perguntas.length,
+            },
+          }),
+        }
+      );
 
-};
+      if (!response.ok) {
+        throw new Error(`Erro ao enviar resultado. Status: ${response.status}`);
+      }
 
+      console.log("📨 Resultado enviado com sucesso");
+    } catch (error) {
+      console.error("❌ Erro ao enviar resultado:", error);
+    }
+  };
 
   if (loading) return <p className="p-6 text-white">Carregando quiz...</p>;
   if (!quiz) return <p className="p-6 text-white">Quiz não encontrado.</p>;
 
   const quizConcluido = resultado !== null;
+  const todasRespondidas = quiz.perguntas.every((p) => respostas[p.id]);
 
   return (
     <div className="p-6 bg-[#F3F7F5] min-h-screen space-y-6 text-white">
       <Header
         title={quiz.titulo}
         subtitle="Responda ao Quiz"
-        rightElement={
-          <BotaoVoltar quizConcluido={quizConcluido} />
-
-
-        }
+        rightElement={<BotaoVoltar quizConcluido={quizConcluido} />}
       />
 
-      <p className="text-[#4FA6A8]">{quiz.descricao}</p>
+      <p className="text-[#24272f]">{quiz.descricao}</p>
 
       <div className="space-y-6">
         {quiz.perguntas?.map((p, index) => {
@@ -238,15 +239,15 @@ export default function QuizPage() {
       </div>
 
       {!quizConcluido && (
-  <Button
-  onClick={verificarResultado}
-  className="mt-6 bg-[#025E69] hover:bg-[#4FA6A8] text-[#FFFFFF]"
->
-  Ver Resultado
-</Button>
-
-)}
-
+        <Button
+          onClick={verificarResultado}
+          className="mt-6 bg-[#025E69] hover:bg-[#4FA6A8] text-[#FFFFFF]"
+          disabled={!todasRespondidas}
+          title={!todasRespondidas ? "Responda a todas as perguntas para continuar" : ""}
+        >
+          Ver Resultado
+        </Button>
+      )}
 
       {quizConcluido && (
         <p className="text-lg font-bold mt-4 text-[#25262f]">

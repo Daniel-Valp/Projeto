@@ -9,6 +9,7 @@ import {
 import Image from "next/image";
 import { Users } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 interface Video {
   id: number;
@@ -37,6 +38,7 @@ const getYoutubeThumbnail = (url: string) => {
 
 const VideoCardshow = ({ video, onEdit, onDelete }: VideoCardProps) => {
   const router = useRouter();
+  const { user, isLoaded } = useUser();
 
   const handleViewVideo = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -49,9 +51,21 @@ const VideoCardshow = ({ video, onEdit, onDelete }: VideoCardProps) => {
       });
     } catch (error) {
       console.error("Erro ao incrementar inscritos:", error);
-      // opcional: avisar o usuário aqui
     } finally {
-      router.push(`/teacher/videos/${video.id}/view`);
+      if (!isLoaded || !user) {
+        router.push("/login"); // ou outra página de login/erro
+        return;
+      }
+      const role = (user.publicMetadata?.userType ?? "").toString().toLowerCase();
+
+
+      if (role === "teacher" || role === "admin") {
+        router.push(`/teacher/videos/${video.id}/view`);
+      } else if (role === "student" || role === "aluno") {
+        router.push(`/user/videos/${video.id}`);
+      } else {
+        router.push("/user/cursos");
+      }
     }
   };
 

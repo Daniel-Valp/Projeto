@@ -175,7 +175,7 @@ const criarSubcategoria = async () => {
 
   return (
     <div className="p-6 bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-white">
-      <h1 className="text-3xl font-bold mb-8 text-center">📂 Gestão de Categorias</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">📂 Gestão de Categorias e subcategorias</h1>
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Categorias */}

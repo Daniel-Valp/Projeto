@@ -1,6 +1,11 @@
 "use client";
 
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "@hello-pangea/dnd";
 import { Button } from "@/components/ui/button";
 import { Trash2, Edit, Plus, GripVertical } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/state/redux";
@@ -17,126 +22,140 @@ export default function DroppableComponent() {
   const dispatch = useAppDispatch();
   const { sections } = useAppSelector((state) => state.global.courseEditor);
 
-  console.log("🧪 Sections dentro de DroppableComponent:", sections);
+  const handleDragEnd = (result: DropResult) => {
+    const { source, destination, type } = result;
 
+    if (!destination) return;
 
-  const handleSectionDragEnd = (result: any) => {
-    if (!result.destination) return;
+    const newSections = [...sections];
 
-    const startIndex = result.source.index;
-    const endIndex = result.destination.index;
+    if (type === "section") {
+      const [movedSection] = newSections.splice(source.index, 1);
+      newSections.splice(destination.index, 0, movedSection);
+      dispatch(setSections(newSections));
+    }
 
-    const updatedSections = [...sections];
-    const [reorderedSection] = updatedSections.splice(startIndex, 1);
-    updatedSections.splice(endIndex, 0, reorderedSection);
-    dispatch(setSections(updatedSections));
-  };
+    if (type === "chapter") {
+      const sourceSectionIndex = sections.findIndex(
+        (sec) => `chapters-${sec.secaoid}` === source.droppableId
+      );
+      const destSectionIndex = sections.findIndex(
+        (sec) => `chapters-${sec.secaoid}` === destination.droppableId
+      );
 
-  const handleChapterDragEnd = (result: any, sectionIndex: number) => {
-    if (!result.destination) return;
+      if (sourceSectionIndex === -1 || destSectionIndex === -1) return;
 
-    const startIndex = result.source.index;
-    const endIndex = result.destination.index;
+      const sourceSection = { ...newSections[sourceSectionIndex] };
+      const destSection =
+        sourceSectionIndex === destSectionIndex
+          ? sourceSection
+          : { ...newSections[destSectionIndex] };
 
-    const updatedSections = [...sections];
-    const updatedChapters = [...updatedSections[sectionIndex].capitulos];
-    const [reorderedChapter] = updatedChapters.splice(startIndex, 1);
-    updatedChapters.splice(endIndex, 0, reorderedChapter);
-    updatedSections[sectionIndex].capitulos = updatedChapters;
-    dispatch(setSections(updatedSections));
+      const sourceChapters = [...(sourceSection.capitulos || [])];
+      const destChapters =
+        sourceSectionIndex === destSectionIndex
+          ? sourceChapters
+          : [...(destSection.capitulos || [])];
+
+      const [movedChapter] = sourceChapters.splice(source.index, 1);
+      destChapters.splice(destination.index, 0, movedChapter);
+
+      newSections[sourceSectionIndex] = {
+        ...sourceSection,
+        capitulos: sourceChapters,
+      };
+
+      if (sourceSectionIndex !== destSectionIndex) {
+        newSections[destSectionIndex] = {
+          ...destSection,
+          capitulos: destChapters,
+        };
+      } else {
+        newSections[sourceSectionIndex].capitulos = destChapters;
+      }
+
+      dispatch(setSections(newSections));
+    }
   };
 
   return (
-    <DragDropContext onDragEnd={handleSectionDragEnd}>
-      <Droppable droppableId="sections">
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId="sections" type="section">
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            {sections.map((section: Secao, sectionIndex: number) => {
-  console.log("🎯 Renderizando seção:", section.secaotitulo);
+            {sections.map((section: Secao, sectionIndex: number) => (
+              <Draggable
+                key={`section-${section.secaoid}`}
+                draggableId={`section-${section.secaoid}`}
+                index={sectionIndex}
+              >
+                {(sectionProvided) => (
+                  <div
+                    ref={sectionProvided.innerRef}
+                    {...sectionProvided.draggableProps}
+                    className={`droppable-section ${
+                      sectionIndex % 2 === 0
+                        ? "droppable-section--even"
+                        : "droppable-section--odd"
+                    }`}
+                  >
+                    <SectionHeader
+                      secao={section}
+                      sectionIndex={sectionIndex}
+                      dragHandleProps={sectionProvided.dragHandleProps}
+                    />
 
-  return (
-    <Draggable
-      key={`section-${section.secaoid}`}
-      draggableId={`section-${section.secaoid}`}
-      index={sectionIndex}
-    >
-      {(draggableProvider) => (
-        <div
-          ref={draggableProvider.innerRef}
-          {...draggableProvider.draggableProps}
-          className={`droppable-section ${
-            sectionIndex % 2 === 0
-              ? "droppable-section--even"
-              : "droppable-section--odd"
-          }`}
-        >
-          <SectionHeader
-            secao={section}
-            sectionIndex={sectionIndex}
-            dragHandleProps={draggableProvider.dragHandleProps}
-          />
-
-          <DragDropContext
-            onDragEnd={(result) =>
-              handleChapterDragEnd(result, sectionIndex)
-            }
-          >
-            <Droppable droppableId={`chapters-${section.secaoid}`}>
-              {(droppableProvider) => (
-                <div
-                  ref={droppableProvider.innerRef}
-                  {...droppableProvider.droppableProps}
-                >
-                  {section.capitulos.map(
-                    (chapter: Capitulo, chapterIndex: number) => {
-                      console.log("📘 Renderizando capítulo:", chapter.capitulotitulo);
-
-                      return (
-                        <Draggable
-                          key={`chapter-${chapter.capituloid}`}
-                          draggableId={`chapter-${chapter.capituloid}`}
-                          index={chapterIndex}
+                    <Droppable
+                      droppableId={`chapters-${section.secaoid}`}
+                      type="chapter"
+                    >
+                      {(droppableProvider) => (
+                        <div
+                          ref={droppableProvider.innerRef}
+                          {...droppableProvider.droppableProps}
                         >
-                          {(draggableProvider) => (
-                            <ChapterItem
-                              chapter={chapter}
-                              chapterIndex={chapterIndex}
-                              sectionIndex={sectionIndex}
-                              draggableProvider={draggableProvider}
-                            />
+                          {section.capitulos.map(
+                            (chapter: Capitulo, chapterIndex: number) => (
+                              <Draggable
+                                key={`chapter-${chapter.capituloid}`}
+                                draggableId={`chapter-${chapter.capituloid}`}
+                                index={chapterIndex}
+                              >
+                                {(chapterProvider) => (
+                                  <ChapterItem
+                                    chapter={chapter}
+                                    chapterIndex={chapterIndex}
+                                    sectionIndex={sectionIndex}
+                                    draggableProvider={chapterProvider}
+                                  />
+                                )}
+                              </Draggable>
+                            )
                           )}
-                        </Draggable>
-                      );
-                    }
-                  )}
-                  {droppableProvider.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+                          {droppableProvider.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
 
-          <Button
-  type="button"
-  onClick={() =>
-    dispatch(
-      openChapterModal({
-        sectionIndex,
-        chapterIndex: null,
-      })
-    )
-  }
-  className="bg-[#025E69] text-white hover:bg-[#4FA6A8] hover:text-white px-3 py-2 text-xs rounded-md flex items-center gap-2 transition-colors"
->
-  <Plus className="text-white" />
-  <span>Adicionar capítulo</span>
-</Button>
-
-        </div>
-      )}
-    </Draggable>
-  );
-})}
-
+                    <Button
+                      type="button"
+                      onClick={() =>
+                        dispatch(
+                          openChapterModal({
+                            sectionIndex,
+                            chapterIndex: null,
+                          })
+                        )
+                      }
+                      className="bg-[#025E69] text-white hover:bg-[#4FA6A8] hover:text-white px-3 py-2 text-xs rounded-md flex items-center gap-2 transition-colors"
+                    >
+                      <Plus className="text-white" />
+                      <span>Adicionar capítulo</span>
+                    </Button>
+                  </div>
+                )}
+              </Draggable>
+            ))}
             {provided.placeholder}
           </div>
         )}
@@ -144,6 +163,10 @@ export default function DroppableComponent() {
     </DragDropContext>
   );
 }
+
+// ===============================
+// Componentes auxiliares mantêm-se
+// ===============================
 
 const SectionHeader = ({
   secao,

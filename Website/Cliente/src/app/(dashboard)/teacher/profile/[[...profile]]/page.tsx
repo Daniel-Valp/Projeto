@@ -6,7 +6,7 @@ import React from 'react'
 const TeacherProfilePage = () => {
   return (
     <div className="p-8"> {/* 👈 padding adicionado aqui */}
-      <Header title="Profile" subtitle="Veja o seu perfil" />
+      <Header title="Perfil" subtitle="Modifique as informações do seu perfil aqui" />
       <UserProfile 
         path="/teacher/profile"
         routing="path"

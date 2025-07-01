@@ -29,7 +29,6 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(new URL("/user/cursos", req.url));
   }
 
-  // ⚠️ Bloqueia teacher de acessar student
   
 
   return NextResponse.next();

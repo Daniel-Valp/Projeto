@@ -4,18 +4,17 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME, // Nome do banco de dados
-  process.env.DB_USER, // Usuário
-  process.env.DB_PASS, // Senha
+  process.env.DB_NAME, 
+  process.env.DB_USER, 
+  process.env.DB_PASS, 
   {
-    host: process.env.DB_HOST, // Host do banco
-    dialect: "postgres", // Define o banco como PostgreSQL
-    port: process.env.DB_PORT || 5432, // Porta do banco
-    logging: false, // Desativa logs no console (opcional)
+    host: process.env.DB_HOST, 
+    dialect: "postgres", 
+    port: process.env.DB_PORT || 5432, 
+    logging: false, 
   }
 );
 
-// Teste de conexão
 (async () => {
   try {
     await sequelize.authenticate();

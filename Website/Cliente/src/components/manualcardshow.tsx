@@ -10,6 +10,7 @@ import {
 import { FileText, Eye, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useUser } from "@clerk/nextjs";
 
 
 interface Manual {
@@ -30,25 +31,39 @@ interface ManualCardProps {
   onDelete?: (manual: Manual) => void;
 }
 
-const ManualCardshow = ({ manual, onEdit, onDelete }: ManualCardProps) => {
+const ManualCardshow = ({ manual }: ManualCardProps) => {
   const router = useRouter();
+  const { user, isLoaded } = useUser();
 
   const handleViewManual = async (e: React.MouseEvent) => {
-  e.stopPropagation();
+    e.stopPropagation();
 
-  try {
-    await fetch(`http://localhost:5000/api/manuais/${manual.id}/enlistar`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  } catch (error) {
-    console.error("Erro ao incrementar inscritos:", error);
-  } finally {
-    router.push(`/teacher/manuais/${manual.id}`);
-  }
-};
+    try {
+      await fetch(`http://localhost:5000/api/manuais/${manual.id}/enlistar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (error) {
+      console.error("Erro ao incrementar inscritos:", error);
+    } finally {
+      if (!isLoaded || !user) {
+        router.push(`/login`); // ou outra página pública
+        return;
+      }
+
+      const role = (user.publicMetadata?.userType ?? "").toString().toLowerCase();
+
+
+      if (role === "teacher" || role === "admin") {
+        router.push(`/teacher/manuais/${manual.id}`);
+      } else if (role === "student" || role === "aluno") {
+        router.push(`/user/manuais/${manual.id}`);  // rota do aluno
+      } else {
+        // fallback ou admin
+        router.push(`/user/cursos`);
+      }
+    }
+  };
 
 
   const getImageUrl = () => {
@@ -113,13 +128,13 @@ const ManualCardshow = ({ manual, onEdit, onDelete }: ManualCardProps) => {
         </div> */}
 <div className="text-sm" style={{ color: "#F3F7F5" }}>
   {manual.descricao.length > 20
-    ? `${manual.descricao.slice(0, 20)}...`
+    ? `${manual.descricao.slice(0, 70)}...`
     : manual.descricao}
 </div>
         {/* Inscritos */}
         <div className="flex items-center text-sm gap-2" style={{ color: "#4FA6A8" }}>
           <Users className="w-4 h-4" />
-          <span>Inscritos: {manual.inscritos ?? 0}</span>
+          <span>Visualisações: {manual.inscritos ?? 0}</span>
         </div>
 
 

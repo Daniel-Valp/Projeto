@@ -111,7 +111,7 @@ const ManualCard = ({ manual, onEdit, onDelete }: ManualCardProps) => {
     {/* Inscritos */}
     <div className="flex items-center text-sm gap-2" style={{ color: "#F3F7F5" }}>
       <Users className="w-4 h-4" />
-      <span>Inscritos: {manual.inscritos ?? 0}</span>
+      <span>Visualisações: {manual.inscritos ?? 0}</span>
     </div>
 
     {/* Descrição */}

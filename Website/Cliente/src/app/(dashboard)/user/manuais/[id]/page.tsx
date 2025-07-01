@@ -85,7 +85,7 @@ className="border border-[#25262f] text-[#25262f] hover:bg-[#4FA6A8] hover:text-
         }
       />
 
-      <div className="text-[#4FA6A8] space-y-4">
+      <div className="text-[#25262f] space-y-4">
         <p>{manual.descricao}</p>
 
         <div className="flex flex-wrap gap-2 pt-2">

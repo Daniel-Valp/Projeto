@@ -148,7 +148,7 @@ className="border border-[#25262f] text-[#25262f] hover:bg-[#4FA6A8] hover:text-
         }
       />
 
-      <p className="text-[#4FA6A8]">{quiz.descricao}</p>
+      <p className="text-[#24272f]">{quiz.descricao}</p>
 
       <div className="space-y-6">
         {quiz.perguntas?.map((p, index) => {
