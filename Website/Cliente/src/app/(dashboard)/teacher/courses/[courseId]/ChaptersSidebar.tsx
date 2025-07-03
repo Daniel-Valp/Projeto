@@ -51,9 +51,18 @@ const ChaptersSidebar = () => {
     );
   
     // Depois navega
-    router.push(`/user/courses/${courseId}/chapters/${chapterId}`, {
-      scroll: false,
-    });
+router.push(`/user/courses/${courseId}/chapters/${chapterId}`, {
+  scroll: false,
+});
+
+// Aguarda um pouco antes de forçar o scroll (evita conflitos visuais)
+setTimeout(() => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+}, 50);
+
   };
 
 

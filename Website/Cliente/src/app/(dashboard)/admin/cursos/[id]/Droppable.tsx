@@ -136,10 +136,10 @@ const CourseEditor = () => {
                 ]}
               />
               <CustomFormField
-                name="cursosubcategoria"
-                label="Subcategoria"
+                name="cursoserviço"
+                label="Serviço"
                 type="select"
-                placeholder="Escolha a subcategoria"
+                placeholder="Escolha o serviço"
                 options={[
                   { value: "10", label: "Frontend" },
                   { value: "11", label: "Backend" },

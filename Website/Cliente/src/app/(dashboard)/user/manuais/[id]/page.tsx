@@ -93,7 +93,7 @@ className="border border-[#25262f] text-[#25262f] hover:bg-[#4FA6A8] hover:text-
             Categoria: {manual.categoria_nome || "Sem categoria"}
           </span>
           <span className="bg-green-100 dark:bg-green-800/30 text-green-800 dark:text-green-300 px-3 py-1 text-xs rounded-full">
-            Subcategoria: {manual.subcategoria_nome || "Sem subcategoria"}
+            Serviço: {manual.subcategoria_nome || "Sem serviço"}
           </span>
         </div>
       </div>

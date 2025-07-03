@@ -114,10 +114,10 @@ export const useSubcategorias = () => {
         if (data?.data) {
           setSubcategorias(data.data);
         } else {
-          toast.error("Erro ao carregar subcategorias");
+          toast.error("Erro ao carregar Serviços");
         }
       } catch (err) {
-        setError("Erro ao carregar subcategorias");
+        setError("Erro ao carregar serviços");
         console.error(err);
       } finally {
         setLoading(false);

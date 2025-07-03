@@ -26,7 +26,7 @@ const videoFormSchema = z.object({
   title: z.string().min(3, "Título é obrigatório"),
   url: z.string().url("URL inválida"),
   categoria: z.string().min(1, "Categoria é obrigatória"),
-  subcategoria: z.string().min(1, "Subcategoria é obrigatória"),
+  subcategoria: z.string().min(1, "Serviço é obrigatório"),
 });
 
 type VideoFormData = z.infer<typeof videoFormSchema>;
@@ -205,9 +205,9 @@ if (!videoId || isNaN(idNumber)) {
 
           <CustomFormField
             name="subcategoria"
-            label="Subcategoria"
+            label="Serviço"
             type="select"
-            placeholder="Selecione uma subcategoria"
+            placeholder="Selecione um Serviço"
             options={subcategorias.map((sub) => ({
               value: String(sub.subcategoriaid),
               label: sub.nome,

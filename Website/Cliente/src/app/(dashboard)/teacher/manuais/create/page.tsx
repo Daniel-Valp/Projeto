@@ -56,7 +56,7 @@ const professorEmail = user?.emailAddresses[0]?.emailAddress || "";
         descricao: z.string().min(10, "Descrição é obrigatória"),
         imagem_capa_url: z.string().optional(),
         categoria: z.string().min(1, "Categoria é obrigatória"),
-        subcategoria: z.string().min(1, "Subcategoria é obrigatória"),
+        subcategoria: z.string().min(1, "Serviço é obrigatória"),
         arquivo_pdf_url: z.string().optional(),
         })
         .superRefine((data, ctx) => {
@@ -105,7 +105,7 @@ const professorEmail = user?.emailAddresses[0]?.emailAddress || "";
             setCategorias(catData.data || []);
             setSubcategorias(subData.data || []);
         } catch {
-            toast.error("Erro ao carregar categorias ou subcategorias");
+            toast.error("Erro ao carregar categorias ou ServiçoS");
         }
         };
 
@@ -357,7 +357,7 @@ if (!imagemCapaFile && (!data.imagem_capa_url || data.imagem_capa_url.trim() ===
 
         <CustomFormField
         name="subcategoria"
-        label="Subcategoria"
+        label="Serviço"
         type="select"
         options={subcategorias.map((sub) => ({
             value: String(sub.subcategoriaid),

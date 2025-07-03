@@ -139,7 +139,7 @@ const ManualCard = ({ manual, onEdit, onDelete }: ManualCardProps) => {
           color: "#166534",
         }}
       >
-        Subcategoria: {manual.subcategoria_nome || "Sem subcategoria"}
+        Serviço: {manual.subcategoria_nome || "Sem serviço"}
       </span>
     </div>
   </CardContent>

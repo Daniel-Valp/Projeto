@@ -249,18 +249,15 @@ export const deleteQuiz = async (req: Request, res: Response) => {
 };
 
 import QuizResposta from "../models/quizzrespostasmodels";
-
 export const getQuizStatistics = async (req: Request, res: Response) => {
   try {
     const quizId = req.params.id;
 
-    // Verifica se o quiz existe
     const quiz = await Quiz.findByPk(quizId);
     if (!quiz) {
       return res.status(404).json({ message: "Quiz não encontrado." });
     }
 
-    // Obter perguntas do quiz
     const perguntas = await QuizPergunta.findAll({
       where: { quiz_id: quizId },
       raw: true,
@@ -276,6 +273,7 @@ export const getQuizStatistics = async (req: Request, res: Response) => {
         totalTentativas: 0,
         mediaPontuacao: 0,
         perguntasMaisErradas: [],
+        totalUtilizadoresUnicos: 0,
       });
     }
 
@@ -283,7 +281,9 @@ export const getQuizStatistics = async (req: Request, res: Response) => {
     const totalPontuacao = respostas.reduce((acc, r) => acc + (r.pontuacao || 0), 0);
     const mediaPontuacao = totalPontuacao / totalTentativas;
 
-    // Inicializa contadores de erro por pergunta
+    // ✅ calcular utilizadores únicos
+const utilizadoresUnicos = new Set(respostas.map((r) => r.aluno_email)).size;
+
     const errosPorPergunta: Record<string, { total: number; erradas: number; texto: string }> = {};
 
     for (const pergunta of perguntas) {
@@ -296,7 +296,6 @@ export const getQuizStatistics = async (req: Request, res: Response) => {
 
     for (const resposta of respostas) {
       const respostasAluno: Record<string, string> = resposta.respostas || {};
-
 
       for (const pergunta of perguntas) {
         const pid = pergunta.id.toString();
@@ -321,12 +320,13 @@ export const getQuizStatistics = async (req: Request, res: Response) => {
         };
       })
       .sort((a, b) => b.taxaErro - a.taxaErro)
-      .slice(0, 5); // Top 5 perguntas com maior erro
+      .slice(0, 5);
 
     res.json({
       totalTentativas,
       mediaPontuacao: Number(mediaPontuacao.toFixed(2)),
       perguntasMaisErradas,
+      totalUtilizadoresUnicos: utilizadoresUnicos,
     });
   } catch (error) {
     console.error("Erro ao buscar estatísticas do quiz:", error);

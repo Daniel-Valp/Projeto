@@ -428,10 +428,10 @@ export const listarCategorias = async (req: Request, res: Response): Promise<voi
 export const listarSubcategorias = async (req: Request, res: Response): Promise<void> => {
     try {
       const subcategorias = await Subcategoria.findAll(); // Busca todas as subcategorias
-      res.json({ message: "Lista de subcategorias carregada com sucesso", data: subcategorias });
+      res.json({ message: "Lista de serviços carregado com sucesso", data: subcategorias });
     } catch (error) {
-      console.error("Erro ao buscar subcategorias:", error);
-      res.status(500).json({ message: "Erro ao buscar subcategorias", error });
+      console.error("Erro ao buscar serviços:", error);
+      res.status(500).json({ message: "Erro ao buscar serviços", error });
     }
   };
   

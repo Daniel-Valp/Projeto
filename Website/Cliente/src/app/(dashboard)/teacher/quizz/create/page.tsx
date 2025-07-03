@@ -31,7 +31,7 @@ const quizSchema = z.object({
   titulo: z.string().min(3, "Título é obrigatório"),
   descricao: z.string().min(10, "Descrição é obrigatória"),
   categoria: z.string().min(1, "Categoria é obrigatória"),
-  subcategoria: z.string().min(1, "Subcategoria é obrigatória"),
+  subcategoria: z.string().min(1, "Serviço é obrigatória"),
   perguntas: z
     .array(
       z.object({
@@ -104,10 +104,6 @@ export default function CreateQuizPage() {
 useEffect(() => {
   const fetchQuiz = async () => {
     if (!id) return;
-    if (loading) {
-  return <p className="text-center text-muted">Carregando quiz...</p>;
-}
-
 
     try {
       const res = await fetch(`http://localhost:5000/api/quizzes/${id}`);
@@ -123,26 +119,26 @@ useEffect(() => {
         };
       });
 
-      // reset básico, perguntas vazias
-     methods.reset({
-  titulo: data.titulo,
-  descricao: data.descricao,
-  categoria: String(data.categoria_id),
-  subcategoria: String(data.subcategoria_id),
-  perguntas, // já com as perguntas carregadas
-});
-
-
+      methods.reset({
+        titulo: data.titulo,
+        descricao: data.descricao,
+        categoria: String(data.categoria_id),
+        subcategoria: String(data.subcategoria_id),
+        perguntas,
+      });
 
       setStatus(data.status || "rascunho");
     } catch (error) {
       console.error("Erro ao carregar quiz:", error);
       toast.error("Erro ao carregar dados do quiz");
+    } finally {
+      setLoading(false);
     }
   };
 
   fetchQuiz();
-}, [id, methods, replace]);
+}, [id, methods]);
+
 
 
   // Criar ou atualizar quiz
@@ -200,6 +196,15 @@ useEffect(() => {
       console.error(err);
     }
   };
+  if (id && loading) {
+  return (
+    <div className="p-6">
+      <p className="text-center text-muted-foreground text-sm">
+        A carregar quiz...
+      </p>
+    </div>
+  );
+}
 
   return (
     <div className="p-6 space-y-6">
@@ -260,14 +265,15 @@ useEffect(() => {
           />
 
           <CustomFormField
-            name="subcategoria"
-            label="Subcategoria"
-            type="select"
-            options={subcategorias.map((sub) => ({
-              value: String(sub.subcategoriaid),
-              label: sub.nome,
-            }))}
-          />
+  name="subcategoria" // ✅ Corrigido
+  label="Serviço"
+  type="select"
+  options={subcategorias.map((sub) => ({
+    value: String(sub.subcategoriaid),
+    label: sub.nome,
+  }))}
+/>
+
 
           <div className="space-y-4">
 <h3 className="text-lg font-semibold text-[#025E69]">Perguntas</h3>

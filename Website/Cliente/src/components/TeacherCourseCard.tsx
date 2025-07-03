@@ -42,14 +42,14 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
   
     if (!curso.subcategoriaid) {
       console.warn("⚠️ subcategoriaid não está definido no curso.");
-      return "Subcategoria não disponível";
+      return "Serviço não disponível";
     }
   
     const subcategoriaEncontrada = subcategorias.find(
       (sub) => Number(sub.subcategoriaid) === Number(curso.subcategoriaid)
     );
   
-    return subcategoriaEncontrada?.nome || "Subcategoria não disponível";
+    return subcategoriaEncontrada?.nome || "Serviço não disponível";
   }, [subcategorias, curso.subcategoriaid]);
   
   

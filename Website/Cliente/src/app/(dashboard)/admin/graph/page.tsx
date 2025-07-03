@@ -231,7 +231,7 @@ className="px-4 py-2 text-white text-sm rounded-lg shadow transition"
             icon={<GraduationCap className="w-5 h-5 text-green-600" />}
           />
           <CustomBar
-            title="Cursos por Subcategoria"
+            title="Cursos por serviços"
             data={courseSubCategoryData}
             icon={<ListOrdered className="w-5 h-5 text-green-400" />}
           />
@@ -248,7 +248,7 @@ className="px-4 py-2 text-white text-sm rounded-lg shadow transition"
             icon={<FileCheck2 className="w-5 h-5 text-orange-500" />}
           />
           <CustomBar
-            title="Quizzes por Subcategoria"
+            title="Quizzes por serviços"
             data={quizSubCategoryData}
             icon={<ListOrdered className="w-5 h-5 text-orange-400" />}
           />
@@ -265,7 +265,7 @@ className="px-4 py-2 text-white text-sm rounded-lg shadow transition"
             icon={<Video className="w-5 h-5 text-blue-600" />}
           />
           <CustomBar
-            title="Vídeos por Subcategoria"
+            title="Vídeos por serviços"
             data={videoSubCategoryData}
             icon={<ListOrdered className="w-5 h-5 text-blue-400" />}
           />
@@ -282,7 +282,7 @@ className="px-4 py-2 text-white text-sm rounded-lg shadow transition"
             icon={<FileText className="w-5 h-5 text-purple-600" />}
           />
           <CustomBar
-            title="Manuais por Subcategoria"
+            title="Manuais por serviços"
             data={manualSubCategoryData}
             icon={<ListOrdered className="w-5 h-5 text-purple-400" />}
           />

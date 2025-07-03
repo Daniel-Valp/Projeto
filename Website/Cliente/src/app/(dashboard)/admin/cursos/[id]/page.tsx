@@ -63,7 +63,7 @@ const CourseEditor = () => {
     }
   
     console.log("🧩 curso.categoria:", curso.categoria);
-    console.log("🧩 curso.subcategoria:", curso.subcategoria);
+    console.log("🧩 curso.serviço:", curso.subcategoria);
   
     // ⬅️ Adiciona este log aqui
     console.log("🧪 curso.secoes recebido:", curso.secoes);
@@ -199,10 +199,10 @@ const CourseEditor = () => {
                 />
 
                 <CustomFormField
-                  name="cursosubcategoria"
-                  label="Subcategoria do Curso"
+                  name="cursosserviços"
+                  label="serviços do Curso"
                   type="select"
-                  placeholder="Escolha a subcategoria"
+                  placeholder="Escolha o serviço"
                   options={subcategorias.map((sub) => ({
                     value: String(sub.subcategoriaid),
                     label: sub.nome,

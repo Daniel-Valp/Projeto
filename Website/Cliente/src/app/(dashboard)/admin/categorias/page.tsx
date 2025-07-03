@@ -41,7 +41,7 @@ export default function CategoriasAdminPage() {
       const json = await res.json();
       setSubcategorias(json.data || []);
     } catch (error) {
-      console.error("Erro ao carregar subcategorias:", error);
+      console.error("Erro ao carregar os serviços:", error);
     }
   };
 
@@ -67,7 +67,7 @@ export default function CategoriasAdminPage() {
   };
 
 const criarSubcategoria = async () => {
-  if (!novaSubcategoria.trim()) return toast.error("Subcategoria vazia");
+  if (!novaSubcategoria.trim()) return toast.error("Serviço vazio");
   try {
     const res = await fetch("http://localhost:5000/api/subcategorias", {
       method: "POST",
@@ -76,15 +76,15 @@ const criarSubcategoria = async () => {
     });
     const json = await res.json();
     if (res.ok) {
-      toast.success("Subcategoria criada com sucesso!");
+      toast.success("serviço criado com sucesso!");
       setNovaSubcategoria("");
       fetchSubcategorias();
     } else {
-      toast.error(json.message || "Erro ao criar subcategoria");
+      toast.error(json.message || "Erro ao criar o serviço");
       console.error("Erro detalhado:", json);
     }
   } catch (error) {
-    console.error("Erro ao criar subcategoria:", error);
+    console.error("Erro ao criar serviços:", error);
   }
 };
 
@@ -121,15 +121,15 @@ const criarSubcategoria = async () => {
         body: JSON.stringify({ nome: editandoSubcategoriaNome }),
       });
       if (res.ok) {
-        toast.success("Subcategoria atualizada com sucesso!");
+        toast.success("serviço atualizado com sucesso!");
         setEditandoSubcategoriaId(null);
         setEditandoSubcategoriaNome("");
         fetchSubcategorias();
       } else {
-        toast.error("Erro ao atualizar subcategoria");
+        toast.error("Erro ao atualizar o serviço");
       }
     } catch (error) {
-      console.error("Erro ao atualizar subcategoria:", error);
+      console.error("Erro ao atualizar 0 serviço:", error);
     }
   };
 
@@ -152,19 +152,19 @@ const criarSubcategoria = async () => {
   };
 
   const apagarSubcategoria = async (id: string | number) => {
-    if (!confirm("Tem certeza que deseja apagar esta subcategoria?")) return;
+    if (!confirm("Tem certeza que deseja apagar este serviço?")) return;
     try {
       const res = await fetch(`http://localhost:5000/api/subcategorias/${id}`, {
         method: "DELETE",
       });
       if (res.ok) {
-        toast.success("Subcategoria apagada com sucesso!");
+        toast.success("Serviço apagado com sucesso!");
         fetchSubcategorias();
       } else {
-        toast.error("Erro ao apagar subcategoria");
+        toast.error("Erro ao apagar o serviço");
       }
     } catch (error) {
-      console.error("Erro ao apagar subcategoria:", error);
+      console.error("Erro ao apagar o serviço:", error);
     }
   };
 
@@ -175,7 +175,7 @@ const criarSubcategoria = async () => {
 
   return (
     <div className="p-6 bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-white">
-      <h1 className="text-3xl font-bold mb-8 text-center">📂 Gestão de Categorias e subcategorias</h1>
+      <h1 className="text-3xl font-bold mb-8 text-center">📂 Gestão de Categorias e Serviços</h1>
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Categorias */}
@@ -260,12 +260,12 @@ const criarSubcategoria = async () => {
 
         {/* Subcategorias */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">➕ Adicionar Subcategoria</h2>
+          <h2 className="text-xl font-semibold mb-4">➕ Adicionar Serviço</h2>
           <div className="flex gap-2 mb-4">
             <input
               value={novaSubcategoria}
               onChange={(e) => setNovaSubcategoria(e.target.value)}
-              placeholder="Nova subcategoria"
+              placeholder="Novo serviço"
               className="px-4 py-2 border rounded-lg w-full dark:bg-gray-700 dark:border-gray-600"
               disabled={!!editandoSubcategoriaId}
             />
@@ -280,7 +280,7 @@ const criarSubcategoria = async () => {
           </div>
 
           <div className="border-t pt-4">
-            <h3 className="font-medium mb-2">🗂️ Subcategorias existentes:</h3>
+            <h3 className="font-medium mb-2">🗂️ Seriços existentes:</h3>
             {subcategorias.length > 0 ? (
               <ul className="list-disc list-inside space-y-2">
                 {subcategorias.map((sub) => (
@@ -333,7 +333,7 @@ const criarSubcategoria = async () => {
                 ))}
               </ul>
             ) : (
-              <p className="text-gray-500 text-sm">Nenhuma subcategoria ainda.</p>
+              <p className="text-gray-500 text-sm">Nenhum serviço ainda.</p>
             )}
           </div>
         </div>

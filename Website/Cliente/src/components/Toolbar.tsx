@@ -40,7 +40,7 @@ const Toolbar = ({ onSearch, onCategoryChange, onSubcategoryChange }: ToolbarPro
 
   // Atualiza subcategorias quando os dados forem carregados
   useEffect(() => {
-    console.log("🔍 Subcategorias recebidas da API:", subcategorias);
+    console.log("🔍 Serviços recebidas da API:", subcategorias);
   
     if (subcategorias.length > 0) {
       const subcategoriasFormatadas = subcategorias.map((subcategoria) => ({
@@ -53,7 +53,7 @@ const Toolbar = ({ onSearch, onCategoryChange, onSubcategoryChange }: ToolbarPro
       const ids = subcategoriasFormatadas.map((s) => s.id);
       const idsDuplicados = ids.filter((id, i) => ids.indexOf(id) !== i);
       if (idsDuplicados.length > 0) {
-        console.error("🚨 Subcategorias com chaves duplicadas:", idsDuplicados);
+        console.error("🚨 serviço com chaves duplicadas:", idsDuplicados);
       }
   
       setSubcategoriasLista(subcategoriasFormatadas);
@@ -115,15 +115,15 @@ const Toolbar = ({ onSearch, onCategoryChange, onSubcategoryChange }: ToolbarPro
       {/* Filtro de Subcategorias */}
       <Select onValueChange={onSubcategoryChange}>
         <SelectTrigger className="toolbar__select">
-          <SelectValue placeholder="Subcategorias" />
+          <SelectValue placeholder="Serviços" />
         </SelectTrigger>
         <SelectContent className="white hover:white">
           <SelectItem value="all" className="toolbar__select-item">
-            Todas as subcategorias
+            Todos os serviços
           </SelectItem>
           {isLoadingSubcategorias ? (
             <SelectItem value="loading" disabled>
-              Carregando subcategorias...
+              Carregando serviços...
             </SelectItem>
           ) : (
             subcategoriasLista.map((subcategoria, index) => (

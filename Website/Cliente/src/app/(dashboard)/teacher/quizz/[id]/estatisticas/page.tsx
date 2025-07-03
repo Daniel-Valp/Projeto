@@ -35,18 +35,29 @@ const EstatisticasPage = () => {
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
       <h1 className="text-2xl font-bold  mb-4" style={{ color: "#025E69" }}>📊 Estatísticas do Quiz</h1>
 
-      <div className="mb-6 space-y-2">
-        <p>
-  <strong className="text-gray-700">Total de tentativas:</strong>{" "}
-  <span className="text-[#025E69] font-semibold">{estatisticas.totalTentativas}</span>
-</p>
+    <div className="mb-6 space-y-2">
+  <p>
+    <strong className="text-gray-700">Total de tentativas:</strong>{" "}
+    <span className="text-[#025E69] font-semibold">
+      {estatisticas.totalTentativas}
+    </span>
+  </p>
 
-<p>
-  <strong className="text-gray-700">Média de pontuação:</strong>{" "}
-  <span className="text-[#025E69] font-semibold">{estatisticas.mediaPontuacao}</span>
-</p>
+  <p>
+    <strong className="text-gray-700">Média de pontuação:</strong>{" "}
+    <span className="text-[#025E69] font-semibold">
+      {estatisticas.mediaPontuacao}
+    </span>
+  </p>
 
-      </div>
+  <p>
+    <strong className="text-gray-700">Utilizadores únicos:</strong>{" "}
+    <span className="text-[#025E69] font-semibold">
+      {estatisticas.totalUtilizadoresUnicos}
+    </span>
+  </p>
+</div>
+
 
       <h2 className="text-xl font-semibold text-gray-800 mb-3">❌ Perguntas com maior taxa de erro</h2>
       <ul className="space-y-4">

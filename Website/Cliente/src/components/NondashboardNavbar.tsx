@@ -26,11 +26,12 @@ const NonDashboardNavbar = () => {
       width={180}
       height={25}
     />
-<span style={{ color: "#F3F7F5", fontSize: "15px", fontWeight: "700", lineHeight: "1.2" }}>
-  Formações
-</span>
+    <span className="hidden sm:inline" style={{ color: "#F3F7F5", fontSize: "15px", fontWeight: "700", lineHeight: "1.2" }}>
+      Formações
+    </span>
   </span>
 </Link>
+
           {/* <div className="flex items-center gap-4">
             <div className="relative group">
               <Link

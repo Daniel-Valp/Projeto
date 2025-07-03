@@ -91,7 +91,7 @@ className="border border-[#25262f] text-[#25262f] hover:bg-[#4FA6A8] hover:text-
             Categoria: {video.categoria_nome || "Sem categoria"}
           </Badge>
           <Badge variant="outline" className="bg-green-100 dark:bg-green-800/30 text-green-800 dark:text-green-300 px-3 py-1 text-xs rounded-full">
-            Subcategoria: {video.subcategoria_nome || "Sem subcategoria"}
+            Serviço: {video.subcategoria_nome || "Sem serviço"}
           </Badge>
         </div>
       </div>

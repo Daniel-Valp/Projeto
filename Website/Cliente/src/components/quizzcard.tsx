@@ -97,7 +97,7 @@ const role = (user.publicMetadata?.userType ?? "").toString().toLowerCase();
             Categoria: {quiz.categoria || "Sem categoria"}
           </span>
           <span className="bg-green-100 dark:bg-green-800/30 text-green-800 dark:text-green-300 px-3 py-1 text-xs rounded-full">
-            Subcategoria: {quiz.subcategoria || "Sem subcategoria"}
+            Serviço: {quiz.subcategoria || "Sem Serviços"}
           </span>
         </div>
       </CardContent>

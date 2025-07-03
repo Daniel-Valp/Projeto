@@ -34,7 +34,7 @@ export const cursoFormSchema = z.object({
     .max(80, "O título deve ter no máximo 80 caracteres"),
   cursodescricao: z.string().min(1, "A descrição é obrigatória"),
   cursocategoria: z.string().min(1, "A categoria é obrigatória"),
-  cursosubcategoria: z.string().min(1, "A subcategoria é obrigatória"),
+  cursosubcategoria: z.string().min(1, "O serviço é obrigatória"),
   cursohoras: z.string().min(1, "As horas são obrigatórias"),
   cursoestado: z.boolean(),
   cursoimagem: z.any().optional(), // aceita File, string ou nada

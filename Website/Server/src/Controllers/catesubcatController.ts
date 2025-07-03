@@ -32,10 +32,10 @@ export const criarSubcategoria = async (req: Request, res: Response) => {
   try {
     const { nome } = req.body;
     const novaSubcategoria = await Subcategoria.create({ nome }); // sem passar subcategoriaid
-    res.status(201).json({ message: "Subcategoria criada com sucesso", data: novaSubcategoria });
+    res.status(201).json({ message: "Serviço criado com sucesso", data: novaSubcategoria });
   } catch (err) {
-    console.error("Erro ao criar subcategoria:", err);
-    res.status(500).json({ message: "Erro ao criar subcategoria", error: err });
+    console.error("Erro ao criar serviço:", err);
+    res.status(500).json({ message: "Erro ao criar serviço", error: err });
   }
 };
 
@@ -80,14 +80,14 @@ export const atualizarSubcategoria = async (req: Request, res: Response) => {
     const { nome } = req.body;
 
     const subcategoria = await Subcategoria.findByPk(id) as SubcategoriaInstance | null;
-    if (!subcategoria) return res.status(404).json({ message: "Subcategoria não encontrada" });
+    if (!subcategoria) return res.status(404).json({ message: "Serviço não encontrado" });
 
     subcategoria.nome = nome;
     await subcategoria.save();
 
-    res.json({ message: "Subcategoria atualizada com sucesso", data: subcategoria });
+    res.json({ message: "Serviço atualizado com sucesso", data: subcategoria });
   } catch (err) {
-    res.status(500).json({ message: "Erro ao atualizar subcategoria", error: err });
+    res.status(500).json({ message: "Erro ao atualizar o serviço", error: err });
   }
 };
 
@@ -97,11 +97,11 @@ export const apagarSubcategoria = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const subcategoria = await Subcategoria.findByPk(id) as SubcategoriaInstance | null;
-    if (!subcategoria) return res.status(404).json({ message: "Subcategoria não encontrada" });
+    if (!subcategoria) return res.status(404).json({ message: "Serviço não encontrado" });
 
     await subcategoria.destroy();
-    res.json({ message: "Subcategoria apagada com sucesso" });
+    res.json({ message: "Serviço apagado com sucesso" });
   } catch (err) {
-    res.status(500).json({ message: "Erro ao apagar subcategoria", error: err });
+    res.status(500).json({ message: "Erro ao apagar o serviço", error: err });
   }
 };
