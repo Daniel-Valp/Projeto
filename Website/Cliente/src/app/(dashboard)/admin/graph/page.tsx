@@ -119,7 +119,25 @@ export default function AdminContentGraph() {
         <ResponsiveContainer width="100%" height={250}>
           {chartType === "bar" ? (
             <BarChart data={data}>
-              <XAxis dataKey="type" tick={{ fill: "#9CA3AF", fontSize: 11 }} />
+<XAxis
+  dataKey="type"
+  interval={0}
+  tickLine={false}
+  tick={({ x, y, payload }) => {
+    const words = (payload.value as string).split(" ");
+    return (
+      <text x={x} y={y + 10} textAnchor="middle" fill="#9CA3AF" fontSize={11}>
+        {words.map((word: string, index: number) => (
+          <tspan key={index} x={x} dy={index === 0 ? 0 : 12}>
+            {word}
+          </tspan>
+        ))}
+      </text>
+    );
+  }}
+/>
+
+
               <YAxis allowDecimals={false} tick={{ fill: "#9CA3AF", fontSize: 11 }} />
               <Tooltip />
               <Bar dataKey="count" radius={[8, 8, 0, 0]}>
@@ -130,7 +148,25 @@ export default function AdminContentGraph() {
             </BarChart>
           ) : (
             <LineChart data={data}>
-              <XAxis dataKey="type" tick={{ fill: "#9CA3AF", fontSize: 11 }} />
+<XAxis
+  dataKey="type"
+  interval={0}
+  tickLine={false}
+  tick={({ x, y, payload }) => {
+    const words = (payload.value as string).split(" ");
+    return (
+      <text x={x} y={y + 10} textAnchor="middle" fill="#9CA3AF" fontSize={11}>
+        {words.map((word: string, index: number) => (
+          <tspan key={index} x={x} dy={index === 0 ? 0 : 12}>
+            {word}
+          </tspan>
+        ))}
+      </text>
+    );
+  }}
+/>
+
+
               <YAxis allowDecimals={false} tick={{ fill: "#9CA3AF", fontSize: 11 }} />
               <Tooltip />
               <Line
@@ -203,7 +239,23 @@ className="px-4 py-2 text-white text-sm rounded-lg shadow transition"
               </PieChart>
             ) : (
               <LineChart data={typeData}>
-                <XAxis dataKey="type" tick={{ fill: "#9CA3AF", fontSize: 11 }} />
+<XAxis
+  dataKey="type"
+  interval={0}
+  tickLine={false}
+  tick={({ x, y, payload }) => {
+    const words = (payload.value as string).split(" ");
+    return (
+      <text x={x} y={y + 10} textAnchor="middle" fill="#9CA3AF" fontSize={11}>
+        {words.map((word: string, index: number) => (
+          <tspan key={index} x={x} dy={index === 0 ? 0 : 12}>
+            {word}
+          </tspan>
+        ))}
+      </text>
+    );
+  }}
+/>
                 <YAxis allowDecimals={false} tick={{ fill: "#9CA3AF", fontSize: 11 }} />
                 <Tooltip />
                 <Line

@@ -74,7 +74,7 @@ export default function CreateQuizPage() {
     },
   });
 
-  const { fields, append, remove, replace  } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: methods.control,
     name: "perguntas",
   });
@@ -305,7 +305,9 @@ useEffect(() => {
                 <div className="text-right">
                   <Button type="button" variant="destructive" onClick={() => {
   try {
-    remove(index);
+    if (index >= 0 && index < fields.length) {
+  remove(index);
+}
   } catch (e) {
     console.error("Erro ao remover pergunta:", e);
   }

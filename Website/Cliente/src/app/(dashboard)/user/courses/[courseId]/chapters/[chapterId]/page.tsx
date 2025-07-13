@@ -82,7 +82,7 @@ const CourseChapterPage = () => {
     <div className="course flex min-h-screen gap-x-6">
       {curso && capituloAtual && <ChaptersSidebar />}
 
-      <main className="flex-1 p-4 pl-2">
+      <main className="flex-1 p-4 pl-2  pb-10">
         <div className="course__breadcrumb mb-4">
           <div className="course__path text-sm flex items-center justify-between w-full">
             <div>
@@ -173,6 +173,7 @@ const CourseChapterPage = () => {
               Quiz em breve!
             </div>
           </TabsContent>
+          <div className="h-16" />
         </Tabs>
       </main>
     </div>

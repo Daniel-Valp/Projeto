@@ -66,7 +66,7 @@ console.log("🔍 Curso renderizado:", curso.cursoid, curso.professornome);
           <div className="course-card-search__footer">
             <span className="course-card-search__hours">{horasFormatadas}</span>
             <span className="course-card-search__enrollment">
-              {curso.enlistados ?? 0} {curso.enlistados === 1 ? "inscrito" : "inscritos"}
+              {curso.enlistados ?? 0} {curso.enlistados === 1 ? "Visualização" : "Visualizações"}
             </span>
           </div>
         </div>

@@ -58,16 +58,17 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
   return (
     <Card className="course-card-teacher group">
       {/* 📌 Cabeçalho do Card com Imagem */}
-      <CardHeader className="course-card-teacher__header">
-        <Image
-          src={curso.imagem || "/placeholder.png"}
-          alt={`Imagem do curso: ${curso.titulo}`}
-          width={370}
-          height={150}
-          className="course-card-teacher__image"
-          priority
-        />
-      </CardHeader>
+<CardHeader className="course-card-teacher__header">
+  <Image
+    src={curso.imagem && curso.imagem !== "" ? curso.imagem : "/images/sem-imagem-curso.png"}
+    alt={`Imagem do curso: ${curso.titulo || "Sem título"}`}
+    fill
+    className="course-card-teacher__image"
+    priority
+  />
+</CardHeader>
+
+
 
       <CardContent className="course-card-teacher__content">
         <div className="flex flex-col">
@@ -121,25 +122,35 @@ const TeacherCourseCard = ({ curso, onEdit, onDelete, isOwner }: TeacherCourseCa
  <div className="flex items-center justify-between mt-2 w-full">
   {/* Botão Ver Curso (sempre visível) */}
 <button
-  onClick={(e) => {
-    e.stopPropagation();
+  onClick={async (e) => {
+  e.stopPropagation();
 
-    const cursoId = curso.cursoid || curso.id;
+  const cursoId = curso.cursoid || curso.id;
 
-    let capituloId;
-    for (const secao of curso.secoes || []) {
-      if (secao.capitulos?.length > 0) {
-        capituloId = secao.capitulos[0].capituloid;
-        break;
-      }
+  let capituloId;
+  for (const secao of curso.secoes || []) {
+    if (secao.capitulos?.length > 0) {
+      capituloId = secao.capitulos[0].capituloid;
+      break;
     }
+  }
 
-    if (capituloId) {
-      router.push(`/user/courses/${cursoId}/chapters/${capituloId}`);
-    } else {
-      alert("Este curso ainda não possui capítulos disponíveis.");
-    }
-  }}
+  if (!capituloId) {
+    alert("Este curso ainda não possui capítulos disponíveis.");
+    return;
+  }
+
+  try {
+    await fetch(`http://localhost:5000/cursos/${cursoId}/enlistar`, {
+      method: "POST",
+    });
+  } catch (error) {
+    console.error("❌ Erro ao registrar visualização:", error);
+  }
+
+  router.push(`/user/courses/${cursoId}/chapters/${capituloId}`);
+}}
+
   className="text-sm hover:underline"
   style={{ color: "#4FA6A8" }}
 >

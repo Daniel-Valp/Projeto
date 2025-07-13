@@ -148,8 +148,8 @@ const CourseEditor = () => {
       <Form {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <Header
-            title="Criação do curso"
-            subtitle="Crie o seu próprio curso e publique"
+            title={id ? "Editar curso" : "Criação do curso"}
+  subtitle={id ? "Atualize as informações do curso" : "Crie o seu próprio curso e publique"}
             rightElement={
               <div className="flex items-center space-x-4">
                 <CustomFormField
@@ -200,31 +200,26 @@ const CourseEditor = () => {
 
                 />
 
-                <CustomFormField
-                  name="cursocategoria"
-                  label="Categoria do Curso"
-                  type="select"
-                  placeholder="Escolha a categoria"
-                  options={categorias.map((cat) => ({
-                    value: cat.id,
-                    label: cat.nome,
-                  }))}
-                    labelClassName="text-[#025E69]"
+              <CustomFormField
+  name="categoria"
+  label="Categoria"
+  type="select"
+  options={categorias.map((cat) => ({
+    value: String(cat.id),
+    label: cat.nome,
+  }))}
+/>
 
-                />
+<CustomFormField
+  name="subcategoria"
+  label="Serviço"
+  type="select"
+  options={subcategorias.map((sub) => ({
+    value: String(sub.subcategoriaid),
+    label: sub.nome,
+  }))}
+/>
 
-                <CustomFormField
-                  name="cursoserviços"
-                  label="Serviços do Curso"
-                  type="select"
-                  placeholder="Escolha o serviço"
-                  options={subcategorias.map((sub) => ({
-                    value: String(sub.subcategoriaid),
-                    label: sub.nome,
-                  }))}
-                    labelClassName="text-[#025E69]"
-
-                />
 
                 <CustomFormField
                   name="cursohoras"

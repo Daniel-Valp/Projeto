@@ -141,8 +141,8 @@ const CourseEditor = () => {
       <Form {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <Header
-            title="Criação do curso"
-            subtitle="Crie o seu próprio curso e publique"
+            title={id ? "Editar curso" : "Criação do curso"}
+  subtitle={id ? "Atualize as informações do curso" : "Crie o seu próprio curso e publique"}
             rightElement={
               <div className="flex items-center space-x-4">
                 <CustomFormField

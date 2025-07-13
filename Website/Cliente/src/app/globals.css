@@ -1106,12 +1106,13 @@ select option {
 
 
 .course-card-teacher__header {
-  @apply p-0 h-[400px] overflow-hidden;
+  @apply relative p-0 h-[400px] overflow-hidden;
 }
 
 .course-card-teacher__image {
-  @apply rounded-t-lg w-[100%] h-[100%] object-cover transition-transform;
+  @apply rounded-t-lg object-cover object-center transition-transform;
 }
+
 
 /* Course Preview */
 .course-preview {
