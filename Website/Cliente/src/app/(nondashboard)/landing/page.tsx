@@ -66,11 +66,10 @@ const sections = [
     title: "Manuais",
     description:
       "Aqui encontras manuais úteis para expandir o teu conhecimento e aprender ao teu ritmo.",
-    buttonText: "Explorar manuais",
     images: [
-      "/images/manual1.jpg",
-      "/images/manual2.jpg",
-      "/images/manual3.jpg",
+      "/images/manuais1.png",
+      "/images/manuais2.png",
+      "/images/manuais3.jpg",
     ],
   },
   {
@@ -78,16 +77,17 @@ const sections = [
     title: "Vídeos",
     description:
       "Descobre vídeos educativos para aprofundar os teus conhecimentos.",
-    buttonText: "Ver vídeos",
-    images: ["/images/video1.jpg", "/images/video2.jpg", "/images/video3.jpg"],
+    images: ["/images/video1.jpg", 
+             "/images/video2.jpg", 
+             "/images/video3.jpg",
+    ],
   },
   {
     id: "Quizzes",
     title: "Quizzes",
     description:
       "Descobre vídeos educativos para aprofundar os teus conhecimentos.",
-    buttonText: "Ver vídeos",
-    images: ["/images/video1.jpg", "/images/video2.jpg", "/images/video3.jpg"],
+    images: ["/images/quizz1.jpg", "/images/quizz2.png", "/images/hero3.jpg"],
   },
 ];
 
@@ -250,11 +250,14 @@ const Landing = () => {
                 {sections[currentSection].description}
               </p>
               <div className="landing__cta">
-                <Link href="/search">
-                  <div className="landing__cta-button">
-                    {sections[currentSection].buttonText}
-                  </div>
-                </Link>
+               {sections[currentSection].buttonText && (
+  <Link href="/search">
+    <div className="landing__cta-button">
+      {sections[currentSection].buttonText}
+    </div>
+  </Link>
+)}
+
               </div>
             </div>
 

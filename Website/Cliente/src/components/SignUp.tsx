@@ -27,24 +27,16 @@ const SignUpComponent = () => {
   };
 
   return (
-    <SignUp
-      appearance={{
-        elements: {
-          rootBox: "flex justify-center items-center py-5",
-          cardBox: "",           // Sem sombra customizada
-          card: "",              // Sem background customizado
-          footer: {},            // Sem cor customizada no footer
-          formFieldLabel: "",    // Sem cor customizada no label
-          formButtonPrimary: "", // Botão com estilo padrão
-          formFieldInput: "",    // Input com estilo padrão
-          footerActionLink: "",  // Link com estilo padrão (remova se quiser esconder)
-        },
-      }}
-      signInUrl={signInUrl}
-      forceRedirectUrl={getRedirectUrl()}
-      routing="hash"
-      afterSignOutUrl="/"
-    />
+   <SignUp
+  
+   
+  signInUrl={signInUrl}
+  forceRedirectUrl={getRedirectUrl()}
+  routing="hash"
+  afterSignOutUrl="/"
+/>
+
+
   );
 };
 

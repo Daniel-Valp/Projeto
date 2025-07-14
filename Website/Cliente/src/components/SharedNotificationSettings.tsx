@@ -112,7 +112,7 @@ const SharedNotificationSettings = ({
           </div>
 
           <Button type="submit" className="notification-settings__submit">
-            Atualizar definições.
+            Atualizar definições
           </Button>
         </form>
       </Form>

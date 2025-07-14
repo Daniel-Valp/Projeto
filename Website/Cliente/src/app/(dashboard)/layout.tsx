@@ -31,7 +31,7 @@ export default function DashboardLayout({
   }, [isCoursePage, pathname]);
 
   if (!isLoaded) return <Loading />;
-  if (!user) return <div>Porfavor autentique-SSse para ver esta pagina.</div>;
+  if (!user) return <div>Porfavor autentique-se para ver esta pagina.</div>;
 
   return (
     <SidebarProvider>
