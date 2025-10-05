@@ -39,12 +39,7 @@ Report included in pt-pt
 
 ## ⚙️ Getting Started
 
-# Backend dependencies
-cd Server
-npm install
-
-# Frontend dependencies
-cd ../Website
+# Backend Dependencies
 npm install
 
 
