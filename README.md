@@ -48,10 +48,15 @@ npm install
 Create a .env file inside the Server/ directory:
 
 DB_HOST=localhost
+
 DB_PORT=5432
+
 DB_NAME=your_database_name
+
 DB_USER=your_username
+
 DB_PASS=your_password
+
 PORT=5000
 
 # Then run migrations:
